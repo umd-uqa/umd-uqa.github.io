@@ -1,5 +1,5 @@
-# appdevclub.com
-The offical website for App Dev Club
+# umd-uqa.github.io
+The offical website for the UMD UQA
 
 To run: 
 1. `npm start`
