@@ -276,7 +276,7 @@ function UMDUQAWebsite() {
                 <h3 className="text-2xl font-light text-slate-800 mb-4">Contact Information</h3>
                 <div className="space-y-3 text-slate-600">
                   <p>
-                    <span className="font-medium">Email:</span> uqaclub@umd.edu
+                    <span className="font-medium">Email:</span> umd.uqa@gmail.com
                   </p>
                   <p>
                     <span className="font-medium">Location:</span> University of Maryland, College Park
