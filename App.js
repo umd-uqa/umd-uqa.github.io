@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { Facebook, Twitter, Instagram } from 'lucide-react';
+const { useState } = React;
 
 function UMDUQAWebsite() {
   const [currentPage, setCurrentPage] = useState('home');
@@ -69,9 +68,9 @@ function UMDUQAWebsite() {
               
               {/* Social Icons */}
               <div className="flex items-center gap-4 ml-4">
-                <Facebook className="w-5 h-5 text-slate-500 hover:text-indigo-400 cursor-pointer transition-colors" />
-                <Twitter className="w-5 h-5 text-slate-500 hover:text-indigo-400 cursor-pointer transition-colors" />
-                <Instagram className="w-5 h-5 text-slate-500 hover:text-indigo-400 cursor-pointer transition-colors" />
+                <span className="text-slate-500 hover:text-indigo-400 transition-colors cursor-pointer">📘</span>
+                <span className="text-slate-500 hover:text-indigo-400 transition-colors cursor-pointer">🐦</span>
+                <span className="text-slate-500 hover:text-indigo-400 transition-colors cursor-pointer">📸</span>
               </div>
               
               {/* Contact Button */}
