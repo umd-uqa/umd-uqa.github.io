@@ -49,10 +49,10 @@ function UMDUQAWebsite() {
       <nav className="bg-[#232742] border-b border-[#3b4166]">
         <div className="max-w-7xl mx-auto px-8 py-6">
           <div className="flex items-center justify-between">
-            {/* Logo */}
+           {/* Logo */}
             <div className="flex items-center">
               <img 
-                src="UQA_white(1).jpg" 
+                src="UQA_white(1).png" 
                 alt="UQA Logo" 
                 className="h-20 w-auto object-contain" 
               />
