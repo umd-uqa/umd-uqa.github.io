@@ -4,7 +4,7 @@ function UMDUQAWebsite() {
   const [currentPage, setCurrentPage] = useState('home');
 
   const navigation = [
-    { id: 'about', label: 'About' },
+    { id: 'about', label: 'hello' },
     { id: 'events', label: 'Events' }
   ];
 
