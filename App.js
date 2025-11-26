@@ -13,53 +13,28 @@ function UMDUQAWebsite() {
   // Card Background: #2d3255 (Lighter Navy)
   // Accent: #7c7fc4 (Periwinkle from Logo)
 
-  {/* Events Page */}
+{/* Events Page */}
       {currentPage === 'events' && (
         <div className="max-w-5xl mx-auto px-8 py-16">
           <div className="bg-[#2d3255] rounded-lg shadow-xl p-12 border border-[#3b4166]">
             <h2 className="text-4xl font-light text-white mb-8">Upcoming Events</h2>
             
-            {/* Manual Event List */}
-            <div className="space-y-8 mb-12">
-              {upcomingEvents.map((event, index) => (
-                <div key={index} className="border-l-4 border-[#7c7fc4] pl-6 py-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-2xl font-light text-white">{event.title}</h3>
-                    <span className="text-[#7c7fc4] font-light whitespace-nowrap ml-4">
-                      {event.date}
-                    </span>
-                  </div>
-                  <div className="space-y-1 text-slate-300 mb-3">
-                    <p className="text-sm">
-                      <span className="font-medium text-slate-400">Time:</span> {event.time}
-                    </p>
-                    <p className="text-sm">
-                      <span className="font-medium text-slate-400">Location:</span> {event.location}
-                    </p>
-                  </div>
-                  <p className="text-slate-300">{event.description}</p>
-                </div>
-              ))}
-            </div>
-
-            {/* Google Calendar Embed Section */}
-            <h3 className="text-2xl font-light text-white mb-6">Calendar View</h3>
-            <div className="bg-white rounded-lg p-2 overflow-hidden">
+            {/* Calendar Embed Only */}
+            <div className="bg-white rounded-lg p-2 overflow-hidden h-[600px]">
               <iframe 
                 src="https://calendar.google.com/calendar/embed?src=3c2a01314cb17c4b0f1fe29b83c80bf8f1753a4217fa9bab39ed151a019aa919%40group.calendar.google.com&ctz=America%2FNew_York" 
                 style={{border: 0}} 
                 width="100%" 
-                height="600" 
+                height="100%" 
                 frameBorder="0" 
                 scrolling="no"
                 title="UQA Calendar"
               ></iframe>
             </div>
 
-            <div className="mt-12 bg-[#232742] rounded-lg p-8 text-center border border-[#3b4166]">
-              <h3 className="text-2xl font-light text-white mb-3">Stay Updated</h3>
-              <p className="text-slate-300">
-                Follow us on social media and join our mailing list to never miss an event!
+            <div className="mt-8 text-center">
+              <p className="text-slate-300 text-sm">
+                *Note: If the calendar appears blank, please ensure you are signed into your Google account or that the calendar permissions are public.
               </p>
             </div>
           </div>
