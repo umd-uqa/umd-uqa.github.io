@@ -46,21 +46,12 @@ function UMDUQAWebsite() {
         <div className="max-w-7xl mx-auto px-8 py-6">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <div className="flex items-center gap-4">
-              <svg className="w-16 h-16" viewBox="0 0 100 100" fill="none">
-                {/* Logo colors were already perfect (#7c7fc4), kept as is */}
-                <circle cx="50" cy="50" r="35" stroke="#7c7fc4" strokeWidth="2" fill="none" />
-                <ellipse cx="50" cy="50" rx="45" ry="15" stroke="#7c7fc4" strokeWidth="2" fill="none" />
-                <ellipse cx="50" cy="50" rx="15" ry="45" stroke="#7c7fc4" strokeWidth="2" fill="none" />
-                <circle cx="50" cy="50" r="4" fill="#7c7fc4" />
-                <text x="50" y="55" textAnchor="middle" fill="#7c7fc4" fontSize="20" fontWeight="bold">UQA</text>
-              </svg>
-              <div>
-                {/* CHANGED: Text color to White/Gray */}
-                <div className="text-xl font-light text-white leading-tight">Undergraduate</div>
-                <div className="text-xl font-light text-white leading-tight">Quantum</div>
-                <div className="text-xl font-light text-white leading-tight">Association</div>
-              </div>
+            <div className="flex items-center">
+              <img 
+                src="UQA_white(1).jpg" 
+                alt="Undergraduate Quantum Association" 
+                className="h-24 w-auto object-contain" 
+              />
             </div>
             
             {/* Nav Links */}
