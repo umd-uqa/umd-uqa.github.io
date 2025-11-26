@@ -49,11 +49,10 @@ function UMDUQAWebsite() {
             <div className="flex items-center">
               <img 
                 src="UQA_white(1).jpg" 
-                alt="Undergraduate Quantum Association" 
-                className="h-24 w-auto object-contain" 
+                alt="UQA Logo" 
+                className="h-20 w-auto object-contain" 
               />
             </div>
-            
             {/* Nav Links */}
             <div className="flex items-center gap-8">
               {navigation.map(item => (
