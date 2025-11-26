@@ -1,36 +1,20 @@
-const { useState } = React;
+import React, { useState } from 'react';
+import ReactDOM from 'react-dom/client';
+import AboutUs from './AboutUs';
+import Events from './Events';
 
 function UMDUQAWebsite() {
   const [currentPage, setCurrentPage] = useState('home');
 
   const navigation = [
-    { id: 'about', label: 'About' },
+    { id: 'home', label: 'Home' },
+    { id: 'aboutus', label: 'About Us' },
     { id: 'events', label: 'Events' }
   ];
 
-  const upcomingEvents = [
-    {
-      title: 'Quantum Computing Workshop',
-      date: 'November 15, 2025',
-      time: '6:00 PM - 8:00 PM',
-      location: 'Physics Building, Room 1410',
-      description: 'Hands-on introduction to quantum algorithms using Qiskit'
-    },
-    {
-      title: 'Guest Lecture: Quantum Cryptography',
-      date: 'November 22, 2025',
-      time: '5:30 PM - 7:00 PM',
-      location: 'Edward St. John Learning & Teaching Center',
-      description: 'Dr. Sarah Chen from IBM Quantum discusses post-quantum cryptography'
-    },
-    {
-      title: 'Social Meetup & Study Session',
-      date: 'December 1, 2025',
-      time: '4:00 PM - 6:00 PM',
-      location: 'Stamp Student Union',
-      description: 'Casual gathering to discuss quantum topics and work on projects together'
-    }
-  ];
+  // Default calendar URL (the one provided)
+  const defaultCalendarUrl =
+    'https://calendar.google.com/calendar/embed?src=3c2a01314cb17c4b0f1fe29b83c80bf8f1753a4217fa9bab39ed151a019aa919%40group.calendar.google.com&ctz=America%2FNew_York';
 
   return (
     <div className="min-h-screen bg-slate-200">
@@ -53,7 +37,7 @@ function UMDUQAWebsite() {
                 <div className="text-xl font-light text-slate-700">Association</div>
               </div>
             </div>
-            
+
             {/* Nav Links */}
             <div className="flex items-center gap-8">
               {navigation.map(item => (
@@ -65,14 +49,14 @@ function UMDUQAWebsite() {
                   {item.label}
                 </button>
               ))}
-              
+
               {/* Social Icons */}
               <div className="flex items-center gap-4 ml-4">
                 <span className="text-slate-500 hover:text-indigo-400 transition-colors cursor-pointer">📘</span>
                 <span className="text-slate-500 hover:text-indigo-400 transition-colors cursor-pointer">🐦</span>
                 <span className="text-slate-500 hover:text-indigo-400 transition-colors cursor-pointer">📸</span>
               </div>
-              
+
               {/* Contact Button */}
               <button
                 onClick={() => setCurrentPage('contact')}
@@ -121,18 +105,18 @@ function UMDUQAWebsite() {
               <h2 className="text-3xl font-light text-slate-800 mb-8">Who We Are</h2>
               <div className="space-y-6 text-slate-600 leading-relaxed">
                 <p>
-                  The Undergraduate Quantum Association (UQA) is a student-run organization 
-                  dedicated to fostering interest and knowledge in quantum technologies among 
+                  The Undergraduate Quantum Association (UQA) is a student-run organization
+                  dedicated to fostering interest and knowledge in quantum technologies among
                   undergraduate students at the University of Maryland.
                 </p>
                 <p>
-                  Whether you're a physics major, computer science enthusiast, mathematics student, 
-                  or simply curious about quantum mechanics, UQA provides a welcoming community 
+                  Whether you're a physics major, computer science enthusiast, mathematics student,
+                  or simply curious about quantum mechanics, UQA provides a welcoming community
                   to learn, explore, and collaborate on quantum-related topics.
                 </p>
                 <p>
-                  Our mission is to make quantum computing accessible to all undergraduates through 
-                  hands-on learning experiences, research opportunities, and a supportive community 
+                  Our mission is to make quantum computing accessible to all undergraduates through
+                  hands-on learning experiences, research opportunities, and a supportive community
                   of quantum enthusiasts.
                 </p>
               </div>
@@ -162,107 +146,14 @@ function UMDUQAWebsite() {
         </div>
       )}
 
-      {/* About Page */}
-      {currentPage === 'about' && (
-        <div className="max-w-5xl mx-auto px-8 py-16">
-          <div className="bg-white rounded-lg shadow-sm p-12">
-            <h2 className="text-4xl font-light text-slate-800 mb-8">About UMD UQA</h2>
-            
-            <div className="space-y-8 text-slate-600 leading-relaxed">
-              <div>
-                <h3 className="text-2xl font-light text-slate-800 mb-4">Our Mission</h3>
-                <p>
-                  The Undergraduate Quantum Association is committed to making quantum technologies 
-                  accessible and understandable to undergraduate students of all majors and backgrounds. 
-                  We believe that quantum computing represents the future of technology, and our goal 
-                  is to prepare the next generation of quantum scientists and engineers.
-                </p>
-              </div>
-
-              <div>
-                <h3 className="text-2xl font-light text-slate-800 mb-4">Our Vision</h3>
-                <p>
-                  We envision a community where students can freely explore quantum concepts, collaborate 
-                  on cutting-edge projects, and build connections with peers who share their passion for 
-                  quantum science. Through education, hands-on experience, and networking, we aim to 
-                  empower students to become leaders in the quantum revolution.
-                </p>
-              </div>
-
-              <div>
-                <h3 className="text-2xl font-light text-slate-800 mb-4">Why Join UQA?</h3>
-                <div className="grid md:grid-cols-2 gap-6 mt-4">
-                  <div className="bg-slate-50 p-6 rounded-lg">
-                    <h4 className="font-medium text-slate-800 mb-2">Learn & Grow</h4>
-                    <p className="text-sm">
-                      Access workshops, tutorials, and resources to build your quantum computing skills 
-                      from beginner to advanced levels.
-                    </p>
-                  </div>
-                  <div className="bg-slate-50 p-6 rounded-lg">
-                    <h4 className="font-medium text-slate-800 mb-2">Network</h4>
-                    <p className="text-sm">
-                      Connect with like-minded students, researchers, and industry professionals in 
-                      the quantum computing field.
-                    </p>
-                  </div>
-                  <div className="bg-slate-50 p-6 rounded-lg">
-                    <h4 className="font-medium text-slate-800 mb-2">Hands-On Experience</h4>
-                    <p className="text-sm">
-                      Work on real quantum computing projects using platforms like IBM Qiskit and 
-                      participate in hackathons.
-                    </p>
-                  </div>
-                  <div className="bg-slate-50 p-6 rounded-lg">
-                    <h4 className="font-medium text-slate-800 mb-2">Community</h4>
-                    <p className="text-sm">
-                      Be part of a welcoming community that supports your academic and professional 
-                      growth in quantum technologies.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* About Us page (separate) */}
+      {currentPage === 'aboutus' && (
+        <AboutUs />
       )}
 
-      {/* Events Page */}
+      {/* Events page (separate) */}
       {currentPage === 'events' && (
-        <div className="max-w-5xl mx-auto px-8 py-16">
-          <div className="bg-white rounded-lg shadow-sm p-12">
-            <h2 className="text-4xl font-light text-slate-800 mb-8">Upcoming Events</h2>
-            
-            <div className="space-y-8">
-              {upcomingEvents.map((event, index) => (
-                <div key={index} className="border-l-4 border-indigo-400 pl-6 py-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-2xl font-light text-slate-800">{event.title}</h3>
-                    <span className="text-indigo-400 font-light whitespace-nowrap ml-4">
-                      {event.date}
-                    </span>
-                  </div>
-                  <div className="space-y-1 text-slate-600 mb-3">
-                    <p className="text-sm">
-                      <span className="font-medium">Time:</span> {event.time}
-                    </p>
-                    <p className="text-sm">
-                      <span className="font-medium">Location:</span> {event.location}
-                    </p>
-                  </div>
-                  <p className="text-slate-600">{event.description}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-12 bg-indigo-50 rounded-lg p-8 text-center">
-              <h3 className="text-2xl font-light text-slate-800 mb-3">Stay Updated</h3>
-              <p className="text-slate-600">
-                Follow us on social media and join our mailing list to never miss an event!
-              </p>
-            </div>
-          </div>
-        </div>
+        <Events defaultUrl={defaultCalendarUrl} />
       )}
 
       {/* Contact Page */}
@@ -270,7 +161,7 @@ function UMDUQAWebsite() {
         <div className="max-w-5xl mx-auto px-8 py-16">
           <div className="bg-white rounded-lg shadow-sm p-12">
             <h2 className="text-4xl font-light text-slate-800 mb-8">Get In Touch</h2>
-            
+
             <div className="space-y-8">
               <div>
                 <h3 className="text-2xl font-light text-slate-800 mb-4">Contact Information</h3>
@@ -290,13 +181,13 @@ function UMDUQAWebsite() {
               <div className="border-t border-slate-200 pt-8">
                 <h3 className="text-2xl font-light text-slate-800 mb-4">Join Our Community</h3>
                 <p className="text-slate-600 mb-6 leading-relaxed">
-                  Interested in joining UQA? We welcome students from all backgrounds and experience levels. 
+                  Interested in joining UQA? We welcome students from all backgrounds and experience levels.
                   Send us an email to learn more about membership, upcoming events, and how to get involved!
                 </p>
                 <div className="bg-slate-50 rounded-lg p-6">
                   <h4 className="text-xl font-light text-slate-800 mb-3">Meeting Times</h4>
                   <p className="text-slate-600">
-                    General meetings are held every other Wednesday at 6:00 PM in the Physics Building. 
+                    General meetings are held every other Wednesday at 6:00 PM in the Physics Building.
                     Check our events page for specific dates and locations.
                   </p>
                 </div>
@@ -305,8 +196,8 @@ function UMDUQAWebsite() {
               <div className="border-t border-slate-200 pt-8">
                 <h3 className="text-2xl font-light text-slate-800 mb-4">Collaboration Opportunities</h3>
                 <p className="text-slate-600 leading-relaxed">
-                  Are you a researcher, company, or organization interested in collaborating with UQA? 
-                  We're always open to partnerships, sponsorships, and speaking opportunities. 
+                  Are you a researcher, company, or organization interested in collaborating with UQA?
+                  We're always open to partnerships, sponsorships, and speaking opportunities.
                   Reach out to discuss how we can work together to advance quantum education!
                 </p>
               </div>
