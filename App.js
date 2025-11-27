@@ -1,10 +1,14 @@
-const { useState } = React;
+import React, { useState } from 'react';
+import ReactDOM from 'react-dom/client';
+import AboutUs from './AboutUs';
+import Events from './Events';
 
 function UMDUQAWebsite() {
   const [currentPage, setCurrentPage] = useState('home');
 
   const navigation = [
-    { id: 'about', label: 'About' },
+    { id: 'home', label: 'Home' },
+    { id: 'aboutus', label: 'About Us' },
     { id: 'events', label: 'Events' }
   ];
 
@@ -69,14 +73,14 @@ function UMDUQAWebsite() {
                   {item.label}
                 </button>
               ))}
-              
+
               {/* Social Icons */}
               <div className="flex items-center gap-4 ml-4">
                 <span className="text-slate-400 hover:text-[#7c7fc4] transition-colors cursor-pointer">📘</span>
                 <span className="text-slate-400 hover:text-[#7c7fc4] transition-colors cursor-pointer">🐦</span>
                 <span className="text-slate-400 hover:text-[#7c7fc4] transition-colors cursor-pointer">📸</span>
               </div>
-              
+
               {/* Contact Button */}
               <button
                 onClick={() => setCurrentPage('contact')}
@@ -128,18 +132,18 @@ function UMDUQAWebsite() {
               <h2 className="text-3xl font-light text-white mb-8">Who We Are</h2>
               <div className="space-y-6 text-slate-300 leading-relaxed">
                 <p>
-                  The Undergraduate Quantum Association (UQA) is a student-run organization 
-                  dedicated to fostering interest and knowledge in quantum technologies among 
+                  The Undergraduate Quantum Association (UQA) is a student-run organization
+                  dedicated to fostering interest and knowledge in quantum technologies among
                   undergraduate students at the University of Maryland.
                 </p>
                 <p>
-                  Whether you're a physics major, computer science enthusiast, mathematics student, 
-                  or simply curious about quantum mechanics, UQA provides a welcoming community 
+                  Whether you're a physics major, computer science enthusiast, mathematics student,
+                  or simply curious about quantum mechanics, UQA provides a welcoming community
                   to learn, explore, and collaborate on quantum-related topics.
                 </p>
                 <p>
-                  Our mission is to make quantum computing accessible to all undergraduates through 
-                  hands-on learning experiences, research opportunities, and a supportive community 
+                  Our mission is to make quantum computing accessible to all undergraduates through
+                  hands-on learning experiences, research opportunities, and a supportive community
                   of quantum enthusiasts.
                 </p>
               </div>
@@ -234,7 +238,7 @@ function UMDUQAWebsite() {
         </div>
       )}
 
-      {/* Events Page */}
+      {/* Events page (separate) */}
       {currentPage === 'events' && (
         <div className="max-w-5xl mx-auto px-8 py-16">
           <div className="bg-[#2d3255] rounded-lg shadow-xl p-12 border border-[#3b4166]">
