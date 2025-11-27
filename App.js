@@ -8,38 +8,21 @@ function UMDUQAWebsite() {
     { id: 'events', label: 'Events' }
   ];
 
-  // BRAND COLORS:
-  // Background: #232742 (Deep Navy)
-  // Card Background: #2d3255 (Lighter Navy)
-  // Accent: #7c7fc4 (Periwinkle from Logo)
-
-{/* Events Page */}
-      {currentPage === 'events' && (
-        <div className="max-w-5xl mx-auto px-8 py-16">
-          <div className="bg-[#2d3255] rounded-lg shadow-xl p-12 border border-[#3b4166]">
-            <h2 className="text-4xl font-light text-white mb-8">Upcoming Events</h2>
-            
-            {/* Calendar Embed Only */}
-            <div className="bg-white rounded-lg p-2 overflow-hidden h-[600px]">
-              <iframe 
-                src="https://calendar.google.com/calendar/embed?src=3c2a01314cb17c4b0f1fe29b83c80bf8f1753a4217fa9bab39ed151a019aa919%40group.calendar.google.com&ctz=America%2FNew_York" 
-                style={{border: 0}} 
-                width="100%" 
-                height="100%" 
-                frameBorder="0" 
-                scrolling="no"
-                title="UQA Calendar"
-              ></iframe>
-            </div>
-
-            <div className="mt-8 text-center">
-              <p className="text-slate-300 text-sm">
-                *Note: If the calendar appears blank, please ensure you are signed into your Google account or that the calendar permissions are public.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+  const upcomingEvents = [
+    (
+      <div>
+        <iframe
+          src="https://calendar.google.com/calendar/embed?src=3c2a01314cb17c4b0f1fe29b83c80bf8f1753a4217fa9bab39ed151a019aa919%40group.calendar.google.com&ctz=America%2FNew_York"
+          style={{ border: 0 }}
+          width="800"
+          height="600"
+          frameBorder="0"
+          scrolling="no"
+          title="Google Calendar"
+        ></iframe>
+      </div>
+    )
+  ];
 
   return (
     // CHANGED: Main background to Deep Navy
@@ -49,13 +32,20 @@ function UMDUQAWebsite() {
       <nav className="bg-[#232742] border-b border-[#3b4166]">
         <div className="max-w-7xl mx-auto px-8 py-6">
           <div className="flex items-center justify-between">
-           {/* Logo */}
-            <div className="flex items-center">
-              <img 
-                src="UQA_white(1).png" 
-                alt="UQA Logo" 
-                className="h-20 w-auto object-contain" 
-              />
+            {/* Logo */}
+            <div className="flex items-center gap-4">
+              <svg className="w-16 h-16" viewBox="0 0 100 100" fill="none">
+                <circle cx="50" cy="50" r="35" stroke="#7c7fc4" strokeWidth="2" fill="none" />
+                <ellipse cx="50" cy="50" rx="45" ry="15" stroke="#7c7fc4" strokeWidth="2" fill="none" />
+                <ellipse cx="50" cy="50" rx="15" ry="45" stroke="#7c7fc4" strokeWidth="2" fill="none" />
+                <circle cx="50" cy="50" r="4" fill="#7c7fc4" />
+                <text x="50" y="55" textAnchor="middle" fill="#7c7fc4" fontSize="20" fontWeight="bold">UQA</text>
+              </svg>
+              <div>
+                <div className="text-xl font-light text-slate-700">Undergraduate</div>
+                <div className="text-xl font-light text-slate-700">Quantum</div>
+                <div className="text-xl font-light text-slate-700">Association</div>
+              </div>
             </div>
             {/* Nav Links */}
             <div className="flex items-center gap-8">
