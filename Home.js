@@ -2,14 +2,56 @@ window.Home = function Home() {
   return (
     <div>
       {/* Banner Section */}
-      <div className="relative bg-gradient-to-b from-[#232742] to-[#1a1c2e] text-white py-32 border-b border-[#3b4166]">
-        <div className="absolute inset-0 opacity-30">
+      <div className="relative bg-gradient-to-b from-[#232742] to-[#1a1c2e] text-white py-32 border-b border-[#3b4166] overflow-hidden">
+        <div className="absolute inset-0 flex items-center justify-center opacity-40">
           <svg className="w-full h-full" viewBox="0 0 1000 500">
-            {[...Array(100)].map((_, i) => (
-              <line key={i} x1={Math.random() * 1000} y1={Math.random() * 500} x2={Math.random() * 1000} y2={Math.random() * 500} stroke="#7c7fc4" strokeWidth="0.5" opacity={Math.random() * 0.4} />
-            ))}
-            <circle cx="500" cy="250" r="80" fill="rgba(124, 127, 196, 0.1)" />
-            <circle cx="500" cy="250" r="100" stroke="#7c7fc4" strokeWidth="1" fill="none" opacity="0.3" />
+            <defs>
+              <radialGradient id="nucleusGrad" cx="50%" cy="50%">
+                <stop offset="0%" stopColor="#9d9ff5" stopOpacity="1" />
+                <stop offset="50%" stopColor="#7c7fc4" stopOpacity="0.8" />
+                <stop offset="100%" stopColor="#5a5d9e" stopOpacity="0.3" />
+              </radialGradient>
+              <radialGradient id="electronGrad" cx="50%" cy="50%">
+                <stop offset="0%" stopColor="#ffffff" stopOpacity="1" />
+                <stop offset="40%" stopColor="#b8baff" stopOpacity="0.9" />
+                <stop offset="100%" stopColor="#7c7fc4" stopOpacity="0.6" />
+              </radialGradient>
+            </defs>
+            
+            {/* Central Nucleus with Gradient */}
+            <circle cx="500" cy="250" r="25" fill="url(#nucleusGrad)" />
+            <circle cx="500" cy="250" r="30" fill="none" stroke="#9d9ff5" strokeWidth="2" opacity="0.6" />
+            
+            {/* Electron Orbital Rings */}
+            <ellipse cx="500" cy="250" rx="120" ry="60" fill="none" stroke="#7c7fc4" strokeWidth="1.5" opacity="0.5" />
+            <ellipse cx="500" cy="250" rx="120" ry="60" fill="none" stroke="#7c7fc4" strokeWidth="1.5" opacity="0.5" transform="rotate(60 500 250)" />
+            <ellipse cx="500" cy="250" rx="120" ry="60" fill="none" stroke="#7c7fc4" strokeWidth="1.5" opacity="0.5" transform="rotate(120 500 250)" />
+            
+            {/* Outer Orbital Ring */}
+            <ellipse cx="500" cy="250" rx="180" ry="90" fill="none" stroke="#6a6db0" strokeWidth="1" opacity="0.4" />
+            <ellipse cx="500" cy="250" rx="180" ry="90" fill="none" stroke="#6a6db0" strokeWidth="1" opacity="0.4" transform="rotate(45 500 250)" />
+            
+            {/* Electrons on orbits */}
+            <circle cx="620" cy="250" r="8" fill="url(#electronGrad)">
+              <animateTransform attributeName="transform" type="rotate" from="0 500 250" to="360 500 250" dur="8s" repeatCount="indefinite" />
+            </circle>
+            <circle cx="380" cy="250" r="8" fill="url(#electronGrad)">
+              <animateTransform attributeName="transform" type="rotate" from="0 500 250" to="360 500 250" dur="8s" repeatCount="indefinite" />
+            </circle>
+            <circle cx="500" cy="190" r="7" fill="url(#electronGrad)">
+              <animateTransform attributeName="transform" type="rotate" from="60 500 250" to="420 500 250" dur="6s" repeatCount="indefinite" />
+            </circle>
+            <circle cx="500" cy="310" r="7" fill="url(#electronGrad)">
+              <animateTransform attributeName="transform" type="rotate" from="120 500 250" to="480 500 250" dur="7s" repeatCount="indefinite" />
+            </circle>
+            
+            {/* Quantum Energy Waves */}
+            <path d="M 300 250 Q 400 230, 500 250 T 700 250" fill="none" stroke="#7c7fc4" strokeWidth="0.8" opacity="0.3">
+              <animate attributeName="opacity" values="0.3;0.6;0.3" dur="3s" repeatCount="indefinite" />
+            </path>
+            <path d="M 300 250 Q 400 270, 500 250 T 700 250" fill="none" stroke="#7c7fc4" strokeWidth="0.8" opacity="0.3">
+              <animate attributeName="opacity" values="0.3;0.6;0.3" dur="3s" begin="1.5s" repeatCount="indefinite" />
+            </path>
           </svg>
         </div>
         <div className="relative max-w-7xl mx-auto px-8 text-center">
