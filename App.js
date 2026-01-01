@@ -135,7 +135,7 @@ function UMDUQAWebsite() {
       {/* 3. FOOTER */}
       <footer className="bg-[#1a1c2e] border-t border-[#3b4166] mt-16">
         <div className="max-w-7xl mx-auto px-8 py-8 text-center text-slate-400 text-sm">
-          <p className="mb-1">© 2025 UMD Undergraduate Quantum Association</p>
+          <p className="mb-1">© 2026 UMD Undergraduate Quantum Association</p>
           <p>Empowering the next generation of quantum scientists</p>
         </div>
       </footer>
