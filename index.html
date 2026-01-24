@@ -1,38 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Basic favicon -->
-    <link rel="icon" type="image/x-icon" href="/favicon_io/favicon.ico">
-  
-    <!-- PNG favicon for modern browsers -->
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon_io/favicon-16x16.png">
-  
-    <!-- Apple touch icon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon_io/apple-touch-icon.png">
-  
-    <!-- For Google search results and social sharing -->
-    <meta property="og:image" content="https://umd-uqa.github.io/favicon_io/android-chrome-512x512.png">
-  
-    <!-- Twitter Card (also used by some search engines) -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content="https://umd-uqa.github.io/favicon_io/android-chrome-512x512.png">
-
-    <link rel="manifest" href="/favicon_io/site.webmanifest">
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UMD UQA - Undergraduate Quantum Association</title>
 
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
-
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-        /* Smooth transition for page switching */
         .animate-fade-in {
             animation: fadeIn 0.3s ease-in-out;
         }
@@ -40,10 +18,15 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
-        /* Ensure the body fills the screen and matches UQA theme */
         body {
             background-color: #232742;
             margin: 0;
+            min-height: 100vh;
+        }
+        /* ADD THIS: Prevents the root from collapsing and causing layout shifts */
+        #root {
+            display: flex;
+            flex-direction: column;
             min-height: 100vh;
         }
     </style>
@@ -55,7 +38,7 @@
 <script type="text/babel" src="./About.js"></script>
 <script type="text/babel" src="./Events.js"></script>
 <script type="text/babel" src="./Contact.js"></script>
-
+<script type="text/babel" src="./Resources.js"></script>
 <script type="text/babel" src="./App.js"></script>
 </body>
 </html>
