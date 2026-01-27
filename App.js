@@ -21,7 +21,8 @@ function UMDUQAWebsite() {
   const navigation = [
     { id: 'home', label: 'Home' },
     { id: 'about', label: 'About Us' },
-    { id: 'events', label: 'Events' },
+    { id: 'events', label: 'Events' },    // Keeping the original
+    { id: 'calendar', label: 'Calendar' }, // Adding the new one
     { id: 'resources', label: 'Resources' }
   ];
 
@@ -91,6 +92,8 @@ function UMDUQAWebsite() {
           {currentPage === 'home' && window.Home && <window.Home />}
           {currentPage === 'about' && window.About && <window.About />}
           {currentPage === 'events' && window.Events && <window.Events />}
+          {/* Add the new Calendar logic here */}
+          {currentPage === 'calendar' && window.Calendar && <window.Calendar />}
           {currentPage === 'resources' && window.Resources && <window.Resources />}
           {currentPage === 'contact' && window.Contact && <window.Contact />}
 
