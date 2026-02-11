@@ -27,7 +27,7 @@ window.Events = function Events() {
 
             {openSection === 'qlcn' && (
                 <div className={contentStyle}>
-                  <h4 className="text-[#7c7fc4] mb-2 font-medium">Quantum Learning Coalition Network</h4>
+                  <h4 className="text-[#7c7fc4] mb-2 font-medium">Quantum Leap Career Nexus</h4>
                   <p>Details regarding the QLCN event will be posted here soon. Stay tuned for workshops and networking opportunities centered around quantum education.</p>
                 </div>
             )}
