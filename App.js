@@ -74,6 +74,13 @@ function UMDUQAWebsite() {
                   <a href="https://www.linkedin.com/company/umduqa/" target="_blank" className="hover:opacity-100 opacity-70 transition-opacity">
                     <img src="https://img.icons8.com/ios-filled/50/7c7fc4/linkedin.png" alt="LinkedIn" className="h-5 w-5" />
                   </a>
+                  <a href="https://discord.gg/qtqcAjhRVP" target="_blank" className="hover:opacity-100 opacity-80 transition-opacity">
+                    <img
+                      src="https://cdn.simpleicons.org/discord/5865F2"
+                      alt="Discord"
+                      className="h-5 w-5"
+                    />
+                  </a>
                 </div>
 
                 <button
