@@ -9,14 +9,14 @@ window.Events = function Events() {
             id: 'qlcn',
             title: 'QLCN',
             subtitle: 'Quantum Learning & Collaboration Network',
-            date: { month: 'APR', day: '12' },
+            date: { month: 'OCT', day: '12' },
             description: 'Quantum Learning & Career Network. Join us for networking sessions and workshops designed to bridge the gap between academia and the quantum industry.'
         },
         {
             id: 'bitcamp',
             title: 'Bitcamp',
             subtitle: "UMD's Annual Hackathon",
-            date: { month: 'MAY', day: '03' },
+            date: { month: 'APR', day: '10' },
             description: "Maryland’s premier hackathon. UQA will be hosting specialized quantum tracks and hardware challenges. Don’t miss out on the largest hackathon at UMD!"
         }
     ];
