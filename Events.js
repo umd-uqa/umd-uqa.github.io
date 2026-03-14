@@ -1,60 +1,94 @@
+const React = window.React || require('react');
+
 window.Events = function Events() {
-  const [openSection, setOpenSection] = React.useState(null);
+    const [openEvent, setOpenEvent] = React.useState(null);
 
-  const toggleSection = (section) => {
-    setOpenSection(openSection === section ? null : section);
-  };
+    // Restoring your specific event data
+    const eventList = [
+        {
+            id: 'qlcn',
+            title: 'QLCN',
+            subtitle: 'Quantum Learning & Collaboration Network',
+            date: { month: 'APR', day: '12' },
+            description: 'Quantum Learning & Career Network. Join us for networking sessions and workshops designed to bridge the gap between academia and the quantum industry.'
+        },
+        {
+            id: 'bitcamp',
+            title: 'Bitcamp',
+            subtitle: "UMD's Annual Hackathon",
+            date: { month: 'MAY', day: '03' },
+            description: "Maryland’s premier hackathon. UQA will be hosting specialized quantum tracks and hardware challenges. Don’t miss out on the largest hackathon at UMD!"
+        }
+    ];
 
-  const eventStyle = "w-full text-left p-6 bg-[#2d3255] border border-[#3b4166] rounded-lg shadow-md transition-all hover:bg-[#3b4166] flex justify-between items-center";
-  const contentStyle = "bg-[#1a1c2e] border-x border-b border-[#3b4166] rounded-b-lg p-8 animate-fade-in text-slate-300 leading-relaxed";
+    return (
+        <div className="min-h-screen pb-24 px-6 w-full" style={{ background: '#09091F' }}>
+            <div className="max-w-4xl mx-auto">
 
-  return (
-      <div className="max-w-4xl mx-auto px-8 py-16 min-h-screen">
-        <h2 className="text-4xl font-light text-white mb-12 tracking-wide">
-          Upcoming <span className="text-[#7c7fc4]">Events</span>
-        </h2>
-
-        <div className="space-y-6">
-          {/* QLCN Dropdown */}
-          <div className="dropdown-item">
-            <button
-                onClick={() => toggleSection('qlcn')}
-                className={`${eventStyle} ${openSection === 'qlcn' ? 'rounded-b-none border-b-0' : ''}`}
-            >
-              <span className="text-2xl font-light text-white">QLCN</span>
-              <span className="text-[#7c7fc4] text-xl">{openSection === 'qlcn' ? '−' : '+'}</span>
-            </button>
-
-            {openSection === 'qlcn' && (
-                <div className={contentStyle}>
-                  <h4 className="text-[#7c7fc4] mb-2 font-medium">Quantum Leap Career Nexus</h4>
-                  <p>Details regarding the QLCN event will be posted here soon. Stay tuned for workshops and networking opportunities centered around quantum education.</p>
+                {/* Header: pt-44 for nav bar clearance & light typography */}
+                <div className="pt-28 mb-20">
+                    <h1 className="text-5xl md:text-7xl font-light tracking-tight leading-tight text-white">
+                        Upcoming <span className="text-[#9B6EFF]">Events</span>
+                    </h1>
                 </div>
-            )}
-          </div>
 
-          {/* Bitcamp Dropdown */}
-          <div className="dropdown-item">
-            <button
-                onClick={() => toggleSection('bitcamp')}
-                className={`${eventStyle} ${openSection === 'bitcamp' ? 'rounded-b-none border-b-0' : ''}`}
-            >
-              <span className="text-2xl font-light text-white">Bitcamp</span>
-              <span className="text-[#7c7fc4] text-xl">{openSection === 'bitcamp' ? '−' : '+'}</span>
-            </button>
+                {/* Event List */}
+                <div className="flex flex-col gap-6">
+                    {eventList.map((event) => (
+                        <div
+                            key={event.id}
+                            className="rounded-[2.2rem] border border-white/5 overflow-hidden transition-all duration-300"
+                            style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)' }}
+                        >
+                            <div
+                                className="p-8 flex items-center justify-between cursor-pointer hover:bg-white/[0.02]"
+                                onClick={() => setOpenEvent(openEvent === event.id ? null : event.id)}
+                            >
+                                <div className="flex items-center gap-8">
+                                    {/* Date Badge */}
+                                    <div className="w-20 h-20 rounded-2xl flex flex-col items-center justify-center border border-[#9B6EFF]/20 shrink-0"
+                                         style={{ backgroundColor: 'rgba(155, 110, 255, 0.1)' }}>
+                                        <span className="text-[#9B97C2] text-xs font-bold tracking-widest">{event.date.month}</span>
+                                        <span className="text-white text-3xl font-bold">{event.date.day}</span>
+                                    </div>
 
-            {openSection === 'bitcamp' && (
-                <div className={contentStyle}>
-                  <h4 className="text-[#7c7fc4] mb-2 font-medium">UMD's Premier Hackathon</h4>
-                  <p>UQA will be participating in Bitcamp! Information about our quantum track, hardware challenges, and mentorship will be updated here as the event approaches.</p>
+                                    <div>
+                                        <h3 className="text-2xl md:text-3xl font-bold text-white mb-1">{event.title}</h3>
+                                        <p className="text-[#9B97C2] text-sm font-light tracking-wide">{event.subtitle}</p>
+                                    </div>
+                                </div>
+
+                                {/* Interaction Button */}
+                                <div className="w-10 h-10 rounded-xl border border-[#9B6EFF]/30 flex items-center justify-center shrink-0"
+                                     style={{ backgroundColor: 'rgba(155, 110, 255, 0.05)' }}>
+                  <span className={`text-[#9B6EFF] text-2xl transition-transform duration-300 ${openEvent === event.id ? 'rotate-45' : ''}`}>
+                    +
+                  </span>
+                                </div>
+                            </div>
+
+                            {/* Accordion Content */}
+                            {openEvent === event.id && (
+                                <div className="px-8 pb-8 pt-2">
+                                    <div className="h-px w-full bg-white/5 mb-6" />
+                                    <p className="text-lg text-[#9B97C2] leading-relaxed font-light">
+                                        {event.description}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    ))}
                 </div>
-            )}
-          </div>
-        </div>
 
-        <div className="mt-16 p-8 bg-[#232742] rounded-lg border border-[#3b4166] text-center">
-          <p className="text-slate-400 italic">More events are currently being planned. Check the Calendar tab for the full schedule.</p>
+                {/* Footer Note */}
+                <div className="mt-16 p-8 rounded-[2rem] border border-white/5 text-center"
+                     style={{ backgroundColor: 'rgba(255, 255, 255, 0.02)' }}>
+                    <p className="text-[#9B97C2] italic font-light tracking-wide">
+                        More events are currently being planned. Check the <a href="#calendar" className="text-[#9B6EFF] underline decoration-[#9B6EFF]/30 underline-offset-4 font-medium">Calendar</a> tab for the full schedule.
+                    </p>
+                </div>
+
+            </div>
         </div>
-      </div>
-  );
+    );
 };

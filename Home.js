@@ -1,87 +1,115 @@
-window.Home = function Home() {
-  return (
-      <div className="flex flex-col min-h-screen">
-        {/* Banner Section */}
-        <div className="relative bg-gradient-to-b from-[#232742] to-[#1a1c2e] text-white py-20 md:py-32 border-b border-[#3b4166] overflow-hidden flex items-center justify-center">
+const React = window.React || require('react');
 
-          {/* RESTORED: Atom Animation SVG */}
-          <div className="absolute inset-0 flex items-center justify-center opacity-40 pointer-events-none">
-            <svg className="w-full max-w-4xl h-auto" viewBox="0 0 1000 500">
+window.Home = function Home() {
+  // 72-point smooth coordinate generator
+  const generatePoints = (rx, ry, cx, cy) => {
+    let xValues = [];
+    let yValues = [];
+    for (let i = 0; i <= 360; i += 5) {
+      const rad = (i * Math.PI) / 180;
+      xValues.push((cx + rx * Math.cos(rad)).toFixed(1));
+      yValues.push((cy + ry * Math.sin(rad)).toFixed(1));
+    }
+    return { x: xValues.join(';'), y: yValues.join(';') };
+  };
+
+  // Scaled down proportions for a more compact look
+  const rx = 240; // Down from 320
+  const ry = 100; // Down from 130
+  const orbitPath = generatePoints(rx, ry, 500, 250);
+
+  return (
+      <div className="flex flex-col min-h-screen bg-[#09091F] items-center">
+
+        {/* 1. HERO SECTION */}
+        <div className="relative w-full flex flex-col items-center pt-44">
+
+          {/* ATOM CONTAINER: Reduced to h-[400px] for a tighter fit */}
+          <div className="relative w-full max-w-6xl h-[400px] flex items-center justify-center pointer-events-none">
+
+            {/* NEBULA GLOW: Scaled down to match */}
+            <div className="absolute w-[500px] h-[350px] bg-[#C084FC]/10 blur-[100px] rounded-full" />
+
+            <svg className="w-full h-full overflow-visible" viewBox="0 0 1000 500">
               <defs>
-                <radialGradient id="nucleusGrad" cx="50%" cy="50%">
-                  <stop offset="0%" stopColor="#9d9ff5" stopOpacity="1" />
-                  <stop offset="50%" stopColor="#7c7fc4" stopOpacity="0.8" />
-                  <stop offset="100%" stopColor="#5a5d9e" stopOpacity="0.3" />
-                </radialGradient>
-                <radialGradient id="electronGrad" cx="50%" cy="50%">
-                  <stop offset="0%" stopColor="#ffffff" stopOpacity="1" />
-                  <stop offset="40%" stopColor="#b8baff" stopOpacity="0.9" />
-                  <stop offset="100%" stopColor="#7c7fc4" stopOpacity="0.6" />
+                <filter id="neonGlow" x="-100%" y="-100%" width="300%" height="300%">
+                  <feGaussianBlur in="SourceAlpha" stdDeviation="5" result="blur" />
+                  <feFlood flood-color="#C084FC" result="color" />
+                  <feComposite in="color" in2="blur" operator="in" result="glow" />
+                  <feMerge><feMergeNode in="glow" /><feMergeNode in="SourceGraphic" /></feMerge>
+                </filter>
+                <radialGradient id="nucleusGrad">
+                  <stop offset="0%" stopColor="#FFFFFF" />
+                  <stop offset="100%" stopColor="#C084FC" />
                 </radialGradient>
               </defs>
 
-              {/* Nucleus */}
-              <circle cx="500" cy="250" r="25" fill="url(#nucleusGrad)" />
-              <circle cx="500" cy="250" r="30" fill="none" stroke="#9d9ff5" strokeWidth="2" opacity="0.6" />
+              {/* Nucleus Core: Slightly smaller to match rescaled orbits */}
+              <circle cx="500" cy="250" r="30" fill="url(#nucleusGrad)" filter="url(#neonGlow)" />
 
-              {/* Orbital Rings */}
-              <ellipse cx="500" cy="250" rx="120" ry="60" fill="none" stroke="#7c7fc4" strokeWidth="1.5" opacity="0.5" />
-              <ellipse cx="500" cy="250" rx="120" ry="60" fill="none" stroke="#7c7fc4" strokeWidth="1.5" opacity="0.5" transform="rotate(60 500 250)" />
-              <ellipse cx="500" cy="250" rx="120" ry="60" fill="none" stroke="#7c7fc4" strokeWidth="1.5" opacity="0.5" transform="rotate(120 500 250)" />
-
-              {/* Outer Rings */}
-              <ellipse cx="500" cy="250" rx="180" ry="90" fill="none" stroke="#6a6db0" strokeWidth="1" opacity="0.4" />
-              <ellipse cx="500" cy="250" rx="180" ry="90" fill="none" stroke="#6a6db0" strokeWidth="1" opacity="0.4" transform="rotate(45 500 250)" />
-
-              {/* Electrons */}
-              <circle cx="620" cy="250" r="8" fill="url(#electronGrad)">
-                <animateTransform attributeName="transform" type="rotate" from="0 500 250" to="360 500 250" dur="8s" repeatCount="indefinite" />
-              </circle>
-              <circle cx="380" cy="250" r="8" fill="url(#electronGrad)">
-                <animateTransform attributeName="transform" type="rotate" from="0 500 250" to="360 500 250" dur="8s" repeatCount="indefinite" />
-              </circle>
+              {/* SYMMETRIC ORBITALS: 0, 60, 120 degree rotations */}
+              {[0, 60, 120].map((rotation, i) => (
+                  <g key={rotation} transform={`rotate(${rotation} 500 250)`}>
+                    <ellipse
+                        cx="500" cy="250" rx={rx} ry={ry}
+                        fill="none" stroke="#FFFFFF" strokeWidth="2"
+                        opacity="0.6" filter="url(#neonGlow)"
+                    />
+                    <circle r="8" fill="#FFFFFF" filter="url(#neonGlow)">
+                      <animate attributeName="cx" values={orbitPath.x} dur={`${6 + i * 0.5}s`} repeatCount="indefinite" />
+                      <animate attributeName="cy" values={orbitPath.y} dur={`${6 + i * 0.5}s`} repeatCount="indefinite" />
+                    </circle>
+                  </g>
+              ))}
             </svg>
           </div>
 
-          {/* Text Section */}
-          <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-light mb-6 tracking-wide leading-tight text-white">
-              Discover the Future of <br className="hidden sm:block" />
-              <span className="text-[#7c7fc4]">Engineering</span> and <span className="text-[#7c7fc4]">Technology</span>
+          {/* HERO TEXT: Adjusted margin for the smaller atom container */}
+          <div className="relative z-10 text-center -mt-4 mb-24">
+            <h1 className="text-4xl md:text-7xl font-light tracking-tight leading-tight text-white">
+              Discover the Future of <br className="hidden md:block" />
+              <span className="text-[#9B6EFF]">Engineering</span> and <span className="text-[#C084FC]">Technology</span>
             </h1>
           </div>
         </div>
 
-        {/* Who We Are Content */}
-        <div className="max-w-5xl mx-auto px-6 py-12 md:py-16">
-          <div className="bg-[#2d3255] rounded-lg shadow-xl p-8 md:p-12 border border-[#3b4166]">
-            <h2 className="text-3xl font-light text-white mb-8">Who We Are</h2>
-            <div className="space-y-6 text-slate-300 leading-relaxed">
-              <p>The Undergraduate Quantum Association (UQA) is a student-run organization dedicated to fostering interest and knowledge in quantum technologies.</p>
-              <p>Whether you're a physics major, computer science enthusiast, or simply curious about quantum mechanics, UQA provides a welcoming community.</p>
+        {/* 2. BENTO SECTION */}
+        <section className="w-full max-w-6xl px-6 pb-32">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+            <div className="p-10 rounded-[2.5rem] border border-[#9B6EFF]/20 flex flex-col justify-between"
+                 style={{ backgroundColor: 'rgba(155, 110, 255, 0.05)' }}>
+              <div>
+                <h4 className="text-[#E040FB] text-xs font-bold uppercase tracking-widest mb-6">Our Community</h4>
+                <p className="text-3xl md:text-4xl font-bold mb-8 leading-tight text-white">
+                  A welcoming space for physics majors, CS enthusiasts, and quantum explorers.
+                </p>
+              </div>
+              <a href="#about" className="text-white border-b border-[#E040FB] pb-1 font-medium no-underline">
+                Learn more about our mission →
+              </a>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8 mt-12">
-              <div className="p-4 rounded-md bg-[#232742]/30">
-                <h3 className="text-xl font-medium text-[#7c7fc4] mb-4">What We Do</h3>
-                <ul className="space-y-3 text-slate-300">
-                  <li>• Weekly workshops on quantum programming</li>
-                  <li>• Guest lectures from industry professionals</li>
-                  <li>• Collaborative projects and hackathons</li>
-                </ul>
+            <div className="p-10 rounded-[2.5rem] border border-white/5 flex flex-col gap-10"
+                 style={{ backgroundColor: 'rgba(255, 255, 255, 0.02)' }}>
+              <div>
+                <h4 className="font-bold text-white text-xl mb-3">Weekly Workshops</h4>
+                <p className="text-[#9B97C2] text-lg leading-relaxed">
+                  Every Wednesday at 6:00 PM in the Physics Building.
+                </p>
               </div>
-              <div className="p-4 rounded-md bg-[#232742]/30">
-                <h3 className="text-xl font-medium text-[#7c7fc4] mb-4">Get Involved</h3>
-                <ul className="space-y-3 text-slate-300">
-                  <li>• Join our meetings every Wednesday at 6:00 PM</li>
-                  <li>• Access quantum computing resources and tools</li>
-                  <li>• Network with researchers and professionals</li>
-                </ul>
+              <div className="h-px w-full bg-white/5" />
+              <div>
+                <h4 className="font-bold text-white text-xl mb-3">Professional Network</h4>
+                <p className="text-[#9B97C2] text-lg leading-relaxed">
+                  Connect with researchers and industry guest lecturers.
+                </p>
               </div>
             </div>
+
           </div>
-        </div>
+        </section>
+
       </div>
   );
 };
-//

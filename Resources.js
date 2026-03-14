@@ -1,61 +1,90 @@
-window.Resources = function Resources() {
-  // 1. Add state to keep track of the selected video
-  const [selectedVideo, setSelectedVideo] = React.useState("");
+const React = window.React || require('react');
 
-  // 2. Define the videos you provided
-  const videoData = {
-    "Neutral Atom Quantum Computing-Quera": "agOdzgWTr-Y",
-    "Quera Quantum Challenges Walkthrough": "i_MKOCxInOQ",
-    "Intro To Blockade-Quera": "xEa3WIzgxDQ"
-  };
+window.Resources = function Resources() {
+  const resourceGroups = [
+    {
+      title: "Semester Relevant",
+      items: [
+        { name: "QuEra Intro", desc: "Introduction to neutral atom quantum computing and the Aquila processor.", link: "#" },
+        { name: "QuEra Slack", desc: "Join the community for technical support and neutral atom discussions.", link: "#" },
+        { name: "Bloqade GitHub", desc: "The SDK for neutral atom quantum computing based on the Julia language.", link: "#" },
+        { name: "Starter Tutorials", desc: "Guided notebooks to get your first neutral atom programs running.", link: "#" }
+      ]
+    },
+    {
+      title: "Introductory Materials",
+      items: [
+        { name: "Intro to Quantum Computing", desc: "A high-level overview of qubits, gates, and quantum advantage.", link: "#" },
+        { name: "Intro to Quantum Science", desc: "The underlying physics and technology of modern quantum systems.", link: "#" },
+        { name: "CHSH Game", desc: "Interactive visualization of Bell's Inequality and quantum non-locality.", link: "#" }
+      ]
+    },
+    {
+      title: "Commonly Used Resources",
+      items: [
+        { name: "Nielsen & Chuang", desc: "The 'Bible' of Quantum Computation and Quantum Information.", link: "#" },
+        { name: "Preskill's Notes", desc: "Advanced lecture notes on quantum information and computation.", link: "#" },
+        { name: "John Watrous Video Series", desc: "The IBM 'Introduction to Quantum Information' lecture series.", link: "#" },
+        { name: "IBM Quantum Learning", desc: "Official courses, lab access, and the Qiskit textbook.", link: "#" },
+        { name: "Pennylane", desc: "Python library for quantum machine learning and automatic differentiation.", link: "#" },
+        { name: "Qubit.guide", desc: "Curated learning paths for beginners and experts alike.", link: "#" },
+        { name: "Repository of Resources", desc: "The massive UQA collection of papers, tools, and extra materials.", link: "#" }
+      ]
+    }
+  ];
 
   return (
-    <div className="min-h-screen bg-[#232742] flex items-center justify-center p-8">
-      <div className="text-center w-full max-w-3xl">
-        <p className="text-slate-300 text-xl mb-6">Select a Quantum Lecture:</p>
+      <div className="min-h-screen pb-32 px-6 w-full" style={{ background: '#09091F' }}>
+        <div className="max-w-6xl mx-auto">
 
-        {/* 3. The Dropdown Menu */}
-        <select
-          className="bg-[#7c7fc4] text-white p-3 rounded-lg mb-8 outline-none cursor-pointer hover:bg-white hover:text-[#232742] transition-colors"
-          onChange={(e) => setSelectedVideo(e.target.value)}
-          value={selectedVideo}
-        >
-          <option value="">-- Choose a Topic --</option>
-          {Object.entries(videoData).map(([title, id]) => (
-            <option key={id} value={id}>{title}</option>
-          ))}
-        </select>
-
-        {/* 4. The Video Player Section */}
-        {selectedVideo ? (
-          <div className="relative pt-[56.25%] w-full rounded-xl overflow-hidden shadow-2xl border-2 border-[#7c7fc4]">
-            <iframe
-              className="absolute top-0 left-0 w-full h-full"
-              src={`https://www.youtube.com/embed/${selectedVideo}?rel=0`}
-              title="UQA Video Player"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            ></iframe>
+          {/* 1. Header: pt-28 spacing as requested */}
+          <div className="pt-28 mb-16">
+            <h1 className="text-5xl md:text-7xl font-light tracking-tight leading-tight text-white">
+              Quantum <span className="text-[#9B6EFF]">Resources</span>
+            </h1>
           </div>
-        ) : (
-          <div className="p-12 border-2 border-dashed border-slate-500 rounded-xl text-slate-500">
-            Select a video above to start watching on-site
-          </div>
-        )}
 
-        {/* Keeping your original link below the player if needed */}
-        <div className="mt-12">
-           <a
-            href="https://quantum-coalition-learning-resource.vercel.app/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block bg-[#7c7fc4] hover:bg-white hover:text-[#232742] text-white px-6 py-2 rounded transition-colors"
-          >
-            Access More Learning Resources
-          </a>
+          {/* 2. Resource Sections */}
+          <div className="space-y-20">
+            {resourceGroups.map((group, idx) => (
+                <div key={idx}>
+
+                  {/* Section Header with Line */}
+                  <div className="flex items-center gap-6 mb-4">
+                    <h2 className="text-3xl font-light text-white whitespace-nowrap">
+                      {group.title}
+                    </h2>
+                    <div className="h-[1px] w-full bg-white/10" />
+                  </div>
+
+                  {/* Resource Grid: mt-12 spacing applied here */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
+                    {group.items.map((item, i) => (
+                        <a
+                            key={i}
+                            href={item.link}
+                            className="block p-10 rounded-[2.5rem] border border-white/[0.03] transition-colors hover:bg-[#161635] no-underline"
+                            style={{ backgroundColor: '#11112b' }}
+                        >
+                          <div className="flex justify-between items-start mb-4">
+                            <h3 className="text-xl font-bold text-white tracking-wide">
+                              {item.name}
+                            </h3>
+                            <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
+                              <span className="text-white/30 text-sm">↗</span>
+                            </div>
+                          </div>
+                          <p className="text-[#9B97C2] font-light text-[15px] leading-relaxed">
+                            {item.desc}
+                          </p>
+                        </a>
+                    ))}
+                  </div>
+                </div>
+            ))}
+          </div>
+
         </div>
       </div>
-    </div>
   );
 };
