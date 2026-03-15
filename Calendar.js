@@ -5,7 +5,7 @@ window.Calendar = function Calendar() {
     const [loading, setLoading] = useState(true);
 
     // UQA Calendar Config
-    const CALENDAR_ID = 'umd.uqa@gmail.com';
+    const CALENDAR_ID = '3c2a01314cb17c4b0f1fe29b83c80bf8f1753a4217fa9bab39ed151a019aa919@group.calendar.google.com';
     const API_KEY = 'YOUR_GOOGLE_API_KEY';
 
     useEffect(() => {
