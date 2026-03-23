@@ -8,9 +8,9 @@ window.Events = function Events() {
         {
             id: 'qlcn',
             title: 'QLCN',
-            subtitle: 'Quantum Learning & Collaboration Network',
-            date: { month: 'OCT', day: '12' },
-            description: 'Quantum Learning & Career Network. Join us for networking sessions and workshops designed to bridge the gap between academia and the quantum industry.'
+            subtitle: 'Quantum Leap & Career Network',
+            date: { month: 'SEPT', day: '15' },
+            description: 'Quantum Leap & Career Network. Join us for networking sessions and workshops designed to bridge the gap between academia and the quantum industry.'
         },
         {
             id: 'bitcamp',
