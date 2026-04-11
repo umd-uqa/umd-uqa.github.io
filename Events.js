@@ -8,9 +8,9 @@ window.Events = function Events() {
         {
             id: 'qlcn',
             title: 'QLCN',
-            subtitle: 'Quantum Leap & Career Network',
+            subtitle: 'Quantum Leap Career Nexus',
             date: { month: 'SEPT', day: '15' },
-            description: 'Quantum Leap & Career Network. Join us for networking sessions and workshops designed to bridge the gap between academia and the quantum industry.'
+            description: 'Join us for our annual keystone event, where we host a career fair, workshops, industry panels, networking sessions, and research presentations designed to bridge the gap between academia and the quantum industry. Done in partnership with the NSF Institute for Robust Quantum Simulations (RQS) and the NSF Center for Quantum Networks (CQN).'
         },
         {
             id: 'bitcamp',
