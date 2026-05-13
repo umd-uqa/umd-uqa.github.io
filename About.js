@@ -1,109 +1,101 @@
-const React = window.React || require('react');
-
+/**
+ * ABOUT US COMPONENT
+ * Expanded layout: 1400px container width for better screen usage.
+ * Typography: 20px body text and 16px labels for high readability.
+ */
 window.About = function About() {
   return (
-      <div className="min-h-screen text-white pb-32 px-6 w-full" style={{ background: '#09091F' }}>
-        <div className="max-w-5xl mx-auto">
+      <div className="min-h-screen bg-[#0f1128] text-[#f0f0f8] font-sans selection:bg-[#9296c8]/30 animate-fade-in">
 
-          {/* 1. Header: Keeps the pt-44 drop for nav bar clearance */}
-          <div className="pt-28 mb-20">
-            <h1 className="text-5xl md:text-6xl font-light tracking-tight leading-tight">
-              About{' '}
-              <span style={{
-                background: 'linear-gradient(to right, #7C3AED, #C084FC)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text'
-              }}>
-              UMD UQA
-            </span>
-            </h1>
+        {/* Container expanded to 1400px to fill more of the screen width */}
+        <div className="max-w-[1400px] mx-auto px-10 py-[120px] pb-[120px]">
+
+          {/* Simplified Header: Consistent weight and size */}
+          <h1 className="font-['Raleway'] text-[clamp(32px,5vw,48px)] font-semibold tracking-tight leading-[1.2] mb-12 text-[#a8abdb]">
+            About UMD Undergraduate Quantum Association
+          </h1>
+
+          {/* WHO WE ARE SECTION */}
+          <section className="mb-10">
+            {/* Label size consistent with large-scale UI */}
+            <h2 className="font-['Raleway'] text-[16px] font-bold tracking-[0.22em] uppercase text-[#9296c8] mb-8">
+              Who We Are
+            </h2>
+            {/* Body text at 20px for clear readability on wide displays */}
+            <div className="space-y-6 text-[20px] text-[#f0f0f8]/80 leading-[1.9]">
+              <p>
+                The Undergraduate Quantum Association (UQA) is a research and career-oriented student organization
+                which provides a space for students to engage with and learn more about quantum science.
+                UQA helps to connect the campus community to the frontiers of quantum through various events.
+              </p>
+              <p>
+                Our community consists of physics, computer science, and other majors who are eager to explore quantum science.
+                Regardless of major, everyone is welcome at UQA.
+                Follow along at the{" "}
+                <a href="#calendar" className="text-[#a8abdb] border-b border-[#b0b3e0]/30 hover:border-[#b0b3e0] transition-colors">
+                  calendar
+                </a>
+                {" "}or join our{" "}
+                <a href="https://discord.gg/qtqcAjhRVP" target="_blank" className="text-[#a8abdb] border-b border-[#b0b3e0]/30 hover:border-[#b0b3e0] transition-colors">
+                  Discord server
+                </a>
+                {" "}for announcements about meetings, events, and opportunities.
+              </p>
+            </div>
+          </section>
+
+          <hr className="border-none border-t border-white/10 mb-10" />
+
+          {/* WHAT WE DO SECTION */}
+          <section className="mb-10">
+            <h2 className="font-['Raleway'] text-[16px] font-bold tracking-[0.22em] uppercase text-[#9296c8] mb-8">
+              What We Do
+            </h2>
+            <ul className="space-y-7">
+              {[
+                "Taken tours to local facilities like IonQ, a quantum computing company focused on software and hardware development.",
+                "Invited speakers from quantum industries to discuss their work via a speaker series.",
+                "Invited UMD faculty to discuss quantum research opportunities on campus.",
+                "Collaborated with hackathon organizations to create a quantum computing track."
+              ].map((item, i) => (
+                  <li key={i} className="relative pl-8 text-[20px] text-[#f0f0f8]/80 leading-[1.8] before:content-['—'] before:absolute before:left-0 before:text-[#9296c8]">
+                    {item}
+                  </li>
+              ))}
+            </ul>
+          </section>
+
+          <hr className="border-none border-t border-white/10 mb-10" />
+
+          {/* WHY JOIN UQA? SECTION */}
+          <section className="mb-[80px]">
+            <h2 className="font-['Raleway'] text-[16px] font-bold tracking-[0.22em] uppercase text-[#9296c8] mb-8">
+              Why Join UQA?
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+              <div className="space-y-3">
+                <h3 className="font-['Raleway'] font-semibold text-[18px] text-white">Learn & Grow</h3>
+                <p className="text-[16px] text-[#f0f0f8]/60 leading-[1.75]">Access workshops, tutorials, and resources to build your quantum computing skills from beginner to advanced levels.</p>
+              </div>
+              <div className="space-y-3">
+                <h3 className="font-['Raleway'] font-semibold text-[18px] text-white">Network</h3>
+                <p className="text-[16px] text-[#f0f0f8]/60 leading-[1.75]">Connect with like-minded students, researchers, and industry professionals in the quantum computing field.</p>
+              </div>
+              <div className="space-y-3">
+                <h3 className="font-['Raleway'] font-semibold text-[18px] text-white">Hands-On Experience</h3>
+                <p className="text-[16px] text-[#f0f0f8]/60 leading-[1.75]">Work on real quantum computing projects using platforms like IBM Qiskit and participate in hackathons.</p>
+              </div>
+              <div className="space-y-3">
+                <h3 className="font-['Raleway'] font-semibold text-[18px] text-white">Community</h3>
+                <p className="text-[16px] text-[#f0f0f8]/60 leading-[1.75]">Be part of a welcoming community that supports your academic and professional growth in quantum technologies.</p>
+              </div>
+            </div>
+          </section>
+
+          <div className="mt-[100px] pt-8 border-t border-white/10 text-[18px] text-[#f0f0f8]/60 text-center">
+            <strong className="font-semibold text-white">Weekly General Body Meetings</strong> — Every Wednesday at 6:00 PM · Room 2124, John S. Toll Physics Building
           </div>
 
-          {/* 2. Mission & Vision */}
-          <div className="space-y-14 mb-20"> {/* Reduced mb-28 to mb-20 */}
-            <div className="flex">
-              <div className="w-[3px] rounded-full flex-shrink-0 mr-8" style={{ background: 'linear-gradient(to bottom, #9B6EFF, #C084FC)' }} />
-              <div>
-                <h3 className="text-xs font-bold uppercase mb-4" style={{ color: '#9B6EFF', letterSpacing: '0.15em' }}>Our Mission</h3>
-                <p className="text-lg md:text-xl leading-relaxed font-light" style={{ color: 'rgba(255,255,255,0.8)' }}>
-                  The Undergraduate Quantum Association is committed to making quantum technologies
-                  accessible and understandable to undergraduate students of all majors and backgrounds.
-                </p>
-              </div>
-            </div>
-            <div className="flex">
-              <div className="w-[3px] rounded-full flex-shrink-0 mr-8" style={{ background: 'linear-gradient(to bottom, #E040FB, #C084FC)' }} />
-              <div>
-                <h3 className="text-xs font-bold uppercase mb-4" style={{ color: '#E040FB', letterSpacing: '0.15em' }}>Our Vision</h3>
-                <p className="text-lg md:text-xl leading-relaxed font-light" style={{ color: 'rgba(255,255,255,0.8)' }}>
-                  We envision a community where students can freely explore quantum concepts and build
-                  connections with peers who share their passion for quantum science.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Divider: Tightened mb-20 to mb-12 to fix the 'big space' */}
-          <div className="h-px w-full mb-12" style={{ background: 'rgba(155,110,255,0.15)' }} />
-
-          {/* 3. Why Join UQA? - All 4 cards restored */}
-          <h2 className="text-4xl md:text-5xl font-light mb-12 tracking-tight">Why Join UQA?</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-            {/* Learn & Grow */}
-            <div className="p-8 rounded-2xl" style={{ background: 'rgba(124,58,237,0.10)', border: '1px solid rgba(155,110,255,0.25)' }}>
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-5" style={{ background: 'rgba(155,110,255,0.15)' }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9B6EFF" strokeWidth="2" strokeLinecap="round">
-                  <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
-                </svg>
-              </div>
-              <h4 className="font-semibold text-lg mb-3" style={{ color: '#9B6EFF' }}>Learn &amp; Grow</h4>
-              <p className="leading-relaxed text-sm" style={{ color: '#9B97C2' }}>
-                Access workshops, tutorials, and resources to build your quantum computing skills from beginner to advanced levels.
-              </p>
-            </div>
-
-            {/* Network */}
-            <div className="p-8 rounded-2xl" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)' }}>
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-5" style={{ background: 'rgba(224,64,251,0.12)' }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E040FB" strokeWidth="2" strokeLinecap="round">
-                  <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
-                </svg>
-              </div>
-              <h4 className="font-semibold text-lg mb-3" style={{ color: '#E040FB' }}>Network</h4>
-              <p className="leading-relaxed text-sm" style={{ color: '#9B97C2' }}>
-                Connect with like-minded students, researchers, and industry professionals in the quantum computing field.
-              </p>
-            </div>
-
-            {/* Hands-On Experience */}
-            <div className="p-8 rounded-2xl" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)' }}>
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-5" style={{ background: 'rgba(192,132,252,0.12)' }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C084FC" strokeWidth="2" strokeLinecap="round">
-                  <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
-                </svg>
-              </div>
-              <h4 className="font-semibold text-lg mb-3" style={{ color: '#C084FC' }}>Hands-On Experience</h4>
-              <p className="leading-relaxed text-sm" style={{ color: '#9B97C2' }}>
-                Work on real quantum computing projects using platforms like IBM Qiskit and participate in hackathons.
-              </p>
-            </div>
-
-            {/* Community */}
-            <div className="p-8 rounded-2xl" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)' }}>
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-5" style={{ background: 'rgba(255,255,255,0.06)' }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.55)" strokeWidth="2" strokeLinecap="round">
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
-                </svg>
-              </div>
-              <h4 className="font-semibold text-lg mb-3" style={{ color: 'rgba(255,255,255,0.75)' }}>Community</h4>
-              <p className="leading-relaxed text-sm" style={{ color: '#9B97C2' }}>
-                Be part of a welcoming community that supports your academic and professional growth in quantum technologies.
-              </p>
-            </div>
-
-          </div>
         </div>
       </div>
   );

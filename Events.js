@@ -1,91 +1,123 @@
-const React = window.React || require('react');
-
+/**
+ * EVENTS COMPONENT
+ * Expanded layout: 1400px container width for maximum screen usage.
+ * Typography: 20px body text and 16px labels to match About Us.
+ */
 window.Events = function Events() {
-    const [openEvent, setOpenEvent] = React.useState(null);
-
-    // Restoring your specific event data
-    const eventList = [
+    const annualEvents = [
         {
-            id: 'qlcn',
-            title: 'QLCN',
-            subtitle: 'Quantum Leap & Career Network',
-            date: { month: 'SEPT', day: '15' },
-            description: 'Quantum Leap & Career Network. Join us for networking sessions and workshops designed to bridge the gap between academia and the quantum industry.'
-        },
-        {
-            id: 'bitcamp',
-            title: 'Bitcamp',
-            subtitle: "UMD's Annual Hackathon",
-            date: { month: 'APR', day: '10' },
-            description: "Maryland’s premier hackathon. UQA will be hosting specialized quantum tracks and hardware challenges. Don’t miss out on the largest hackathon at UMD!"
+            month: "Sept",
+            day: "15",
+            title: "Quantum Leap Career Nexus",
+            subtitle: "QLCN 2026 · University of Maryland",
+            description: "A career fair and professional development event bringing together quantum computing students, researchers, and industry professionals. QLCN connects tomorrow's quantum workforce with leading organizations through networking, recruitment, and mentorship workshops.",
+            highlights: [
+                "Networking with quantum industry professionals and recruiters",
+                "Workshops focused on internship and job placement",
+                "Career development and mentorship opportunities for undergraduates"
+            ],
+            links: [
+                { label: "Register via Handshake", url: "https://go.umd.edu/QLCNregister", primary: true },
+                { label: "Register without Handshake", url: "https://go.umd.edu/attendQLCN", primary: false }
+            ]
         }
     ];
 
     return (
-        <div className="min-h-screen pb-24 px-6 w-full" style={{ background: '#09091F' }}>
-            <div className="max-w-4xl mx-auto">
+        <div className="min-h-screen bg-[#0f1128] text-[#f0f0f8] font-sans selection:bg-[#9296c8]/30 animate-fade-in">
 
-                {/* Header: pt-44 for nav bar clearance & light typography */}
-                <div className="pt-28 mb-20">
-                    <h1 className="text-5xl md:text-7xl font-light tracking-tight leading-tight text-white">
-                        Upcoming <span className="text-[#9B6EFF]">Events</span>
-                    </h1>
-                </div>
+            {/* Container expanded to 1400px to match site-wide ultra-wide standard */}
+            <div className="max-w-[1400px] mx-auto px-10 py-[120px] pb-[120px]">
 
-                {/* Event List */}
-                <div className="flex flex-col gap-6">
-                    {eventList.map((event) => (
-                        <div
-                            key={event.id}
-                            className="rounded-[2.2rem] border border-white/5 overflow-hidden transition-all duration-300"
-                            style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)' }}
-                        >
-                            <div
-                                className="p-8 flex items-center justify-between cursor-pointer hover:bg-white/[0.02]"
-                                onClick={() => setOpenEvent(openEvent === event.id ? null : event.id)}
-                            >
-                                <div className="flex items-center gap-8">
-                                    {/* Date Badge */}
-                                    <div className="w-20 h-20 rounded-2xl flex flex-col items-center justify-center border border-[#9B6EFF]/20 shrink-0"
-                                         style={{ backgroundColor: 'rgba(155, 110, 255, 0.1)' }}>
-                                        <span className="text-[#9B97C2] text-xs font-bold tracking-widest">{event.date.month}</span>
-                                        <span className="text-white text-3xl font-bold">{event.date.day}</span>
+                {/* Simplified Header: Uniform font and optimized size */}
+                <h1 className="font-['Raleway'] text-[clamp(32px,5vw,48px)] font-semibold tracking-tight leading-[1.2] mb-16 text-[#a8abdb]">
+                    Upcoming Events
+                </h1>
+
+                {/* ANNUAL EVENTS SECTION */}
+                <div className="mb-14">
+                    {/* Label increased to 16px to match About Us labels */}
+                    <div className="font-['Raleway'] text-[16px] font-bold tracking-[0.22em] uppercase text-[#9296c8] mb-10">
+                        Annual
+                    </div>
+
+                    <div className="space-y-0">
+                        {annualEvents.map((event, index) => (
+                            <div key={index} className="grid grid-cols-[140px_1fr] gap-12 py-12 border-t border-white/10 first:border-t-0 last:border-b last:border-white/10">
+
+                                {/* Date Column: Scaled for the 1400px container */}
+                                <div className="text-left pt-1">
+                                    <div className="font-['Raleway'] text-[14px] font-bold tracking-[0.16em] uppercase text-[#9296c8]">
+                                        {event.month}
                                     </div>
-
-                                    <div>
-                                        <h3 className="text-2xl md:text-3xl font-bold text-white mb-1">{event.title}</h3>
-                                        <p className="text-[#9B97C2] text-sm font-light tracking-wide">{event.subtitle}</p>
+                                    <div className="font-['Raleway'] text-[56px] font-light text-white leading-none">
+                                        {event.day}
                                     </div>
                                 </div>
 
-                                {/* Interaction Button */}
-                                <div className="w-10 h-10 rounded-xl border border-[#9B6EFF]/30 flex items-center justify-center shrink-0"
-                                     style={{ backgroundColor: 'rgba(155, 110, 255, 0.05)' }}>
-                  <span className={`text-[#9B6EFF] text-2xl transition-transform duration-300 ${openEvent === event.id ? 'rotate-45' : ''}`}>
-                    +
-                  </span>
-                                </div>
-                            </div>
-
-                            {/* Accordion Content */}
-                            {openEvent === event.id && (
-                                <div className="px-8 pb-8 pt-2">
-                                    <div className="h-px w-full bg-white/5 mb-6" />
-                                    <p className="text-lg text-[#9B97C2] leading-relaxed font-light">
+                                {/* Content Column: Body text at 20px */}
+                                <div className="space-y-3">
+                                    <h2 className="font-['Raleway'] text-[28px] font-semibold text-white">
+                                        {event.title}
+                                    </h2>
+                                    <div className="text-[18px] text-[#a8abdb] italic mb-5">
+                                        {event.subtitle}
+                                    </div>
+                                    <p className="text-[20px] text-[#f0f0f8]/80 leading-[1.9] mb-6">
                                         {event.description}
                                     </p>
+
+                                    {/* Highlights List: Increased to 20px for high readability */}
+                                    <ul className="space-y-4 mb-8">
+                                        {event.highlights.map((item, i) => (
+                                            <li key={i} className="relative pl-8 text-[20px] text-[#f0f0f8]/80 leading-[1.8] before:content-['—'] before:absolute before:left-0 before:text-[#9296c8]">
+                                                {item}
+                                            </li>
+                                        ))}
+                                    </ul>
+
+                                    {/* Action Buttons: Consistent padding and font */}
+                                    <div className="flex gap-5 pt-6 flex-wrap">
+                                        {event.links.map((link, i) => (
+                                            <a
+                                                key={i}
+                                                href={link.url}
+                                                target="_blank"
+                                                className={`font-['Raleway'] text-[15px] font-bold px-8 py-3.5 rounded-[6px] tracking-wide transition-all ${
+                                                    link.primary
+                                                        ? "bg-[#9296c8] text-[#0f1128] hover:brightness-110"
+                                                        : "border border-[#9a9dd4]/35 text-[#a8abdb] hover:bg-[#9a9dd4]/10"
+                                                }`}
+                                            >
+                                                {link.label}
+                                            </a>
+                                        ))}
+                                    </div>
                                 </div>
-                            )}
-                        </div>
-                    ))}
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
-                {/* Footer Note */}
-                <div className="mt-16 p-8 rounded-[2rem] border border-white/5 text-center"
-                     style={{ backgroundColor: 'rgba(255, 255, 255, 0.02)' }}>
-                    <p className="text-[#9B97C2] italic font-light tracking-wide">
-                        More events are currently being planned. Check the <a href="#calendar" className="text-[#9B6EFF] underline decoration-[#9B6EFF]/30 underline-offset-4 font-medium">Calendar</a> tab for the full schedule.
-                    </p>
+                {/* RECURRING SECTION: Text increased to 20px */}
+                <div className="pt-12 border-t border-white/10">
+                    <div className="font-['Raleway'] text-[16px] font-bold tracking-[0.22em] uppercase text-[#9296c8] mb-8">
+                        Recurring
+                    </div>
+                    <div className="space-y-5 text-[20px] text-[#f0f0f8]/80 leading-[1.9]">
+                        <p>
+                            <strong className="font-semibold text-[#f0f0f8]">Weekly General Body Meetings</strong> — Every Wednesday at 6:00 PM · Room 2124, John S. Toll Physics Building
+                        </p>
+                        <p className="text-[18px] text-[#f0f0f8]/60">
+                            Announcements for additional events and opportunities are posted in our{" "}
+                            <a href="https://discord.gg/qtqcAjhRVP" className="text-[#a8abdb] border-b border-[#a8abdb]/30 hover:border-[#a8abdb] transition-colors">
+                                Discord server
+                            </a>. Check the{" "}
+                            <a href="#calendar" className="text-[#a8abdb] border-b border-[#a8abdb]/30 hover:border-[#a8abdb] transition-colors">
+                                Calendar tab
+                            </a> for the full schedule.
+                        </p>
+                    </div>
                 </div>
 
             </div>

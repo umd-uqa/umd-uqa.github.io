@@ -1,5 +1,9 @@
 const { useState, useEffect } = React;
 
+/**
+ * CALENDAR COMPONENT
+ * Enhanced typography and 1400px layout to match the site-wide readability standards.
+ */
 window.Calendar = function Calendar() {
     const [upcomingEvents, setUpcomingEvents] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -22,7 +26,7 @@ window.Calendar = function Calendar() {
                             .toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase(),
                         title: item.summary,
                         location: item.location || "TBA",
-                        color: item.colorId ? "#C084FC" : "#9B6EFF"
+                        color: item.colorId ? "#a8abdb" : "#9296c8"
                     })));
                 }
             } catch (e) {
@@ -35,68 +39,86 @@ window.Calendar = function Calendar() {
     }, []);
 
     return (
-        <div className="min-h-screen pb-32 px-6 w-full" style={{ background: '#09091F' }}>
-            <div className="max-w-6xl mx-auto">
+        <div className="min-h-screen bg-[#0f1128] text-[#f0f0f8] font-sans selection:bg-[#9296c8]/30 animate-fade-in">
 
-                {/* 1. MAIN HEADER: Changed pt-28 to pt-16 to fix the stacking issue */}
-                <div className="pt-16">
-                    <h1 className="text-4xl md:text-6xl font-light tracking-tight leading-tight text-white">
-                        UQA <span className="text-[#C084FC]">Calendar</span>
-                    </h1>
-                </div>
+            {/* Container expanded to 1400px to fill the screen width */}
+            <div className="max-w-[1400px] mx-auto px-10 py-[120px] pb-[120px]">
 
-                {/* 2. UPCOMING EVENTS: mt-12 spacing maintained */}
-                <div className="mt-12">
+                {/* Simplified Header: Optimized size for 1400px layout */}
+                <h1 className="font-['Raleway'] text-[clamp(32px,5vw,48px)] font-semibold tracking-tight leading-[1.2] mb-16 text-[#a8abdb]">
+                    UQA Calendar
+                </h1>
+
+                {/* ── SECTION 1: UPCOMING EVENTS ── */}
+                <div className="mb-14">
+                    {/* Label increased to 16px for consistency */}
+                    <div className="font-['Raleway'] text-[16px] font-bold tracking-[0.22em] uppercase text-[#9296c8] mb-10">
+                        Upcoming Events
+                    </div>
+
                     {loading ? (
-                        <div className="p-8 rounded-2xl border border-white/5 animate-pulse" style={{ backgroundColor: 'rgba(255, 255, 255, 0.02)' }}>
-                            <p className="text-slate-500 text-xs uppercase tracking-widest">Fetching Schedule...</p>
+                        <div className="w-full p-12 rounded-2xl border border-white/5 bg-white/[0.02] animate-pulse">
+                            <p className="text-[#9296c8] text-sm uppercase tracking-widest text-center">Fetching Schedule...</p>
                         </div>
                     ) : upcomingEvents.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
                             {upcomingEvents.map((event, i) => (
-                                <div key={i} className="p-8 rounded-3xl border border-white/[0.03]" style={{ backgroundColor: '#11112b' }}>
-                                    <div className="flex justify-between items-start mb-4">
-                                        <span className="text-2xl font-bold text-white tracking-tighter">{event.date}</span>
-                                        <div className="w-2 h-2 rounded-full mt-2" style={{ backgroundColor: event.color, boxShadow: `0 0 10px ${event.color}` }} />
+                                <div key={i} className="p-10 rounded-3xl border border-white/5 bg-[#161836] transition-all hover:scale-[1.02] hover:border-[#a8abdb]/30">
+                                    <div className="flex justify-between items-start mb-6">
+                                        {/* Date increased to 32px (text-3xl) */}
+                                        <span className="text-3xl font-bold text-white tracking-tighter">{event.date}</span>
+                                        <div className="w-2.5 h-2.5 rounded-full mt-2" style={{ backgroundColor: event.color, boxShadow: `0 0 12px ${event.color}` }} />
                                     </div>
-                                    <h4 className="text-lg font-bold text-white mb-1">{event.title}</h4>
-                                    <p className="text-slate-500 text-xs font-medium uppercase tracking-widest">📍 {event.location}</p>
+                                    {/* Title increased to 22px */}
+                                    <h4 className="text-[22px] font-semibold text-white mb-4 leading-snug">{event.title}</h4>
+                                    <p className="text-[#f0f0f8]/50 text-sm font-medium uppercase tracking-widest">📍 {event.location}</p>
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <div className="w-full p-8 rounded-2xl border border-white/5" style={{ backgroundColor: 'rgba(255, 255, 255, 0.02)' }}>
-                            <div className="flex items-center gap-3">
-                                <div className="w-1.5 h-1.5 rounded-full bg-[#9B6EFF]" />
-                                <p className="text-[#9B97C2] italic font-light tracking-wide">
-                                    No upcoming events found. Check back soon!
-                                </p>
-                            </div>
+                        /* Empty state text increased to 20px */
+                        <div className="w-full py-10 px-0 border-y border-white/10">
+                            <p className="text-[#f0f0f8]/60 italic font-light text-[20px]">
+                                No upcoming events found. Check back soon!
+                            </p>
                         </div>
                     )}
                 </div>
 
-                {/* 3. SUB HEADER: mt-12 spacing */}
-                <div className="mt-12">
-                    <h2 className="text-2xl md:text-4xl font-light tracking-tight text-white">
-                        Full <span className="text-[#C084FC]">Calendar</span> View
-                    </h2>
-                </div>
+                <hr className="border-none border-t border-white/10 mb-14" />
 
-                {/* 4. CALENDAR GRID: mt-12 spacing */}
-                <div className="mt-12">
-                    <div className="w-full rounded-[2.5rem] border border-white/5 overflow-hidden shadow-2xl"
-                         style={{ backgroundColor: 'rgba(255, 255, 255, 0.01)', minHeight: '700px' }}>
+                {/* ── SECTION 2: FULL CALENDAR VIEW ── */}
+                <div className="cal-section">
+                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 mb-10">
+                        {/* Header consistent with 16px label style */}
+                        <h2 className="font-['Raleway'] text-[clamp(24px,3vw,32px)] font-semibold text-[#a8abdb]">
+                            Full Calendar View
+                        </h2>
+
+                        <a
+                            href={`https://calendar.google.com/calendar/render?cid=${CALENDAR_ID}`}
+                            target="_blank"
+                            className="bg-[#9a9dd4]/15 border border-[#9a9dd4]/35 text-[#b0b3e0] px-8 py-3.5 rounded-lg transition-all text-[15px] font-bold hover:bg-[#9a9dd4]/25 inline-flex items-center gap-3"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M8 7V6h1v1h1v1H9v1H8V8H7V7h1z"/>
+                                <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
+                            </svg>
+                            Add to My Calendar
+                        </a>
+                    </div>
+
+                    <div className="w-full rounded-3xl border border-white/10 overflow-hidden shadow-2xl bg-[#0c0d23]">
                         <iframe
                             src={`https://calendar.google.com/calendar/embed?src=${CALENDAR_ID}&ctz=America%2FNew_York`}
-                            style={{ border: 0 }}
-                            width="100%"
-                            height="700"
-                            frameBorder="0"
+                            className="w-full h-[800px] border-none opacity-90 grayscale-[0.5] invert-[0.9] hue-rotate-[200deg]"
                             scrolling="no"
-                            className="opacity-90 grayscale-[0.5] invert-[0.9] hue-rotate-[200deg]"
                         ></iframe>
                     </div>
+                </div>
+
+                <div className="mt-24 pt-10 border-t border-white/10 text-[20px] text-[#f0f0f8]/60 text-center">
+                    <strong className="font-semibold text-white">Weekly General Body Meetings</strong> — Every Wednesday at 6:00 PM · Room 2124, John S. Toll Physics Building
                 </div>
 
             </div>
