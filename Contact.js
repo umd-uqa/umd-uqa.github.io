@@ -1,77 +1,86 @@
-const React = window.React || require('react');
-
+/**
+ * CONTACT COMPONENT
+ * Expanded layout: 1400px container width for maximum screen usage.
+ * Typography: 20px body text and 16px labels for high readability.
+ */
 window.Contact = function Contact() {
   return (
-      <div className="min-h-screen pb-24 px-6 w-full" style={{ background: '#09091F' }}>
-        <div className="max-w-5xl mx-auto">
+      <div className="min-h-screen bg-[#0f1128] text-[#f0f0f8] font-sans selection:bg-[#9296c8]/30 animate-fade-in">
 
-          {/* 1. Header: pt-28 (Middle ground between 12 and 44). */}
-          <div className="pt-28 mb-8 text-center">
-            <h1 className="text-6xl md:text-7xl font-light tracking-tight text-white">
-              Get In <span className="text-[#C084FC]">Touch</span>
-            </h1>
-            <p className="text-[#9B97C2] mt-6 text-lg font-light tracking-wide max-w-2xl mx-auto">
-              We'd love to hear from you — students, researchers, and partners alike.
-            </p>
-          </div>
+        {/* 1400px container matching site-wide ultra-wide standard */}
+        <div className="max-w-[1400px] mx-auto px-10 py-[120px] pb-[120px]">
 
-          {/* 2. Contact Cards Grid: mt-12 (Middle ground between 2 and 16). */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
+          {/* Simplified Header: Uniform font and optimized size */}
+          <h1 className="font-['Raleway'] text-[clamp(32px,5vw,48px)] font-semibold tracking-tight leading-[1.2] mb-4 text-[#a8abdb]">
+            Get In Touch
+          </h1>
+          <p className="text-[20px] text-[#f0f0f8]/60 mb-16 leading-relaxed">
+            We'd love to hear from you — students, researchers, and partners alike.
+          </p>
 
-            {/* Card: For Students */}
-            <div className="p-10 rounded-[2.5rem] border border-[#9B6EFF]/20"
-                 style={{ backgroundColor: 'rgba(155, 110, 255, 0.05)' }}>
-              <h4 className="text-[#9B6EFF] text-xs font-bold uppercase tracking-widest mb-4">For Students</h4>
-              <h3 className="text-4xl font-bold text-white mb-6">Visit Us</h3>
-              <p className="text-[#9B97C2] font-light leading-relaxed mb-8">
+          {/* TWO-COL CONTACT GRID */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 mb-16">
+
+            <div className="space-y-8">
+              <div className="font-['Raleway'] text-[16px] font-bold tracking-[0.22em] uppercase text-[#9296c8]">
+                For Students
+              </div>
+              <h2 className="text-[28px] font-semibold text-white">Visit Us</h2>
+              <p className="text-[20px] text-[#f0f0f8]/80 leading-[1.9]">
                 Looking to get involved or attend a workshop? The best way to find us is in person.
               </p>
 
-              <div className="p-6 rounded-2xl bg-[#09091F]/50 border border-white/5">
-                <div className="flex gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-[#9B6EFF]/10 flex items-center justify-center shrink-0">
-                    <span className="text-[#9B6EFF] text-lg">📍</span>
-                  </div>
-                  <div>
-                    <h5 className="text-white font-bold mb-1">Location</h5>
-                    <p className="text-[#C084FC] font-bold mb-2">Physics Toll 2124</p>
-                    <p className="text-xs text-[#9B97C2] italic leading-normal">
-                      Check the <a href="#events" className="text-[#9B6EFF] underline decoration-[#9B6EFF]/30 underline-offset-2">Events</a> page for specific meeting dates and times.
-                    </p>
-                  </div>
+              <div className="pt-8 border-t border-white/10">
+                <div className="font-['Raleway'] text-[13px] font-bold tracking-[0.14em] uppercase text-[#9296c8] mb-3">
+                  Location
                 </div>
+                <div className="text-[22px] font-semibold text-white mb-3">
+                  Physics Toll 2124
+                </div>
+                <p className="text-[18px] text-[#f0f0f8]/60 leading-relaxed">
+                  Check the <a href="#events" className="text-[#a8abdb] border-b border-[#a8abdb]/30 hover:border-[#a8abdb] transition-colors">Events</a> page for specific meeting dates and times.
+                </p>
               </div>
             </div>
 
-            {/* Card: For Partners */}
-            <div className="p-10 rounded-[2.5rem] border border-white/5"
-                 style={{ backgroundColor: 'rgba(255, 255, 255, 0.02)' }}>
-              <h4 className="text-[#E040FB] text-xs font-bold uppercase tracking-widest mb-4">For Partners</h4>
-              <h3 className="text-4xl font-bold text-white mb-6">Contact Us</h3>
-              <p className="text-[#9B97C2] font-light leading-relaxed mb-8">
+            <div className="space-y-8">
+              <div className="font-['Raleway'] text-[16px] font-bold tracking-[0.22em] uppercase text-[#9296c8]">
+                For Partners
+              </div>
+              <h2 className="text-[28px] font-semibold text-white">Contact Us</h2>
+              <p className="text-[20px] text-[#f0f0f8]/80 leading-[1.9]">
                 For research collaborations, industry partnerships, or general administrative inquiries, please reach out to our executive board.
               </p>
-
-              <div className="p-6 rounded-2xl bg-[#09091F]/50 border border-white/5">
-                <div className="flex gap-3">
-                  <div className="w-2 h-2 rounded-full bg-[#E040FB] mt-1.5 shrink-0" />
-                  <p className="text-sm text-[#9B97C2] italic leading-relaxed">
-                    All inquiries are monitored by our board, and we will get back to you as soon as possible.
-                  </p>
-                </div>
+              <div className="pt-8 border-t border-white/10 italic text-[18px] text-[#f0f0f8]/50 leading-relaxed">
+                All inquiries are monitored by our board, and we will get back to you as soon as possible.
               </div>
             </div>
+
           </div>
 
-          {/* 3. Footer Email Section: mt-16 to maintain the visual airiness */}
-          <div className="mt-16 pt-10 border-t border-white/5 text-center">
-            <p className="text-[#9B97C2] mb-8 font-light">Prefer direct messaging? Reach us via email:</p>
-            <a href="mailto:umd.uqa@gmail.com"
-               className="inline-flex items-center gap-3 px-8 py-4 rounded-xl border border-white/10 bg-white/5 text-white hover:bg-white/10 transition-all no-underline mb-6">
-              <span className="text-lg">✉️</span>
-              <span className="font-medium">Email Us</span>
+          <hr className="border-none border-t border-white/10 mb-16" />
+
+          {/* EMAIL CTA SECTION */}
+          <div className="text-center py-10">
+            <p className="text-[20px] text-[#f0f0f8]/60 mb-10">
+              Prefer direct messaging? Reach us via email.
+            </p>
+
+            <a
+                href="mailto:umd_uqa@gmail.com"
+                className="inline-flex items-center gap-4 bg-[#9a9dd4]/15 border border-[#9a9dd4]/35 text-[#a8abdb] px-10 py-5 rounded-lg transition-all text-[18px] font-bold hover:bg-[#9a9dd4]/25 mb-6"
+            >
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/>
+              </svg>
+              Email Us
             </a>
-            <p className="text-[#9B6EFF] font-mono text-sm">umd.uqa@gmail.com</p>
+
+            <div className="text-[18px]">
+              <a href="mailto:umd_uqa@gmail.com" className="text-[#a8abdb] border-b border-[#a8abdb]/30 hover:border-[#a8abdb] transition-colors">
+                umd_uqa@gmail.com
+              </a>
+            </div>
           </div>
 
         </div>
