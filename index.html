@@ -5,11 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UMD UQA - Undergraduate Quantum Association</title>
 
-
+    <!-- React 18 & Babel Standalone -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Firebase SDK (v10 Compat CDN) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
 
     <style>
         .animate-fade-in {
@@ -20,7 +26,7 @@
             to { opacity: 1; }
         }
         body {
-            background-color: #0f1128; /* Updated to match new theme */
+            background-color: #0f1128;
             margin: 0;
             min-height: 100vh;
         }
@@ -36,6 +42,12 @@
 <body>
 <div id="root"></div>
 
+<!-- Firebase Config & Authentication Layer -->
+<script type="text/babel" src="./firebase-config.js"></script>
+<script type="text/babel" src="./auth.js"></script>
+<script type="text/babel" src="./seed-data.js"></script>
+
+<!-- Application Components -->
 <script type="text/babel" src="./Navbar.js"></script>
 <script type="text/babel" src="./Home.js"></script>
 <script type="text/babel" src="./About.js"></script>
@@ -43,7 +55,9 @@
 <script type="text/babel" src="./Contact.js"></script>
 <script type="text/babel" src="./Calendar.js"></script>
 <script type="text/babel" src="./Resources.js"></script>
+<script type="text/babel" src="./Admin.js"></script>
 
+<!-- Main App Entry Router -->
 <script type="text/babel" src="./App.js"></script>
 </body>
 </html>

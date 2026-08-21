@@ -68,7 +68,7 @@ window.About = function About() {
           <hr className="border-none border-t border-white/10 mb-10" />
 
           {/* WHY JOIN UQA? SECTION */}
-          <section className="mb-[80px]">
+          <section className="mb-10">
             <h2 className="font-['Raleway'] text-[16px] font-bold tracking-[0.22em] uppercase text-[#9296c8] mb-8">
               Why Join UQA?
             </h2>
@@ -92,7 +92,44 @@ window.About = function About() {
             </div>
           </section>
 
-          <div className="mt-[100px] pt-8 border-t border-white/10 text-[18px] text-[#f0f0f8]/60 text-center">
+          <hr className="border-none border-t border-white/10 mb-10" />
+
+          {/* SUPPORTED BY SECTION */}
+          <section className="mb-10">
+            <h2 className="font-['Raleway'] text-[16px] font-bold tracking-[0.22em] uppercase text-[#9296c8] mb-8">
+              Supported By
+            </h2>
+            <div className="text-[20px] text-[#f0f0f8]/80 leading-[1.9] mb-6">
+              <p>
+                Supported by the{" "}
+                <a
+                  href="https://rqs.umd.edu/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#a8abdb] border-b border-[#b0b3e0]/30 hover:border-[#b0b3e0] transition-colors"
+                >
+                  Institute for Robust Quantum Simulation (RQS)
+                </a>
+                .
+              </p>
+            </div>
+            <div className="pt-2">
+              <a
+                href="https://rqs.umd.edu/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block transition-transform hover:scale-105 focus:outline-none"
+              >
+                <img
+                  src="nsf-rqs-logo.png"
+                  alt="Institute for Robust Quantum Simulation (RQS) Logo"
+                  className="h-14 sm:h-16 md:h-20 w-auto object-contain opacity-90 hover:opacity-100 transition-opacity"
+                />
+              </a>
+            </div>
+          </section>
+
+          <div className="mt-[80px] pt-8 border-t border-white/10 text-[18px] text-[#f0f0f8]/60 text-center">
             <strong className="font-semibold text-white">Weekly General Body Meetings</strong> — Every Wednesday at 6:00 PM · Room 2124, John S. Toll Physics Building
           </div>
 

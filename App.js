@@ -2,12 +2,12 @@ const { useState, useEffect } = React;
 
 /**
  * MAIN WEBSITE COMPONENT (ROUTER)
- * This file handles the logic: state, navigation, and component swapping.
+ * Handles client-side navigation, global auth state, and dynamic view routing.
  */
 function UMDUQAWebsite() {
   const [currentPage, setCurrentPage] = useState('home');
 
-  // Logic to handle hash changes (e.g., #about, #resources)
+  // Logic to handle hash changes (e.g., #about, #resources, #events, #admin)
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '') || 'home';
@@ -19,7 +19,7 @@ function UMDUQAWebsite() {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  // Helper function passed to Navbar to trigger page changes
+  // Helper function passed to Navbar/pages to trigger page changes
   const navigateTo = (id) => {
     window.location.hash = id;
   };
@@ -27,14 +27,12 @@ function UMDUQAWebsite() {
   return (
       <div className="min-h-screen text-slate-200 font-sans bg-[#0f1128]">
 
-        {/* ── NAVBAR LOGIC ──
-          Calls the external Navbar component and passes state/logic down as props. */}
+        {/* ── NAVBAR LOGIC ── */}
         {window.Navbar && (
             <window.Navbar currentPage={currentPage} navigateTo={navigateTo} />
         )}
 
-        {/* ── MAIN PAGE ROUTER ──
-          Swaps based on the window-bound components defined in other files. */}
+        {/* ── MAIN PAGE ROUTER ── */}
         <main className="pt-[52px]">
           {currentPage === 'home' && window.Home && <window.Home />}
           {currentPage === 'about' && window.About && <window.About />}
@@ -42,6 +40,7 @@ function UMDUQAWebsite() {
           {currentPage === 'calendar' && window.Calendar && <window.Calendar />}
           {currentPage === 'resources' && window.Resources && <window.Resources />}
           {currentPage === 'contact' && window.Contact && <window.Contact />}
+          {currentPage === 'admin' && window.Admin && <window.Admin navigateTo={navigateTo} />}
 
           {/* Fallback display if a component is still initializing */}
           {(!window[currentPage.charAt(0).toUpperCase() + currentPage.slice(1)] && currentPage !== 'home') && (
@@ -52,8 +51,16 @@ function UMDUQAWebsite() {
         </main>
 
         <footer className="bg-[#0f1120] border-t border-[#3b4166] mt-16">
-          <div className="max-w-7xl mx-auto px-8 py-12 text-center text-slate-400 text-sm">
+          <div className="max-w-7xl mx-auto px-8 py-12 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left text-slate-400 text-sm">
             <p>© 2026 UMD Undergraduate Quantum Association</p>
+            <div className="flex items-center gap-6 text-xs">
+              <button
+                onClick={() => navigateTo('admin')}
+                className="text-slate-500 hover:text-[#a8abdb] transition-colors"
+              >
+                Admin Portal
+              </button>
+            </div>
           </div>
         </footer>
       </div>
