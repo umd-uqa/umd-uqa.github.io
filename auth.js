@@ -21,8 +21,9 @@ function parseJwt(token) {
 }
 
 /**
- * UMD UQA Pure Google Identity Services (GIS) Auth Service
- * Direct browser-to-Google authentication with ZERO Firebase.
+ * UMD UQA Unified Authentication Service
+ * Bridges Google Identity Services (GIS) with Firebase Auth (v10 Compat),
+ * Firestore Whitelist Verification, and resilient offline fallback.
  */
 window.UQAAuth = {
   _listeners: [],
@@ -32,8 +33,10 @@ window.UQAAuth = {
     try {
       const stored = localStorage.getItem('uqa_google_user');
       if (stored) {
+        const parsed = JSON.parse(stored);
         return {
-          user: JSON.parse(stored),
+          user: parsed,
+          isAdmin: Boolean(parsed.isAdmin),
           isLoading: false,
           error: null
         };
@@ -43,6 +46,7 @@ window.UQAAuth = {
     }
     return {
       user: null,
+      isAdmin: false,
       isLoading: false,
       error: null
     };
@@ -66,38 +70,109 @@ window.UQAAuth = {
   },
 
   /**
-   * Handle Google Credential Response from GIS SDK
+   * Verify if email is in the Firestore admin_emails whitelist
    */
-  _handleCredentialResponse(response) {
+  async checkAdminStatus(email) {
+    if (!email) return false;
+    const cleanEmail = email.toLowerCase().trim();
+
+    // Check Firestore if configured and online
+    if (window.isFirebaseConfigured && window.isFirebaseConfigured() && window.uqaDb) {
+      try {
+        const doc = await window.uqaDb.collection('admin_emails').doc(cleanEmail).get();
+        if (doc.exists && doc.data()?.role === 'admin') {
+          return true;
+        }
+      } catch (err) {
+        console.warn("[UQA Auth] Firestore whitelist query error (unauthenticated or offline):", err);
+      }
+    }
+
+    // Default fallback admin check for local/offline testing
+    const localAdmins = ['president@umduqa.org', 'lead@umd.edu', 'admin@umd.edu'];
+    if (localAdmins.includes(cleanEmail)) {
+      return true;
+    }
+
+    return false;
+  },
+
+  /**
+   * Handle Google Credential Response from GIS SDK
+   * Bridges GIS ID Token into Firebase Auth
+   */
+  async _handleCredentialResponse(response) {
     if (!response || !response.credential) {
       this._emit({ error: "No credential received from Google Sign-In.", isLoading: false });
       return;
     }
 
-    const payload = parseJwt(response.credential);
-    if (!payload || !payload.email) {
-      this._emit({ error: "Failed to decode Google profile information.", isLoading: false });
-      return;
-    }
-
-    const userObj = {
-      uid: payload.sub,
-      email: payload.email,
-      displayName: payload.name || payload.email.split('@')[0],
-      photoURL: payload.picture || "https://www.gravatar.com/avatar/?d=mp"
-    };
+    this._emit({ isLoading: true, error: null });
 
     try {
-      localStorage.setItem('uqa_google_user', JSON.stringify(userObj));
-    } catch (e) {
-      console.warn("[UQA Auth] Failed to save session to localStorage:", e);
-    }
+      let userObj = null;
+      let isAdmin = false;
 
-    this._emit({
-      user: userObj,
-      isLoading: false,
-      error: null
-    });
+      // 1. If Firebase Auth is configured, exchange GIS ID Token with Firebase
+      if (window.isFirebaseConfigured && window.isFirebaseConfigured() && window.uqaAuth && window.firebase?.auth?.GoogleAuthProvider) {
+        try {
+          const credential = window.firebase.auth.GoogleAuthProvider.credential(response.credential);
+          const userCredential = await window.uqaAuth.signInWithCredential(credential);
+          const fbUser = userCredential.user;
+
+          userObj = {
+            uid: fbUser.uid,
+            email: fbUser.email,
+            displayName: fbUser.displayName || fbUser.email.split('@')[0],
+            photoURL: fbUser.photoURL || "https://www.gravatar.com/avatar/?d=mp"
+          };
+
+          isAdmin = await this.checkAdminStatus(userObj.email);
+        } catch (fbErr) {
+          console.warn("[UQA Auth] Firebase credential sign-in warning:", fbErr);
+          // Fall back to direct JWT decode if Firebase token exchange threw an issue
+        }
+      }
+
+      // 2. Fallback to direct client-side JWT decode if userObj not created above
+      if (!userObj) {
+        const payload = parseJwt(response.credential);
+        if (!payload || !payload.email) {
+          throw new Error("Failed to decode Google profile information from token.");
+        }
+
+        userObj = {
+          uid: payload.sub,
+          email: payload.email,
+          displayName: payload.name || payload.email.split('@')[0],
+          photoURL: payload.picture || "https://www.gravatar.com/avatar/?d=mp"
+        };
+
+        isAdmin = await this.checkAdminStatus(userObj.email);
+      }
+
+      const storedPayload = { ...userObj, isAdmin };
+      try {
+        localStorage.setItem('uqa_google_user', JSON.stringify(storedPayload));
+      } catch (e) {
+        console.warn("[UQA Auth] Failed to save session to localStorage:", e);
+      }
+
+      this._emit({
+        user: userObj,
+        isAdmin: isAdmin,
+        isLoading: false,
+        error: null
+      });
+
+      console.log(`[UQA Auth] Authenticated user: ${userObj.email} (Admin: ${isAdmin})`);
+    } catch (err) {
+      console.error("[UQA Auth] Authentication error:", err);
+      this._emit({
+        error: err.message || "Failed to complete authentication.",
+        isLoading: false
+      });
+    }
   },
 
   /**
@@ -105,7 +180,7 @@ window.UQAAuth = {
    */
   initGIS(retryCount = 0) {
     if (typeof window.google === "undefined" || !window.google.accounts || !window.google.accounts.id) {
-      if (retryCount < 20) {
+      if (retryCount < 25) {
         setTimeout(() => this.initGIS(retryCount + 1), 100);
       } else {
         console.warn("[UQA Auth] Google Identity Services SDK failed to load. Check ad-blockers or network.");
@@ -121,7 +196,7 @@ window.UQAAuth = {
           auto_select: false,
           cancel_on_tap_outside: true
         });
-        console.log("[UQA Auth] Google Identity Services initialized successfully.");
+        console.log("[UQA Auth] Google Identity Services initialized.");
       } catch (err) {
         console.error("[UQA Auth] Error initializing GIS:", err);
       }
@@ -140,7 +215,6 @@ window.UQAAuth = {
 
     if (window.isGoogleAuthConfigured && window.isGoogleAuthConfigured()) {
       try {
-        // Ensure initialized
         window.google.accounts.id.initialize({
           client_id: window.UQA_GOOGLE_CLIENT_ID,
           callback: this._handleCredentialResponse.bind(this),
@@ -148,12 +222,12 @@ window.UQAAuth = {
         });
 
         window.google.accounts.id.renderButton(element, {
-          theme: options.theme || "outline",
+          theme: options.theme || "filled_blue",
           size: options.size || "large",
           text: options.text || "signin_with",
           shape: options.shape || "rectangular",
           logo_alignment: options.logo_alignment || "left",
-          width: options.width || "320"
+          width: options.width || "300"
         });
       } catch (err) {
         console.error("[UQA Auth] Error rendering Google button:", err);
@@ -164,23 +238,37 @@ window.UQAAuth = {
   /**
    * Sign Out
    */
-  signOut() {
-    try {
-      localStorage.removeItem('uqa_google_user');
-    } catch (e) {
-      console.warn("[UQA Auth] Error removing session:", e);
+  async signOut() {
+    this._emit({ isLoading: true });
+
+    // Firebase Auth sign out
+    if (window.uqaAuth) {
+      try {
+        await window.uqaAuth.signOut();
+      } catch (e) {
+        console.warn("[UQA Auth] Firebase sign out error:", e);
+      }
     }
 
+    // GIS auto-select disable
     if (window.google?.accounts?.id?.disableAutoSelect) {
       try {
         window.google.accounts.id.disableAutoSelect();
       } catch (e) {
-        console.warn("[UQA Auth] Error disabling auto-select:", e);
+        console.warn("[UQA Auth] Error disabling GIS auto-select:", e);
       }
+    }
+
+    // Clear local storage
+    try {
+      localStorage.removeItem('uqa_google_user');
+    } catch (e) {
+      console.warn("[UQA Auth] Error removing local session:", e);
     }
 
     this._emit({
       user: null,
+      isAdmin: false,
       isLoading: false,
       error: null
     });
@@ -190,6 +278,25 @@ window.UQAAuth = {
 // Initialize GIS on load
 if (typeof window !== "undefined") {
   window.UQAAuth.initGIS();
+
+  // Listen to Firebase Auth state changes if Firebase is active
+  if (window.isFirebaseConfigured && window.isFirebaseConfigured() && window.uqaAuth) {
+    window.uqaAuth.onAuthStateChanged(async (fbUser) => {
+      if (fbUser) {
+        const isAdmin = await window.UQAAuth.checkAdminStatus(fbUser.email);
+        const userObj = {
+          uid: fbUser.uid,
+          email: fbUser.email,
+          displayName: fbUser.displayName || fbUser.email.split('@')[0],
+          photoURL: fbUser.photoURL || "https://www.gravatar.com/avatar/?d=mp"
+        };
+        try {
+          localStorage.setItem('uqa_google_user', JSON.stringify({ ...userObj, isAdmin }));
+        } catch (e) {}
+        window.UQAAuth._emit({ user: userObj, isAdmin, isLoading: false });
+      }
+    });
+  }
 }
 
 /**
@@ -207,6 +314,7 @@ window.useUQAAuth = function useUQAAuth() {
   return {
     ...authState,
     signOut: () => window.UQAAuth.signOut(),
-    renderButton: (el, opts) => window.UQAAuth.renderButton(el, opts)
+    renderButton: (el, opts) => window.UQAAuth.renderButton(el, opts),
+    checkAdminStatus: (email) => window.UQAAuth.checkAdminStatus(email)
   };
 };

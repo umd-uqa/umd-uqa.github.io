@@ -2,12 +2,12 @@ const { useState, useEffect } = React;
 
 /**
  * MAIN WEBSITE COMPONENT (ROUTER)
- * This file handles the logic: state, navigation, and component swapping.
+ * Handles hash-based navigation and component mounting.
  */
 function UMDUQAWebsite() {
   const [currentPage, setCurrentPage] = useState('home');
 
-  // Logic to handle hash changes (e.g., #about, #resources, #auth)
+  // Logic to handle hash changes (e.g., #about, #resources, #auth, #admin)
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '') || 'home';
@@ -24,7 +24,8 @@ function UMDUQAWebsite() {
     window.location.hash = id;
   };
 
-  const isAuthRoute = currentPage === 'auth' || currentPage === 'login' || currentPage === 'admin';
+  const isAuthPortalRoute = currentPage === 'auth' || currentPage === 'login';
+  const isAdminRoute = currentPage === 'admin';
 
   return (
       <div className="min-h-screen text-slate-200 font-sans bg-[#0f1128]">
@@ -38,14 +39,15 @@ function UMDUQAWebsite() {
         <main className="pt-[52px]">
           {currentPage === 'home' && window.Home && <window.Home />}
           {currentPage === 'about' && window.About && <window.About />}
-          {currentPage === 'events' && window.Events && <window.Events />}
+          {currentPage === 'events' && window.Events && <window.Events navigateTo={navigateTo} />}
           {currentPage === 'calendar' && window.Calendar && <window.Calendar />}
-          {currentPage === 'resources' && window.Resources && <window.Resources />}
+          {currentPage === 'resources' && window.Resources && <window.Resources navigateTo={navigateTo} />}
           {currentPage === 'contact' && window.Contact && <window.Contact />}
-          {isAuthRoute && window.AuthPortal && <window.AuthPortal navigateTo={navigateTo} />}
+          {isAuthPortalRoute && window.AuthPortal && <window.AuthPortal navigateTo={navigateTo} />}
+          {isAdminRoute && window.Admin && <window.Admin navigateTo={navigateTo} />}
 
           {/* Fallback display if a component is still initializing */}
-          {(!window[currentPage.charAt(0).toUpperCase() + currentPage.slice(1)] && currentPage !== 'home' && !isAuthRoute) && (
+          {(!window[currentPage.charAt(0).toUpperCase() + currentPage.slice(1)] && currentPage !== 'home' && !isAuthPortalRoute && !isAdminRoute) && (
               <div className="flex items-center justify-center min-h-[60vh] text-slate-400">
                 <p className="animate-pulse text-xl">Initializing Quantum Module: {currentPage}...</p>
               </div>
@@ -61,6 +63,12 @@ function UMDUQAWebsite() {
                 className="text-slate-500 hover:text-[#a8abdb] transition-colors"
               >
                 Sign In Portal
+              </button>
+              <button
+                onClick={() => navigateTo('admin')}
+                className="text-slate-500 hover:text-[#a8abdb] transition-colors"
+              >
+                Admin CMS
               </button>
             </div>
           </div>

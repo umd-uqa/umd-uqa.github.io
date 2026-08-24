@@ -2,10 +2,10 @@ const { useState, useEffect, useRef } = window.React || React;
 
 /**
  * AUTHENTICATION PORTAL COMPONENT
- * Pure Google Identity Services (GIS) Sign-In & User Profile Card (Zero Firebase).
+ * Unified Google Sign-In & User Profile Card with Admin Whitelist indicator.
  */
 window.AuthPortal = function AuthPortal({ navigateTo }) {
-  const auth = window.useUQAAuth ? window.useUQAAuth() : { user: null, isLoading: false, error: null };
+  const auth = window.useUQAAuth ? window.useUQAAuth() : { user: null, isAdmin: false, isLoading: false, error: null };
   const [dismissedError, setDismissedError] = useState(false);
   const googleBtnRef = useRef(null);
 
@@ -83,7 +83,7 @@ window.AuthPortal = function AuthPortal({ navigateTo }) {
           </div>
 
           <div className="mt-8 pt-6 border-t border-white/10 text-xs text-slate-500">
-            Powered by Google Identity Services (Direct Client OAuth)
+            Powered by Google Identity Services & Firebase Auth
           </div>
         </div>
       </div>
@@ -117,10 +117,18 @@ window.AuthPortal = function AuthPortal({ navigateTo }) {
 
         {/* User Info */}
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold mb-3">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            Google Authenticated
-          </div>
+          {auth.isAdmin ? (
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-300 text-xs font-bold mb-3 uppercase tracking-wider">
+              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+              Admin Authorized
+            </div>
+          ) : (
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold mb-3">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              Google Authenticated
+            </div>
+          )}
+
           <h2 className="font-['Raleway'] text-2xl font-bold text-white mb-1">
             {auth.user.displayName || "Google User"}
           </h2>
@@ -133,22 +141,34 @@ window.AuthPortal = function AuthPortal({ navigateTo }) {
         <div className="bg-[#0f1128] border border-white/10 rounded-xl p-4 text-left text-xs space-y-2">
           <div className="flex justify-between text-slate-400">
             <span>Provider:</span>
-            <span className="font-semibold text-slate-200">Google Identity Services (GIS)</span>
+            <span className="font-semibold text-slate-200">Google + Firebase Auth</span>
           </div>
           <div className="flex justify-between text-slate-400">
-            <span>User ID (Sub):</span>
-            <span className="font-mono text-slate-300 truncate max-w-[180px]">{auth.user.uid}</span>
+            <span>Role:</span>
+            <span className={`font-semibold ${auth.isAdmin ? 'text-amber-300 font-bold' : 'text-slate-300'}`}>
+              {auth.isAdmin ? 'Administrator (Full CMS Write)' : 'Member (Read Only)'}
+            </span>
           </div>
           <div className="flex justify-between text-slate-400">
             <span>Session:</span>
-            <span className="text-emerald-400 font-semibold">Active Client Session</span>
+            <span className="text-emerald-400 font-semibold">Active Session</span>
           </div>
         </div>
+
+        {/* Admin CMS Shortcut */}
+        {auth.isAdmin && navigateTo && (
+          <button
+            onClick={() => navigateTo('admin')}
+            className="w-full bg-[#9296c8] hover:brightness-110 text-[#0f1128] font-bold py-3.5 px-6 rounded-lg transition-all text-sm shadow-md flex items-center justify-center gap-2"
+          >
+            <span>🛡️ Open Admin CMS Dashboard</span>
+          </button>
+        )}
 
         {/* Sign Out Button */}
         <button
           onClick={() => auth.signOut()}
-          className="w-full bg-red-500/15 hover:bg-red-500/25 text-red-300 font-bold py-3.5 px-6 rounded-lg border border-red-500/30 transition-all text-sm shadow-md"
+          className="w-full bg-red-500/15 hover:bg-red-500/25 text-red-300 font-bold py-3 px-6 rounded-lg border border-red-500/30 transition-all text-sm shadow-md"
         >
           Sign Out
         </button>

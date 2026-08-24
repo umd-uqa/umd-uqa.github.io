@@ -1,18 +1,102 @@
-const { useState } = window.React;
+const { useState, useEffect } = window.React || React;
 
 /**
  * RESOURCES COMPONENT
  * Expanded layout: 1400px container width for maximum screen usage.
  * Typography: 20px body text and 16px labels to fill the wider space.
+ * Dynamic CMS: Loads videos from Firestore with inline admin controls and resilient offline fallback.
  */
-window.Resources = function Resources() {
+window.Resources = function Resources({ navigateTo }) {
+  const auth = window.useUQAAuth ? window.useUQAAuth() : { user: null, isAdmin: false };
   const [activeTab, setActiveTab] = useState(0);
 
-  const videoResources = [
-    { id: "agOdzgWTr-Y", title: "QuEra Workshop 1" },
-    { id: "i_MKOCxInOQ", title: "QuEra Quantum Challenge Walkthrough" },
-    { id: "xEa3WIzgxDQ", title: "QuEra Workshop 2" }
+  // Default hardcoded fallback videos
+  const defaultVideoResources = [
+    { id: "agOdzgWTr-Y", title: "QuEra Workshop 1", order: 1 },
+    { id: "i_MKOCxInOQ", title: "QuEra Quantum Challenge Walkthrough", order: 2 },
+    { id: "xEa3WIzgxDQ", title: "QuEra Workshop 2", order: 3 }
   ];
+
+  const [videos, setVideos] = useState(defaultVideoResources);
+  const [isAddingVideo, setIsAddingVideo] = useState(false);
+  const [videoForm, setVideoForm] = useState({ title: '', id: '', order: 1 });
+
+  // Subscribe to live Firestore videos if available
+  useEffect(() => {
+    if (window.isFirebaseConfigured && window.isFirebaseConfigured() && window.uqaDb) {
+      const unsub = window.uqaDb.collection('videos').orderBy('order', 'asc').onSnapshot(
+        (snapshot) => {
+          if (!snapshot.empty) {
+            const fetched = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setVideos(fetched);
+          } else {
+            setVideos(defaultVideoResources);
+          }
+        },
+        (err) => {
+          console.warn("[Resources] Firestore videos load warning:", err);
+          setVideos(defaultVideoResources);
+        }
+      );
+      return () => unsub();
+    } else {
+      setVideos(defaultVideoResources);
+    }
+  }, []);
+
+  // Safe active video resolution
+  const safeActiveIndex = activeTab >= videos.length ? 0 : activeTab;
+  const currentVideo = videos[safeActiveIndex] || defaultVideoResources[0];
+
+  const handleSaveInlineVideo = async (e) => {
+    e.preventDefault();
+    if (!videoForm.title || !videoForm.id) return;
+
+    let cleanId = videoForm.id.trim();
+    const match = cleanId.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+    if (match && match[1]) {
+      cleanId = match[1];
+    }
+
+    const payload = {
+      id: cleanId,
+      title: videoForm.title.trim(),
+      order: Number(videoForm.order) || (videos.length + 1),
+      updatedAt: new Date().toISOString()
+    };
+
+    if (window.uqaDb && auth.isAdmin) {
+      try {
+        await window.uqaDb.collection('videos').doc(payload.id).set(payload, { merge: true });
+        setIsAddingVideo(false);
+        setVideoForm({ title: '', id: '', order: 1 });
+      } catch (err) {
+        alert("Failed to save video: " + err.message);
+      }
+    } else {
+      // Offline local preview
+      setVideos([...videos, payload]);
+      setIsAddingVideo(false);
+      setVideoForm({ title: '', id: '', order: 1 });
+    }
+  };
+
+  const handleDeleteInlineVideo = async (videoId) => {
+    if (!confirm("Are you sure you want to remove this video?")) return;
+    if (window.uqaDb && auth.isAdmin) {
+      try {
+        await window.uqaDb.collection('videos').doc(videoId).delete();
+        if (activeTab >= videos.length - 1) {
+          setActiveTab(Math.max(0, videos.length - 2));
+        }
+      } catch (err) {
+        alert("Failed to delete video: " + err.message);
+      }
+    } else {
+      setVideos(videos.filter(v => v.id !== videoId));
+      setActiveTab(0);
+    }
+  };
 
   const uqaPresentations = [
     { title: "Intro to Quantum Computing", link: "https://docs.google.com/presentation/d/1bGQW5ZHiP69EGtNNrue6r17IT3a_Wy68/edit?usp=sharing", tag: "Intro" },
@@ -28,40 +112,138 @@ window.Resources = function Resources() {
         <div className="max-w-[1400px] mx-auto px-10 py-[120px] pb-[120px]">
 
           {/* Simplified Heading: Optimized for 1400px layout */}
-          <h1 className="font-['Raleway'] text-[clamp(32px,5vw,48px)] font-semibold tracking-tight leading-[1.2] mb-16 text-[#a8abdb]">
-            UQA Resources
-          </h1>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-16">
+            <h1 className="font-['Raleway'] text-[clamp(32px,5vw,48px)] font-semibold tracking-tight leading-[1.2] text-[#a8abdb]">
+              UQA Resources
+            </h1>
+            {auth.isAdmin && (
+              <div className="flex items-center gap-3">
+                <span className="px-3 py-1 bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-bold rounded-full uppercase tracking-wider">
+                  Admin Mode Active
+                </span>
+                {navigateTo && (
+                  <button
+                    onClick={() => navigateTo('admin')}
+                    className="text-xs bg-[#9296c8]/20 hover:bg-[#9296c8]/30 text-[#a8abdb] px-3 py-1.5 rounded-lg border border-[#9296c8]/30 font-semibold transition-colors"
+                  >
+                    Open CMS Dashboard →
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
 
           {/* ── SECTION 1: FEATURED VIDEOS ── */}
           <div className="mb-14">
-            <div className="font-['Raleway'] text-[16px] font-bold tracking-[0.22em] uppercase text-[#9296c8] mb-8">
-              Featured Videos
+            <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
+              <div className="font-['Raleway'] text-[16px] font-bold tracking-[0.22em] uppercase text-[#9296c8]">
+                Featured Videos
+              </div>
+              {auth.isAdmin && (
+                <button
+                  onClick={() => {
+                    setVideoForm({ title: '', id: '', order: videos.length + 1 });
+                    setIsAddingVideo(true);
+                  }}
+                  className="bg-[#9296c8] text-[#0f1128] font-bold px-4 py-1.5 rounded-md text-xs hover:brightness-110 transition-all flex items-center gap-1.5"
+                >
+                  <span>+ Add Video</span>
+                </button>
+              )}
             </div>
 
-            <div className="flex gap-0 border-b border-white/10 mb-10 overflow-x-auto scrollbar-hide">
-              {videoResources.map((video, i) => (
+            {/* Video Tabs */}
+            <div className="flex gap-0 border-b border-white/10 mb-10 overflow-x-auto scrollbar-hide items-center">
+              {videos.map((video, i) => (
+                <div key={video.id || i} className="flex items-center border-b-2 border-transparent">
                   <button
-                      key={i}
-                      onClick={() => setActiveTab(i)}
-                      className={`font-['Raleway'] text-[18px] font-medium px-8 py-4 border-b-2 transition-colors whitespace-nowrap
-                  ${activeTab === i ? 'text-[#a8abdb] border-[#a8abdb]' : 'text-[#f0f0f8]/50 border-transparent hover:text-[#f0f0f8]'}
-                `}
+                    onClick={() => setActiveTab(i)}
+                    className={`font-['Raleway'] text-[18px] font-medium px-8 py-4 border-b-2 transition-colors whitespace-nowrap
+                      ${safeActiveIndex === i ? 'text-[#a8abdb] border-[#a8abdb]' : 'text-[#f0f0f8]/50 border-transparent hover:text-[#f0f0f8]'}
+                    `}
                   >
                     {video.title}
                   </button>
+                  {auth.isAdmin && safeActiveIndex === i && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteInlineVideo(video.id);
+                      }}
+                      title="Remove this video"
+                      className="text-red-400 hover:text-red-300 px-2 text-xs"
+                    >
+                      🗑️
+                    </button>
+                  )}
+                </div>
               ))}
             </div>
 
-            <div className="w-full aspect-video rounded-3xl overflow-hidden border border-white/10 bg-[#0c0d23] shadow-2xl">
-              <iframe
-                  width="100%" height="100%"
-                  src={`https://www.youtube.com/embed/${videoResources[activeTab].id}`}
-                  title="Quantum Video Player"
-                  frameBorder="0"
-                  allowFullScreen
-              ></iframe>
-            </div>
+            {/* Video Player */}
+            {currentVideo && (
+              <div className="w-full aspect-video rounded-3xl overflow-hidden border border-white/10 bg-[#0c0d23] shadow-2xl">
+                <iframe
+                    width="100%" height="100%"
+                    src={`https://www.youtube.com/embed/${currentVideo.id}`}
+                    title={currentVideo.title}
+                    frameBorder="0"
+                    allowFullScreen
+                ></iframe>
+              </div>
+            )}
           </div>
+
+          {/* Inline Add Video Modal */}
+          {isAddingVideo && (
+            <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+              <div className="bg-[#0c0d23] border border-white/20 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+                <div className="flex justify-between items-center border-b border-white/10 pb-3">
+                  <h3 className="text-lg font-bold text-white font-['Raleway']">Add Featured Video</h3>
+                  <button onClick={() => setIsAddingVideo(false)} className="text-slate-400 hover:text-white font-bold">✕</button>
+                </div>
+                <form onSubmit={handleSaveInlineVideo} className="space-y-4 text-sm">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-300 mb-1">Title</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. QuEra Workshop 3"
+                      value={videoForm.title}
+                      onChange={e => setVideoForm({ ...videoForm, title: e.target.value })}
+                      className="w-full bg-[#0f1128] border border-white/20 rounded-lg p-2.5 text-white"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-300 mb-1">YouTube URL or ID</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. https://youtu.be/agOdzgWTr-Y"
+                      value={videoForm.id}
+                      onChange={e => setVideoForm({ ...videoForm, id: e.target.value })}
+                      className="w-full bg-[#0f1128] border border-white/20 rounded-lg p-2.5 text-white"
+                      required
+                    />
+                  </div>
+                  <div className="flex justify-end gap-3 pt-3 border-t border-white/10">
+                    <button
+                      type="button"
+                      onClick={() => setIsAddingVideo(false)}
+                      className="px-4 py-2 rounded-lg border border-white/10 text-slate-300 text-xs"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-5 py-2 rounded-lg bg-[#9296c8] text-[#0f1128] font-bold text-xs hover:brightness-110"
+                    >
+                      Save Video
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
 
           <hr className="border-none border-t border-white/10 mb-14" />
 

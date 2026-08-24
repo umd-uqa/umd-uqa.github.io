@@ -1,9 +1,9 @@
 /**
  * STANDALONE NAVBAR COMPONENT
- * Scaled up for better readability with responsive Google Authentication status trigger.
+ * Scaled up for better readability with responsive Google Authentication & Admin status indicators.
  */
 window.Navbar = function Navbar({ currentPage, navigateTo }) {
-    const auth = window.useUQAAuth ? window.useUQAAuth() : { user: null };
+    const auth = window.useUQAAuth ? window.useUQAAuth() : { user: null, isAdmin: false };
 
     const navigation = [
         { id: 'home', label: 'Home' },
@@ -64,8 +64,8 @@ window.Navbar = function Navbar({ currentPage, navigateTo }) {
                     </div>
 
                     {/* SOCIALS & ACTIONS */}
-                    <div className="flex items-center gap-4 sm:gap-6 md:gap-8 flex-shrink-0">
-                        <div className="hidden xl:flex items-center gap-8">
+                    <div className="flex items-center gap-3 sm:gap-4 md:gap-6 flex-shrink-0">
+                        <div className="hidden xl:flex items-center gap-6">
                             <a href="https://www.instagram.com/umd.uqa/" target="_blank" rel="noopener noreferrer" className="hover:opacity-100 opacity-80 transition-opacity">
                                 <img src="https://cdn.simpleicons.org/instagram/cbd5e1" alt="Instagram" className="h-6 w-6" />
                             </a>
@@ -76,6 +76,22 @@ window.Navbar = function Navbar({ currentPage, navigateTo }) {
                                 <img src="https://cdn.simpleicons.org/discord/cbd5e1" alt="Discord" className="h-6 w-6" />
                             </a>
                         </div>
+
+                        {/* Admin CMS Direct Shortcut (Visible when admin is logged in) */}
+                        {auth.isAdmin && (
+                            <button
+                                onClick={() => navigateTo('admin')}
+                                title="Open Admin CMS"
+                                className={`px-2.5 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 text-xs font-bold ${
+                                    currentPage === 'admin'
+                                        ? 'bg-amber-400 text-[#0f1128] border-amber-400'
+                                        : 'bg-amber-400/15 border-amber-400/40 text-amber-300 hover:bg-amber-400/25'
+                                }`}
+                            >
+                                <span>🛡️</span>
+                                <span className="hidden sm:inline">Admin CMS</span>
+                            </button>
+                        )}
 
                         {/* Google Auth Status / Sign In Trigger */}
                         <button
@@ -101,7 +117,7 @@ window.Navbar = function Navbar({ currentPage, navigateTo }) {
                                     <span className="hidden sm:inline truncate max-w-[100px]">
                                         {auth.user.displayName?.split(' ')[0] || 'User'}
                                     </span>
-                                    <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                                    <span className={`w-2 h-2 rounded-full ${auth.isAdmin ? 'bg-amber-400' : 'bg-emerald-400'}`}></span>
                                 </>
                             ) : (
                                 <>
@@ -116,8 +132,8 @@ window.Navbar = function Navbar({ currentPage, navigateTo }) {
                         <button
                             onClick={() => navigateTo('contact')}
                             className="bg-[#9a9dd4]/15 border border-[#9a9dd4]/35 text-[#a8abdb]
-              px-5 py-2 sm:px-8 sm:py-3 rounded-lg transition-all
-              text-[13px] sm:text-[15px] font-bold whitespace-nowrap hover:bg-[#9a9dd4]/25"
+              px-4 py-2 sm:px-6 sm:py-2.5 rounded-lg transition-all
+              text-[13px] sm:text-[14px] font-bold whitespace-nowrap hover:bg-[#9a9dd4]/25"
                         >
                             Contact
                         </button>
