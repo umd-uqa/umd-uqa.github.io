@@ -117,19 +117,9 @@ window.Resources = function Resources({ navigateTo }) {
               UQA Resources
             </h1>
             {auth.isAdmin && (
-              <div className="flex items-center gap-3">
-                <span className="px-3 py-1 bg-[#9296c8]/15 border border-[#9296c8]/30 text-[#a8abdb] text-xs font-bold rounded-full uppercase tracking-wider">
-                  Admin Mode Active
-                </span>
-                {navigateTo && (
-                  <button
-                    onClick={() => navigateTo('admin')}
-                    className="text-xs bg-[#9296c8]/20 hover:bg-[#9296c8]/30 text-[#a8abdb] px-3 py-1.5 rounded-lg border border-[#9296c8]/30 font-semibold transition-colors"
-                  >
-                    Admin CMS →
-                  </button>
-                )}
-              </div>
+              <span className="px-3 py-1 bg-[#9296c8]/15 border border-[#9296c8]/30 text-[#a8abdb] text-xs font-bold rounded-full uppercase tracking-wider">
+                Admin Mode Active
+              </span>
             )}
           </div>
 

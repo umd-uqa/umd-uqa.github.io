@@ -143,39 +143,29 @@ window.Events = function Events({ navigateTo }) {
             Upcoming Events
           </h1>
           {auth.isAdmin && (
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => {
-                  setEditingEvent({
-                    month: "Sept",
-                    day: "15",
-                    year: "2026",
-                    title: "",
-                    subtitle: "",
-                    description: "",
-                    highlights: [""],
-                    links: [{ label: "Register", url: "", primary: true }],
-                    posterUrl: "",
-                    posterPath: "",
-                    posterAlt: "Event Poster",
-                    isAnnual: true,
-                    order: events.length + 1
-                  });
-                  setIsEventModalOpen(true);
-                }}
-                className="bg-[#9296c8] text-[#0f1128] font-bold px-5 py-2.5 rounded-lg text-xs hover:brightness-110 transition-all flex items-center gap-2 shadow-lg"
-              >
-                <span>Add New Event</span>
-              </button>
-              {navigateTo && (
-                <button
-                  onClick={() => navigateTo('admin')}
-                  className="text-xs bg-white/5 hover:bg-white/10 text-slate-300 px-4 py-2.5 rounded-lg border border-white/10 font-semibold transition-colors"
-                >
-                  Admin CMS →
-                </button>
-              )}
-            </div>
+            <button
+              onClick={() => {
+                setEditingEvent({
+                  month: "Sept",
+                  day: "15",
+                  year: "2026",
+                  title: "",
+                  subtitle: "",
+                  description: "",
+                  highlights: [""],
+                  links: [{ label: "Register", url: "", primary: true }],
+                  posterUrl: "",
+                  posterPath: "",
+                  posterAlt: "Event Poster",
+                  isAnnual: true,
+                  order: events.length + 1
+                });
+                setIsEventModalOpen(true);
+              }}
+              className="bg-[#9296c8] text-[#0f1128] font-bold px-5 py-2.5 rounded-lg text-xs hover:brightness-110 transition-all flex items-center gap-2 shadow-lg"
+            >
+              <span>Add New Event</span>
+            </button>
           )}
         </div>
 

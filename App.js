@@ -64,12 +64,6 @@ function UMDUQAWebsite() {
               >
                 Sign In Portal
               </button>
-              <button
-                onClick={() => navigateTo('admin')}
-                className="text-slate-500 hover:text-[#a8abdb] transition-colors"
-              >
-                Admin CMS
-              </button>
             </div>
           </div>
         </footer>

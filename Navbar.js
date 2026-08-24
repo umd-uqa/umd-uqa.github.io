@@ -77,22 +77,7 @@ window.Navbar = function Navbar({ currentPage, navigateTo }) {
                             </a>
                         </div>
 
-                        {/* Admin CMS Direct Shortcut (Visible when admin is logged in) */}
-                        {auth.isAdmin && (
-                            <button
-                                onClick={() => navigateTo('admin')}
-                                title="Open Admin CMS"
-                                className={`px-3 py-1.5 rounded-lg border transition-all text-xs font-bold ${
-                                    currentPage === 'admin'
-                                        ? 'bg-[#9296c8] text-[#0f1128] border-[#9296c8]'
-                                        : 'bg-[#9296c8]/15 border-[#9296c8]/40 text-[#a8abdb] hover:bg-[#9296c8]/25'
-                                }`}
-                            >
-                                Admin CMS
-                            </button>
-                        )}
-
-                        {/* Google Auth Status / Sign In Trigger */}
+                        {/* Google Auth Status / User Profile Trigger */}
                         <button
                             onClick={() => navigateTo(auth.isAdmin ? 'admin' : 'auth')}
                             title={auth.user ? `Signed in as ${auth.user.email}` : "Sign in with Google"}
