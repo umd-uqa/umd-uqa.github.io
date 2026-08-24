@@ -1,9 +1,9 @@
 /**
  * STANDALONE NAVBAR COMPONENT
- * Scaled up for better readability with discreet Admin Portal trigger.
+ * Scaled up for better readability with responsive Google Authentication status trigger.
  */
 window.Navbar = function Navbar({ currentPage, navigateTo }) {
-    const auth = window.useUQAAuth ? window.useUQAAuth() : { user: null, isAdmin: false };
+    const auth = window.useUQAAuth ? window.useUQAAuth() : { user: null };
 
     const navigation = [
         { id: 'home', label: 'Home' },
@@ -31,7 +31,7 @@ window.Navbar = function Navbar({ currentPage, navigateTo }) {
                     backgroundColor: 'rgba(12, 13, 35, 0.95)',
                     backdropFilter: 'blur(16px)',
                     borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-                    padding: '18px 40px', // Increased padding for a taller navbar
+                    padding: '18px 40px',
                     display: 'flex',
                     alignItems: 'center'
                 }}
@@ -77,26 +77,39 @@ window.Navbar = function Navbar({ currentPage, navigateTo }) {
                             </a>
                         </div>
 
-                        {/* Admin Trigger Button */}
+                        {/* Google Auth Status / Sign In Trigger */}
                         <button
-                            onClick={() => navigateTo('admin')}
-                            title={auth.isAdmin ? `Logged in as Admin (${auth.user?.email})` : "Administrator Portal"}
-                            className={`p-2.5 sm:px-3.5 sm:py-2.5 rounded-lg border transition-all flex items-center gap-2 text-xs sm:text-sm font-bold ${
-                                currentPage === 'admin'
+                            onClick={() => navigateTo('auth')}
+                            title={auth.user ? `Signed in as ${auth.user.email}` : "Sign in with Google"}
+                            className={`p-2 sm:px-3 sm:py-2 rounded-lg border transition-all flex items-center gap-2 text-xs sm:text-sm font-bold ${
+                                currentPage === 'auth'
                                     ? 'bg-[#9296c8] text-[#0f1128] border-[#9296c8]'
-                                    : auth.isAdmin
-                                        ? 'bg-[#9296c8]/20 border-[#9296c8]/50 text-[#a8abdb] hover:bg-[#9296c8]/30'
+                                    : auth.user
+                                        ? 'bg-[#9296c8]/15 border-[#9296c8]/40 text-[#a8abdb] hover:bg-[#9296c8]/25'
                                         : 'bg-white/5 border-white/10 text-slate-400 hover:text-[#a8abdb] hover:border-white/20'
                             }`}
                         >
-                            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                            </svg>
-                            <span className="hidden sm:inline">
-                                {auth.isAdmin ? 'Admin' : 'Login'}
-                            </span>
-                            {auth.isAdmin && (
-                                <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                            {auth.user ? (
+                                <>
+                                    <div className="w-5 h-5 rounded-full overflow-hidden flex-shrink-0 bg-[#9296c8]/30 flex items-center justify-center text-[10px]">
+                                        {auth.user.photoURL ? (
+                                            <img src={auth.user.photoURL} alt="" className="w-full h-full object-cover" />
+                                        ) : (
+                                            <span>{auth.user.displayName?.charAt(0) || 'U'}</span>
+                                        )}
+                                    </div>
+                                    <span className="hidden sm:inline truncate max-w-[100px]">
+                                        {auth.user.displayName?.split(' ')[0] || 'User'}
+                                    </span>
+                                    <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                                </>
+                            ) : (
+                                <>
+                                    <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                                    </svg>
+                                    <span className="hidden sm:inline">Sign In</span>
+                                </>
                             )}
                         </button>
 

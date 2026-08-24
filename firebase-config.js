@@ -1,7 +1,7 @@
 /**
  * UMD UQA Firebase Configuration & Initialization
  * 
- * Replace the placeholder values below with your Firebase Project Configuration
+ * Replace placeholder values below with your Firebase Project Configuration
  * from the Firebase Console (Project Settings > General > Your apps > Web app).
  */
 window.UQA_FIREBASE_CONFIG = {
@@ -14,18 +14,20 @@ window.UQA_FIREBASE_CONFIG = {
 };
 
 /**
- * Check if Firebase credentials have been configured
+ * Check if Firebase credentials have been configured with valid keys
  */
 window.isFirebaseConfigured = function() {
   const cfg = window.UQA_FIREBASE_CONFIG;
-  return cfg &&
+  return Boolean(
+    cfg &&
     cfg.apiKey &&
     cfg.apiKey !== "YOUR_FIREBASE_API_KEY" &&
     cfg.projectId &&
-    cfg.projectId !== "YOUR_PROJECT_ID";
+    cfg.projectId !== "YOUR_PROJECT_ID"
+  );
 };
 
-// Initialize Firebase services if Firebase CDN scripts and valid config are loaded
+// Initialize Firebase App and Auth services if SDK and config are present
 (function initFirebase() {
   if (typeof window.firebase === "undefined") {
     console.warn("[UQA Firebase] Firebase SDK scripts not loaded yet.");
@@ -38,13 +40,11 @@ window.isFirebaseConfigured = function() {
         window.firebase.initializeApp(window.UQA_FIREBASE_CONFIG);
       }
       window.uqaAuth = window.firebase.auth();
-      window.uqaDb = window.firebase.firestore();
-      window.uqaStorage = window.firebase.storage();
-      console.log("[UQA Firebase] Firebase initialized successfully.");
+      console.log("[UQA Firebase] Firebase Auth initialized successfully.");
     } catch (err) {
       console.error("[UQA Firebase] Error initializing Firebase:", err);
     }
   } else {
-    console.info("[UQA Firebase] Running in offline / unconfigured demo mode. Fallback content will be displayed.");
+    console.info("[UQA Firebase] Running in unconfigured client mode. Please configure firebase-config.js with valid Firebase credentials.");
   }
 })();

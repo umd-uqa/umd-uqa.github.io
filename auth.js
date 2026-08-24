@@ -1,20 +1,14 @@
 const { useState, useEffect } = window.React || React;
 
-// Designated primary administrator emails
-window.UQA_INITIAL_ADMIN_EMAILS = [
-  "krithikm@terpmail.umd.edu"
-];
-
 /**
- * UMD UQA Authentication Service
- * Manages Google Sign-In, Firebase Auth sessions, and admin email verification.
+ * UMD UQA Google Authentication Service
+ * Manages Google Sign-In, Firebase session persistence, and user profile state.
  */
 window.UQAAuth = {
   _listeners: [],
 
   _state: {
     user: null,
-    isAdmin: false,
     isLoading: true,
     error: null
   },
@@ -37,77 +31,42 @@ window.UQAAuth = {
   },
 
   /**
-   * Check if a given email is authorized as administrator
+   * Format Firebase Auth error codes into user-friendly messages
    */
-  async checkAdminStatus(email) {
-    if (!email) return false;
-    const cleanEmail = email.toLowerCase().trim();
-
-    // 1. Check permanent initial admin whitelist
-    if (window.UQA_INITIAL_ADMIN_EMAILS.some(e => e.toLowerCase() === cleanEmail)) {
-      return true;
+  _formatErrorMessage(err) {
+    if (!err) return "An unknown error occurred during sign-in.";
+    const code = err.code || "";
+    if (code === "auth/popup-closed-by-user" || code === "auth/cancelled-popup-request") {
+      return "Sign-in popup was closed before completing authentication.";
     }
-
-    // 2. Check cached admin whitelist in localStorage
-    try {
-      const cached = JSON.parse(localStorage.getItem('uqa_admin_emails_cache') || '[]');
-      if (Array.isArray(cached) && cached.some(item => (typeof item === 'string' ? item : item.email || item.id).toLowerCase() === cleanEmail)) {
-        return true;
-      }
-    } catch (e) {
-      console.warn("Error reading admin emails cache:", e);
+    if (code === "auth/popup-blocked") {
+      return "Sign-in popup was blocked by your browser. Please enable popups for this site.";
     }
-
-    // 3. Check Firestore admin_emails collection if configured
-    if (window.isFirebaseConfigured() && window.uqaDb) {
-      try {
-        const emailDoc = await window.uqaDb
-          .collection('admin_emails')
-          .doc(cleanEmail)
-          .get();
-
-        if (emailDoc.exists) {
-          const data = emailDoc.data();
-          return data.role === 'admin' || data.isAdmin === true || true;
-        }
-      } catch (err) {
-        console.error("[UQA Auth] Error querying Firestore admin status:", err);
-      }
+    if (code === "auth/unauthorized-domain") {
+      return "Current domain is not authorized in Firebase Console (Authentication > Settings > Authorized domains).";
     }
-
-    return false;
+    if (code === "auth/network-request-failed") {
+      return "Network connection failed. Please check your internet connection.";
+    }
+    if (code === "auth/invalid-api-key") {
+      return "Invalid Firebase API key in firebase-config.js.";
+    }
+    return err.message || "Failed to sign in with Google.";
   },
 
   /**
-   * Sign in using Google OAuth Popup (or mock prompt in demo mode)
+   * Sign in using Google OAuth Popup
    */
   async signInWithGoogle() {
     this._emit({ isLoading: true, error: null });
 
     if (!window.isFirebaseConfigured() || !window.uqaAuth) {
-      // Demo / Mock sign-in when Firebase API keys are not yet configured
-      const mockEmail = window.prompt(
-        "[Demo Mode] Enter your email to sign in as Administrator:",
-        "krithikm@terpmail.umd.edu"
-      );
-      if (mockEmail) {
-        const cleanEmail = mockEmail.trim().toLowerCase();
-        const isAdmin = await this.checkAdminStatus(cleanEmail);
-        localStorage.setItem('uqa_mock_user_email', cleanEmail);
-        const mockUser = {
-          displayName: cleanEmail.split('@')[0] + (isAdmin ? " (Admin)" : ""),
-          email: cleanEmail,
-          photoURL: "https://www.gravatar.com/avatar/?d=mp"
-        };
-        this._emit({
-          user: mockUser,
-          isAdmin,
-          isLoading: false,
-          error: null
-        });
-        return mockUser;
-      }
-      this._emit({ isLoading: false });
+      const errMessage = "Firebase Authentication is not configured. Please update firebase-config.js with your project keys.";
+      console.warn("[UQA Auth]", errMessage);
+      this._emit({
+        isLoading: false,
+        error: errMessage
+      });
       return null;
     }
 
@@ -115,26 +74,28 @@ window.UQAAuth = {
       const provider = new window.firebase.auth.GoogleAuthProvider();
       provider.setCustomParameters({ prompt: 'select_account' });
       const result = await window.uqaAuth.signInWithPopup(provider);
-      const user = result.user;
-      const isAdmin = await this.checkAdminStatus(user.email);
+      const fbUser = result.user;
+
+      const userObj = {
+        uid: fbUser.uid,
+        displayName: fbUser.displayName || fbUser.email.split('@')[0],
+        email: fbUser.email,
+        photoURL: fbUser.photoURL || "https://www.gravatar.com/avatar/?d=mp"
+      };
 
       this._emit({
-        user: {
-          displayName: user.displayName,
-          email: user.email,
-          photoURL: user.photoURL,
-          uid: user.uid
-        },
-        isAdmin,
+        user: userObj,
         isLoading: false,
         error: null
       });
-      return user;
+
+      return userObj;
     } catch (err) {
-      console.error("[UQA Auth] Sign-in error:", err);
+      console.error("[UQA Auth] Google sign-in error:", err);
+      const friendlyError = this._formatErrorMessage(err);
       this._emit({
         isLoading: false,
-        error: err.message || "Failed to sign in with Google."
+        error: friendlyError
       });
       throw err;
     }
@@ -145,7 +106,6 @@ window.UQAAuth = {
    */
   async signOut() {
     this._emit({ isLoading: true });
-    localStorage.removeItem('uqa_mock_user_email');
 
     if (window.isFirebaseConfigured() && window.uqaAuth) {
       try {
@@ -157,63 +117,45 @@ window.UQAAuth = {
 
     this._emit({
       user: null,
-      isAdmin: false,
       isLoading: false,
       error: null
     });
   }
 };
 
-// Initialize Firebase Auth listener on load
+// Initialize Firebase Auth session persistence listener on load
 if (typeof window !== "undefined") {
-  setTimeout(async () => {
+  setTimeout(() => {
     if (window.isFirebaseConfigured() && window.uqaAuth) {
-      window.uqaAuth.onAuthStateChanged(async (firebaseUser) => {
+      window.uqaAuth.onAuthStateChanged((firebaseUser) => {
         if (firebaseUser) {
-          const isAdmin = await window.UQAAuth.checkAdminStatus(firebaseUser.email);
           window.UQAAuth._emit({
             user: {
-              displayName: firebaseUser.displayName,
+              uid: firebaseUser.uid,
+              displayName: firebaseUser.displayName || firebaseUser.email.split('@')[0],
               email: firebaseUser.email,
-              photoURL: firebaseUser.photoURL,
-              uid: firebaseUser.uid
+              photoURL: firebaseUser.photoURL || "https://www.gravatar.com/avatar/?d=mp"
             },
-            isAdmin,
             isLoading: false,
             error: null
           });
         } else {
           window.UQAAuth._emit({
             user: null,
-            isAdmin: false,
             isLoading: false,
             error: null
           });
         }
       });
     } else {
-      // Check stored user in localStorage
-      const mockEmail = localStorage.getItem('uqa_mock_user_email') || "krithikm@terpmail.umd.edu";
-      if (mockEmail) {
-        const isAdmin = await window.UQAAuth.checkAdminStatus(mockEmail);
-        window.UQAAuth._emit({
-          user: {
-            displayName: mockEmail.split('@')[0] + (isAdmin ? " (Admin)" : ""),
-            email: mockEmail,
-            photoURL: "https://www.gravatar.com/avatar/?d=mp"
-          },
-          isAdmin,
-          isLoading: false
-        });
-      } else {
-        window.UQAAuth._emit({
-          user: null,
-          isAdmin: false,
-          isLoading: false
-        });
-      }
+      // Unconfigured or guest mode
+      window.UQAAuth._emit({
+        user: null,
+        isLoading: false,
+        error: null
+      });
     }
-  }, 100);
+  }, 50);
 }
 
 /**

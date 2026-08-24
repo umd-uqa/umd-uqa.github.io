@@ -11,11 +11,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Firebase SDK (v10 Compat CDN) -->
+    <!-- Firebase v10 Compat SDK (App & Auth) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
 
     <style>
         .animate-fade-in {
@@ -45,7 +43,6 @@
 <!-- Firebase Config & Authentication Layer -->
 <script type="text/babel" src="./firebase-config.js"></script>
 <script type="text/babel" src="./auth.js"></script>
-<script type="text/babel" src="./seed-data.js"></script>
 
 <!-- Application Components -->
 <script type="text/babel" src="./Navbar.js"></script>
@@ -55,9 +52,9 @@
 <script type="text/babel" src="./Contact.js"></script>
 <script type="text/babel" src="./Calendar.js"></script>
 <script type="text/babel" src="./Resources.js"></script>
-<script type="text/babel" src="./Admin.js"></script>
+<script type="text/babel" src="./AuthPortal.js"></script>
 
-<!-- Main App Entry Router -->
+<!-- Main App Router -->
 <script type="text/babel" src="./App.js"></script>
 </body>
 </html>
