@@ -1,39 +1,45 @@
-# Plan: Pure Google Authentication Integration
+# Plan: Pure Google Identity Services (GIS) Authentication Integration
 
 ## Scope & Objective
-Integrate pure Google Sign-In into the UMD UQA web portal using the standard Firebase v10 Compat Auth SDK (`firebase.auth().signInWithPopup`). Enable any valid Google user (@gmail.com, @terpmail.umd.edu, @umd.edu, etc.) to authenticate seamlessly, view their user profile card, persist sessions across page reloads, and sign out cleanly. Zero mock prompt hacks, zero `window.prompt` dialogs, zero `localStorage` mock email bypasses.
+Eliminate all Firebase SDKs, configurations, and backend dependencies. Integrate pure client-side Google Identity Services (GIS) SDK (`https://accounts.google.com/gsi/client`) into UMD UQA web application. Enable any Google account user (@gmail.com, @terpmail.umd.edu, @umd.edu) to authenticate via official Google Sign-In button or One Tap, decode client-side JWT ID token, persist user session across page reloads via `localStorage`, and cleanly sign out.
 
 ---
 
 ### In Scope
-1. **Firebase Auth Service Core (`auth.js`)**:
-   - `signInWithGoogle()`: Trigger `firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider())` with `setCustomParameters({ prompt: 'select_account' })`.
-   - `signOut()`: Call `firebase.auth().signOut()`.
-   - `onAuthStateChanged`: Single source of truth for session lifecycle and persistence.
-   - Clean state model: `{ user: { uid, displayName, email, photoURL } | null, isLoading: boolean, error: string | null }`.
-   - Custom hook `useUQAAuth()` for reactive UI bindings.
-   - Complete removal of demo `window.prompt` dialogs and mock user generation.
-2. **Configuration Validation Layer (`firebase-config.js`)**:
-   - `window.isFirebaseConfigured()` validation helper.
-   - Non-blocking setup alert when placeholder keys are detected.
-3. **User Interface Lifecycle (`Admin.js` / Auth Portal)**:
-   - **Guest / Unauthenticated View**: Clean centered card with official "Sign in with Google" button (with Google SVG icon), loading spinner, and dismissible error banner.
-   - **Authenticated View**: User Profile Card rendering Google avatar (`photoURL`), display name (`displayName`), email address (`email`), and "Sign Out" button.
-   - **Error Handling**: Dismissible banner displaying friendly error messages for popup closure, blocker, or network failure.
-4. **Navbar Authentication State Binding (`Navbar.js`)**:
-   - Guest: Displays "Sign In" / "Login" button navigating to auth portal.
-   - Authenticated: Displays user avatar / display name and active status indicator.
-5. **Firebase Console & Authorized Domains Setup Guide**:
-   - Step-by-step instructions for enabling Google Sign-In method.
-   - Whitelisting `localhost`, `127.0.0.1`, and `umd-uqa.github.io`.
+1. **Zero Firebase Elimination**:
+   - Remove Firebase v10 Compat SDK CDN script tags (`firebase-app-compat.js`, `firebase-auth-compat.js`) from `index.html`.
+   - Remove `firebase-config.js` and delete all Firebase object references across all components.
+   - Eliminate all Firebase database/server requirements.
+2. **Google Identity Services (GIS) Core Integration**:
+   - Asynchronously load Google Identity Services SDK (`https://accounts.google.com/gsi/client`) in `index.html`.
+   - Create `google-auth-config.js` defining `window.UQA_GOOGLE_CLIENT_ID` and configuration validator `window.isGoogleAuthConfigured()`.
+   - Initialize GIS via `google.accounts.id.initialize({ client_id, callback, auto_select })`.
+   - Render official Google Sign-In button into DOM container via `google.accounts.id.renderButton()`.
+   - Optional One Tap prompt trigger `google.accounts.id.prompt()`.
+3. **Client-Side JWT Decoding & Session Management (`auth.js`)**:
+   - Safe Base64URL JWT payload parser supporting UTF-8 decoding.
+   - User profile extractor: `user = { uid: payload.sub, email: payload.email, displayName: payload.name, photoURL: payload.picture }`.
+   - Persistent session storage in `localStorage` (`uqa_google_user`).
+   - Auto-restore user session on cold start / page reload (`F5`).
+   - Clean `signOut()`: clear `localStorage`, call `google.accounts.id.disableAutoSelect()`, and emit `user: null`.
+   - React Hook `useUQAAuth()` providing `{ user, isLoading, error, signOut, renderGoogleButton }`.
+4. **UI Presentation & Routing**:
+   - `AuthPortal.js`:
+     - Unauthenticated View: Container rendering official Google Sign-In button, loading state, dismissible error banner, and Google Cloud Console setup guide when unconfigured.
+     - Authenticated View: User Profile Card displaying Google photo avatar, name, email, Google OAuth session badge, and Sign Out button.
+   - `Navbar.js`: Dynamic auth indicator displaying "Sign In" button when logged out, or user thumbnail avatar + name + live status pill when logged in.
+   - `App.js`: Routing for `#auth`, `#login`, and `#admin` pointing to `AuthPortal`.
+5. **Google Cloud Console Setup Documentation**:
+   - Step-by-step instructions for OAuth Consent Screen, OAuth 2.0 Client ID (Web Application), and Authorized JavaScript Origins (`localhost:8000`, `127.0.0.1:8000`, `umd-uqa.github.io`).
+   - Update `README.md` to reflect pure GIS architecture.
 6. **Git Worktree Isolation**:
    - T0 worktree creation on `feature/google-auth` branch; final cleanup on completion.
 
 ### Out of Scope
-- Role-based authorization, administrator gates, or CMS whitelisting (pure authentication: ANY valid Google user can sign in).
-- Backend Node.js / SSR servers (preserves static GitHub Pages client architecture).
-- Bundlers (Webpack, Vite, npm build scripts) — uses zero-build CDN Babel architecture.
-- Third-party GIS library (`gsi/client`) — uses standard Firebase v10 Compat Auth popup flow.
+- Backend server / database verification (Node.js, Express, Go, Python).
+- Firebase Auth, Firestore, or Cloud Storage services.
+- Role-based authorization or CMS admin whitelisting (pure authentication for any valid Google account).
+- Node.js bundlers (Webpack, Vite, npm scripts) — maintains zero-build CDN Babel architecture.
 
 ---
 
@@ -42,21 +48,23 @@ Integrate pure Google Sign-In into the UMD UQA web portal using the standard Fir
 ### 1. High-Level Architecture
 ```mermaid
 graph TD
-    A["User Browser"] -->|"1. Loads index.html"| B["Firebase v10 Compat CDN (app & auth)"]
-    A -->|"2. Loads Config & Auth Service"| C["firebase-config.js & auth.js"]
-    A -->|"3. Mounts React UI"| D["Navbar.js & Admin.js (Auth Portal)"]
+    A["User Browser"] -->|"1. Loads index.html"| B["Google Identity Services CDN (gsi/client)"]
+    A -->|"2. Loads Config & Auth Service"| C["google-auth-config.js & auth.js"]
+    A -->|"3. Mounts React UI"| D["Navbar.js & AuthPortal.js"]
     
-    subgraph Authentication Flow
-        D -->|"Click 'Sign in with Google'"| E["UQAAuth.signInWithGoogle()"]
-        E -->|"signInWithPopup(GoogleAuthProvider)"| F["Google Account Chooser Popup"]
-        F -->|"User Selects Google Account"| G["Firebase Auth Credential"]
-        G -->|"Resolves Firebase User"| H["firebase.auth().onAuthStateChanged"]
+    subgraph GIS Sign-In Flow
+        D -->|"Mounts button container"| E["google.accounts.id.renderButton()"]
+        E -->|"User clicks official Google button"| F["Google Sign-In Dialog / Popup"]
+        F -->|"User selects account"| G["Google ID Token (JWT)"]
+        G -->|"handleCredentialResponse(response)"| H["auth.js JWT Parser"]
     end
 
-    subgraph State & UI Update
-        H -->|"Emits { user, isLoading: false, error: null }"| I["UQAAuth State Store"]
-        I -->|"Reactive hook useUQAAuth()"| D
-        D -->|"Renders Authenticated State"| J["User Profile Card (Avatar, Name, Email, Sign Out)"]
+    subgraph State & Persistence
+        H -->|"Decodes payload.sub, email, name, picture"| I["User Object"]
+        I -->|"Persists to localStorage ('uqa_google_user')"| J["Browser localStorage"]
+        I -->|"Emits { user, isLoading: false, error: null }"| K["UQAAuth State Store"]
+        K -->|"Reactive hook useUQAAuth()"| D
+        D -->|"Renders Authenticated State"| L["User Profile Card (Photo, Name, Email, Sign Out)"]
     end
 ```
 
@@ -65,57 +73,95 @@ graph TD
 sequenceDiagram
     autonumber
     actor User as Google User
-    participant UI as Admin.js / Navbar
+    participant UI as AuthPortal.js
+    participant GIS as Google Identity Services SDK
     participant Auth as auth.js (UQAAuth)
-    participant SDK as Firebase Auth SDK
-    participant Google as Google OAuth Popup
+    participant Storage as localStorage
 
-    User->>UI: Clicks "Sign in with Google"
-    UI->>Auth: signInWithGoogle()
-    Auth->>Auth: Set state { isLoading: true, error: null }
-    Auth->>SDK: signInWithPopup(GoogleAuthProvider with prompt: select_account)
-    SDK->>Google: Opens OAuth popup dialog
-    User->>Google: Selects Google Account (@gmail, @umd.edu, etc.)
-    Google-->>SDK: Returns OAuth tokens & user info
-    SDK-->>Auth: Resolves firebaseUser { uid, displayName, email, photoURL }
-    SDK->>Auth: Triggers onAuthStateChanged(firebaseUser)
-    Auth->>Auth: Emit state { user: firebaseUser, isLoading: false, error: null }
-    Auth-->>UI: useUQAAuth hook triggers re-render
-    UI-->>User: Displays User Profile Card + Sign Out button
+    Note over UI,GIS: Application Load / Init
+    Auth->>Storage: Read 'uqa_google_user'
+    alt Cached User Found
+        Storage-->>Auth: Stored User Object
+        Auth->>Auth: Emit { user, isLoading: false }
+        Auth-->>UI: useUQAAuth() re-renders Authenticated Profile Card
+    else No Cached User
+        Auth->>Auth: Emit { user: null, isLoading: false }
+        UI->>GIS: google.accounts.id.initialize({ client_id, callback })
+        UI->>GIS: google.accounts.id.renderButton(containerElement, options)
+        GIS-->>UI: Official Google Sign-In Button rendered
+    end
+
+    Note over User,GIS: User Login Action
+    User->>GIS: Clicks Official Google Sign-In Button
+    GIS->>User: Opens Google Account Chooser
+    User->>GIS: Selects Google Account (@gmail, @umd.edu)
+    GIS->>Auth: handleCredentialResponse({ credential })
+    Auth->>Auth: Base64URL decode JWT payload
+    Auth->>Auth: Extract { uid, email, displayName, photoURL }
+    Auth->>Storage: localStorage.setItem('uqa_google_user', JSON.stringify(user))
+    Auth->>Auth: Emit { user, isLoading: false, error: null }
+    Auth-->>UI: useUQAAuth() triggers re-render
+    UI-->>User: Displays User Profile Card + Sign Out Button
+
+    Note over User,Auth: User Sign Out Action
+    User->>UI: Clicks "Sign Out"
+    UI->>Auth: auth.signOut()
+    Auth->>GIS: google.accounts.id.disableAutoSelect()
+    Auth->>Storage: localStorage.removeItem('uqa_google_user')
+    Auth->>Auth: Emit { user: null, isLoading: false, error: null }
+    Auth-->>UI: useUQAAuth() re-renders Sign-In Button
 ```
 
 ---
 
 ## Data Schemas & Configurations
 
-### 1. Firebase Configuration (`firebase-config.js`)
+### 1. Google Auth Configuration (`google-auth-config.js`)
 ```javascript
-window.UQA_FIREBASE_CONFIG = {
-  apiKey: "YOUR_FIREBASE_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
-};
+/**
+ * UMD UQA Google Identity Services (GIS) Configuration
+ * Configure OAuth 2.0 Web Client ID from Google Cloud Console.
+ */
+window.UQA_GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
 
-window.isFirebaseConfigured = function() {
-  const cfg = window.UQA_FIREBASE_CONFIG;
+/**
+ * Check if Google OAuth Client ID is configured
+ */
+window.isGoogleAuthConfigured = function() {
+  const cid = window.UQA_GOOGLE_CLIENT_ID;
   return Boolean(
-    cfg &&
-    cfg.apiKey &&
-    cfg.apiKey !== "YOUR_FIREBASE_API_KEY" &&
-    cfg.projectId &&
-    cfg.projectId !== "YOUR_PROJECT_ID"
+    cid &&
+    typeof cid === "string" &&
+    cid.trim() !== "" &&
+    !cid.includes("YOUR_GOOGLE_CLIENT_ID") &&
+    cid.endsWith(".apps.googleusercontent.com")
   );
 };
 ```
 
-### 2. Auth State Shape (`window.UQAAuth.getState()`)
+### 2. Decoded JWT Payload Schema (Google ID Token)
+```javascript
+{
+  "iss": "https://accounts.google.com",
+  "sub": "118234567890123456789", // Google unique user ID
+  "azp": "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com",
+  "aud": "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com",
+  "email": "janedoe@terpmail.umd.edu",
+  "email_verified": true,
+  "name": "Jane Doe",
+  "picture": "https://lh3.googleusercontent.com/a/...",
+  "given_name": "Jane",
+  "family_name": "Doe",
+  "iat": 1756000000,
+  "exp": 1756003600
+}
+```
+
+### 3. Application User State Shape (`auth.js`)
 ```javascript
 {
   user: {
-    uid: "firebase_user_uid_12345",
+    uid: "118234567890123456789",
     displayName: "Jane Doe",
     email: "janedoe@terpmail.umd.edu",
     photoURL: "https://lh3.googleusercontent.com/a/..."
@@ -125,33 +171,44 @@ window.isFirebaseConfigured = function() {
 }
 ```
 
+### 4. LocalStorage Session Key
+- Key: `'uqa_google_user'`
+- Value: `JSON.stringify(user)`
+
 ---
 
-## Firebase Console & Authorized Domains Setup Guide
+## Step-by-Step Google Cloud Console Setup Guide
 
-### Step 1: Enable Google Sign-In Provider
-1. Open [Firebase Console](https://console.firebase.google.com/).
-2. Select your Firebase project (or create `umd-uqa-web`).
-3. Navigate to **Build** > **Authentication** > **Sign-in method**.
-4. Click on **Google** under Additional providers.
-5. Toggle **Enable**.
-6. Set **Project public-facing name** to `UMD UQA`.
-7. Select a valid **Project support email** from the dropdown.
-8. Click **Save**.
+### Step 1: Create or Select Google Cloud Project
+1. Navigate to [Google Cloud Console](https://console.cloud.google.com/).
+2. Click the project dropdown at top left and select **New Project**.
+3. Name the project `umd-uqa-web` (or select existing project) and click **Create**.
 
-### Step 2: Configure Authorized Domains
-1. In Firebase Console, go to **Authentication** > **Settings** tab.
-2. Click **Authorized domains**.
-3. Verify and add the following domains:
-   - `localhost`
-   - `127.0.0.1`
-   - `umd-uqa.github.io`
-   - `<YOUR_PROJECT_ID>.firebaseapp.com`
-   - `<YOUR_PROJECT_ID>.web.app`
+### Step 2: Configure OAuth Consent Screen
+1. In the left navigation menu, go to **APIs & Services** > **OAuth consent screen**.
+2. Select User Type: **External** and click **Create**.
+3. Fill in required App Information:
+   - **App name**: `UMD UQA`
+   - **User support email**: Select your email.
+   - **Developer contact information**: Enter your email.
+4. Click **Save and Continue** through Scopes (default `email`, `profile`, `openid` are selected).
+5. Under **Test users**, add your testing Google accounts (e.g., `@gmail.com` or `@terpmail.umd.edu`), then click **Save and Continue**.
 
-### Step 3: Populate Web App Keys
-1. Go to **Project settings** (gear icon) > **General** > **Your apps** > **Web app**.
-2. Copy the `firebaseConfig` object values into `firebase-config.js`.
+### Step 3: Create OAuth 2.0 Web Client ID
+1. Navigate to **APIs & Services** > **Credentials**.
+2. Click **+ CREATE CREDENTIALS** at the top and select **OAuth client ID**.
+3. Set Application type to **Web application**.
+4. Set Name to `UMD UQA Web Client`.
+5. Under **Authorized JavaScript origins**, click **+ ADD URI** and add:
+   - `http://localhost:8000`
+   - `http://127.0.0.1:8000`
+   - `https://umd-uqa.github.io`
+6. Click **Create**.
+7. Copy the generated **Client ID** (format: `xxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com`).
+
+### Step 4: Populate Client ID in Codebase
+1. Open `google-auth-config.js`.
+2. Replace `"YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"` with your actual Google Client ID.
 
 ---
 
@@ -162,7 +219,7 @@ window.isFirebaseConfigured = function() {
 - **Est. Time**: 3 min
 - **Files**: None
 - **Action**:
-  - Caveman: Run `git worktree add ../worktree-google-auth -b feature/google-auth`. Switch directory to `../worktree-google-auth`.
+  - Caveman: Make new worktree for google auth work. Run `git worktree add ../worktree-google-auth -b feature/google-auth`. Switch directory to `../worktree-google-auth`.
   - Verify clean working tree on isolated branch.
 - **Acceptance Criteria**:
   - `git worktree list` displays `../worktree-google-auth` on branch `feature/google-auth`.
@@ -172,199 +229,239 @@ window.isFirebaseConfigured = function() {
 
 ---
 
-### T1: Verify Firebase Compat SDK dependencies & script load order (`index.html`)
+### T1: Update HTML dependencies & strip Firebase SDKs (`index.html`)
 - **Deps**: T0
 - **Est. Time**: 10 min
 - **Files**:
   - `index.html`
 - **Action**:
-  - Caveman: Check and verify `<head>` includes Firebase v10 Compat CDN scripts:
+  - Caveman: Edit `index.html`. Delete all Firebase script tags (`firebase-app-compat.js`, `firebase-auth-compat.js`).
+  - Add Google Identity Services SDK script tag in `<head>`:
     ```html
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+    <!-- Google Identity Services (GIS) SDK -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     ```
-  - Ensure script execution sequence:
-    1. React 18 & ReactDOM
+  - In `<body>`, replace `<script type="text/babel" src="./firebase-config.js"></script>` with:
+    ```html
+    <!-- Google Auth Config & Authentication Layer -->
+    <script type="text/babel" src="./google-auth-config.js"></script>
+    <script type="text/babel" src="./auth.js"></script>
+    ```
+  - Ensure clean script loading sequence:
+    1. React 18 & ReactDOM UMD
     2. Babel Standalone & Tailwind CDN
-    3. Firebase Compat CDN scripts (`app`, `auth`, `firestore`, `storage`)
-    4. `firebase-config.js`
+    3. Google Identity Services SDK (`gsi/client`)
+    4. `google-auth-config.js`
     5. `auth.js`
-    6. `seed-data.js`
-    7. UI Components (`Navbar.js`, `Home.js`, `About.js`, `Events.js`, `Contact.js`, `Calendar.js`, `Resources.js`, `Admin.js`)
-    8. `App.js`
+    6. UI Components (`Navbar.js`, `Home.js`, `About.js`, `Events.js`, `Contact.js`, `Calendar.js`, `Resources.js`, `AuthPortal.js`)
+    7. `App.js`
 - **Acceptance Criteria**:
-  - `index.html` loads Firebase App and Auth SDKs in correct order before `firebase-config.js` and `auth.js`.
+  - Zero Firebase script tags in `index.html`.
+  - GIS SDK and `google-auth-config.js` loaded in correct order.
 - **Tests**:
-  - *Happy*: Page loads; `window.firebase` and `window.firebase.auth` defined in browser console.
-  - *Error*: Missing script causes no syntax/parse crash on remaining static components.
+  - *Happy*: Open `index.html` in browser; `google.accounts.id` API is accessible on window load.
+  - *Error*: No 404 network errors for missing Firebase scripts in browser network panel.
 
 ---
 
-### T2: Firebase configuration validation & status helper (`firebase-config.js`)
+### T2: Create `google-auth-config.js` and delete `firebase-config.js`
 - **Deps**: T1
 - **Est. Time**: 10 min
 - **Files**:
-  - `firebase-config.js`
+  - `google-auth-config.js`
+  - `firebase-config.js` (delete)
 - **Action**:
-  - Caveman: Update `firebase-config.js` to ensure clean placeholder structure and validation helper `window.isFirebaseConfigured()`.
-  - Initialize Firebase app and services safely:
-    ```javascript
-    if (window.isFirebaseConfigured()) {
-      if (!window.firebase.apps.length) {
-        window.firebase.initializeApp(window.UQA_FIREBASE_CONFIG);
-      }
-      window.uqaAuth = window.firebase.auth();
-    }
-    ```
-  - Provide non-blocking informational console logs when running in unconfigured mode.
+  - Caveman: Create `google-auth-config.js`. Define `window.UQA_GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"`.
+  - Implement `window.isGoogleAuthConfigured()` helper checking for non-placeholder valid client ID ending in `.apps.googleusercontent.com`.
+  - Delete `firebase-config.js` file from filesystem.
 - **Acceptance Criteria**:
-  - `window.isFirebaseConfigured()` returns `false` for default placeholder keys and `true` when valid credentials are set.
-  - `window.uqaAuth` initialized when configured.
+  - `google-auth-config.js` exists and sets `window.UQA_GOOGLE_CLIENT_ID`.
+  - `window.isGoogleAuthConfigured()` returns `false` on placeholder and `true` on valid Client ID.
+  - `firebase-config.js` completely deleted.
 - **Tests**:
-  - *Happy*: Placeholder configuration returns `false` without throwing exceptions.
-  - *Edge*: Populated valid configuration initializes `window.uqaAuth` correctly.
+  - *Happy*: Placeholder configuration returns `false` safely without exceptions.
+  - *Edge*: String with spaces or missing suffix returns `false`.
 
 ---
 
-### T3: Refactor Auth Service for pure Firebase Google Auth (`auth.js`)
+### T3: Implement Pure GIS Auth Service & JWT decoder (`auth.js`)
 - **Deps**: T2
 - **Est. Time**: 25 min
 - **Files**:
   - `auth.js`
 - **Action**:
-  - Caveman: Rewrite `auth.js`. Eliminate all mock code (`window.prompt`, `uqa_mock_user_email`, fake admin checks).
-  - Implement pure Google Sign-In service `window.UQAAuth`:
-    - `getState()`: Returns current `{ user, isLoading, error }`.
-    - `subscribe(callback)`: Registers listener and returns unsubscribe function.
-    - `signInWithGoogle()`:
-      - Emit `{ isLoading: true, error: null }`.
-      - Guard check: if `!window.isFirebaseConfigured()`, emit error "Firebase configuration required. Please update firebase-config.js" and return.
-      - Create provider: `const provider = new window.firebase.auth.GoogleAuthProvider();`
-      - Set custom parameter: `provider.setCustomParameters({ prompt: 'select_account' });`
-      - Call `await window.uqaAuth.signInWithPopup(provider)`.
-      - Catch errors, format friendly error string (handling popup blocked, popup closed, unauthorized domain), and emit `{ isLoading: false, error }`.
+  - Caveman: Rewrite `auth.js` with pure GIS authentication and zero Firebase code.
+  - Implement UTF-8 safe JWT payload decoder:
+    ```javascript
+    function parseJwt(token) {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+      return JSON.parse(jsonPayload);
+    }
+    ```
+  - Implement `window.UQAAuth` service:
+    - `_state`: `{ user: null, isLoading: true, error: null }`.
+    - `getState()`: Returns current state.
+    - `subscribe(callback)`: Adds listener, fires immediately with current state, returns unsubscribe function.
+    - `_emit(newState)`: Updates state and notifies subscribers.
+    - `_initSession()`: On script load, check `localStorage.getItem('uqa_google_user')`. If valid JSON found, emit `{ user: parsedUser, isLoading: false, error: null }`. Else emit `{ user: null, isLoading: false, error: null }`.
+    - `handleCredentialResponse(response)`:
+      - Extract `response.credential`.
+      - Decode payload via `parseJwt`.
+      - Construct user: `{ uid: payload.sub, email: payload.email, displayName: payload.name || payload.email.split('@')[0], photoURL: payload.picture || "https://www.gravatar.com/avatar/?d=mp" }`.
+      - `localStorage.setItem('uqa_google_user', JSON.stringify(user))`.
+      - Emit `{ user, isLoading: false, error: null }`.
+    - `initGIS(buttonContainerId)`:
+      - If `!window.isGoogleAuthConfigured()`, emit warning and skip GIS init.
+      - Wait until `window.google?.accounts?.id` is ready.
+      - Call `google.accounts.id.initialize({ client_id: window.UQA_GOOGLE_CLIENT_ID, callback: (resp) => window.UQAAuth.handleCredentialResponse(resp), auto_select: false })`.
+      - If `buttonContainerId` provided and DOM element exists:
+        `google.accounts.id.renderButton(document.getElementById(buttonContainerId), { theme: 'outline', size: 'large', text: 'signin_with', shape: 'rectangular', width: 320 })`.
     - `signOut()`:
-      - Emit `{ isLoading: true }`.
-      - Call `await window.uqaAuth.signOut()`.
+      - `localStorage.removeItem('uqa_google_user')`.
+      - If `window.google?.accounts?.id?.disableAutoSelect`, call `google.accounts.id.disableAutoSelect()`.
       - Emit `{ user: null, isLoading: false, error: null }`.
-  - Attach listener `window.uqaAuth.onAuthStateChanged`:
-    - When `firebaseUser` present: emit `{ user: { uid, displayName, email, photoURL }, isLoading: false, error: null }`.
-    - When `firebaseUser` null: emit `{ user: null, isLoading: false, error: null }`.
-  - Export React hook `window.useUQAAuth()` for seamless component state subscription.
+  - Implement React Hook `window.useUQAAuth()`:
+    - Returns `{ user, isLoading, error, signOut: () => window.UQAAuth.signOut(), initGIS: (containerId) => window.UQAAuth.initGIS(containerId) }`.
 - **Acceptance Criteria**:
-  - No `window.prompt` dialogs or mock auto-login code exist in codebase.
-  - Calling `signInWithGoogle()` triggers Google popup with account selector.
-  - Any valid Google account populates `user` with profile data (`uid`, `displayName`, `email`, `photoURL`).
-  - Page refresh retains authenticated session automatically.
-  - `signOut()` clears user session and emits `user: null`.
+  - JWT token decoded accurately with full Unicode/UTF-8 character support.
+  - Authenticated user state persists across page reload (`F5`) via `localStorage`.
+  - `signOut()` completely removes session from `localStorage` and disables auto-select.
+  - Zero Firebase references remain in `auth.js`.
 - **Tests**:
-  - *Happy*: Sign in with Google account succeeds -> user profile populated.
-  - *Happy*: Sign out clears user state to `null`.
-  - *Edge*: User closes popup dialog -> caught cleanly, error state updated, no crash.
-  - *Error*: Unconfigured Firebase keys -> friendly error displayed without throwing unhandled promise rejection.
+  - *Happy*: Valid JWT credential triggers user extraction and storage in `localStorage`.
+  - *Happy*: Page reload restores user immediately without flashing empty state.
+  - *Happy*: `signOut()` resets state to `null` and empties `localStorage`.
+  - *Edge*: Malformed JWT credential caught cleanly without crashing application.
 
 ---
 
-### T4: Build User Profile Card & Sign-In UI (`Admin.js`)
+### T4: Update `AuthPortal.js` for GIS Button Container & User Profile Card
 - **Deps**: T3
 - **Est. Time**: 25 min
 - **Files**:
-  - `Admin.js`
+  - `AuthPortal.js`
 - **Action**:
-  - Caveman: Update `Admin.js` (Auth Portal view) to support clean unauthenticated guest view, dismissible error alerts, and authenticated User Profile Card.
-  - **Guest / Unauthenticated View (`!auth.user`)**:
-    - Render centered auth card in portal.
-    - Title: "UMD UQA Sign In".
-    - Description: "Sign in with your Google account (@gmail.com, @terpmail.umd.edu, @umd.edu) to access your profile."
-    - Dismissible Error Banner: If `auth.error` present, show red alert box with message and close button.
-    - Unconfigured Warning: If `!window.isFirebaseConfigured()`, show amber notice with guidance to update `firebase-config.js`.
-    - "Sign in with Google" Button:
-      - Full-width button with official Google "G" multicolor SVG icon.
-      - Displays "Signing In..." spinner when `auth.isLoading` is true.
-      - Click handler calls `auth.signInWithGoogle()`.
+  - Caveman: Rewrite `AuthPortal.js`. Remove all Firebase checks and popup triggers.
+  - **Guest View (`!auth.user`)**:
+    - Render centered auth portal card with shield icon, title "Sign In to UMD UQA", and description.
+    - If `!window.isGoogleAuthConfigured()`:
+      - Render amber alert banner "Google Cloud Configuration Required".
+      - Render helpful setup instructions guiding developer to create OAuth Web Client ID and set `google-auth-config.js`.
+    - If `window.isGoogleAuthConfigured()`:
+      - Render button mounting container `<div id="google-signin-btn" className="flex justify-center my-6 min-h-[44px]"></div>`.
+      - In `useEffect`, call `auth.initGIS('google-signin-btn')` (or `window.UQAAuth.initGIS`).
+      - Display dismissible error banner if `auth.error` present.
+    - Footer badge: "Powered by Google Identity Services".
   - **Authenticated View (`auth.user`)**:
     - Render User Profile Card:
-      - User Avatar: Google profile picture (`auth.user.photoURL`) with fallback initials.
-      - Display Name: `auth.user.displayName` (or "Google User").
+      - Avatar: `auth.user.photoURL` with image error fallback to initials badge.
+      - Display Name: `auth.user.displayName`.
       - Email: `auth.user.email`.
-      - Status Badge: "Google Authenticated" green badge.
-      - User ID: Truncated `auth.user.uid` in monospace.
-      - "Sign Out" Button: Calling `auth.signOut()` to clear session.
+      - Badge: "Google Authenticated" with green pulse dot.
+      - Details box: Provider "Google Identity Services (OAuth 2.0)", User ID (`auth.user.uid`), Status "Active Session".
+      - "Sign Out" button calling `auth.signOut()`.
+      - "← Return to Home" button calling `navigateTo('home')`.
 - **Acceptance Criteria**:
-  - Unauthenticated users see clean Google Sign-In card with SVG icon.
-  - Clicking sign-in opens Google account picker popup.
-  - Authenticated users see rich User Profile Card with photo, name, email, and working Sign Out button.
-  - Errors are dismissible and clearly explained.
+  - Guest view properly mounts official GIS Sign-In button when configured.
+  - Unconfigured mode renders clear Google Cloud Console setup guidance.
+  - Authenticated view displays user avatar, name, email, and functioning Sign Out button.
+  - Zero Firebase references remain in `AuthPortal.js`.
 - **Tests**:
-  - *Happy*: Guest visits portal -> sees Google button -> signs in -> profile card shows accurate photo and email.
-  - *Happy*: Authenticated user clicks Sign Out -> UI returns to guest sign-in button.
-  - *Edge*: User without profile photo displays initials placeholder avatar.
-  - *Error*: Popup closed by user displays dismissible alert banner.
+  - *Happy*: Guest visits `#auth` -> GIS button renders -> clicks -> signs in -> profile card rendered.
+  - *Happy*: Authenticated user clicks "Sign Out" -> session cleared -> guest button rendered.
+  - *Edge*: Missing photo URL renders stylish initials fallback avatar.
+  - *Edge*: Placeholder client ID shows setup guide without throwing JavaScript errors.
 
 ---
 
-### T5: Bind Navbar authentication indicator (`Navbar.js`)
+### T5: Verify & update Navbar and Router integration (`Navbar.js` & `App.js`)
 - **Deps**: T4
 - **Est. Time**: 15 min
 - **Files**:
   - `Navbar.js`
+  - `App.js`
 - **Action**:
-  - Caveman: Update `Navbar.js` to reflect live Google auth state.
+  - Caveman: Inspect `Navbar.js` and `App.js` to ensure clean integration with pure GIS auth state.
   - In `Navbar.js`:
-    - Consume `const auth = window.useUQAAuth ? window.useUQAAuth() : { user: null };`
-    - When unauthenticated (`!auth.user`): Show "Sign In" button leading to `#admin` (or portal view).
-    - When authenticated (`auth.user`):
-      - Show user avatar thumbnail or name pill with green online dot.
-      - Clicking navigates to `#admin` to view user profile.
+    - Ensure `useUQAAuth()` provides active user state.
+    - Guest view renders "Sign In" button navigating to `navigateTo('auth')`.
+    - Authenticated view renders user avatar thumbnail, first name, and green active indicator pill, clicking to `navigateTo('auth')`.
+  - In `App.js`:
+    - Verify routing for `#auth`, `#login`, `#admin` maps to `AuthPortal`.
+    - Verify footer links navigate to `#auth`.
+    - Ensure zero Firebase references exist.
 - **Acceptance Criteria**:
-  - Navbar dynamically updates immediately upon sign-in and sign-out without requiring page reload.
+  - Navbar updates instantly when user signs in or signs out without full page reload.
+  - `#auth`, `#login`, and `#admin` routes render `AuthPortal`.
 - **Tests**:
-  - *Happy*: Guest sees "Sign In" -> after Google login, Navbar shows user avatar / name + green indicator.
-  - *Happy*: Clicking Sign Out in profile immediately reverts Navbar to "Sign In".
+  - *Happy*: Navbar reflects user avatar and name upon login.
+  - *Happy*: Clicking "Sign In" in Navbar opens `#auth` portal.
 
 ---
 
-### T6: End-to-End Verification Protocol
-- **Deps**: T1, T2, T3, T4, T5
+### T6: Update Documentation (`README.md`)
+- **Deps**: T5
+- **Est. Time**: 10 min
+- **Files**:
+  - `README.md`
+- **Action**:
+  - Caveman: Update `README.md`. Remove Firebase setup section entirely.
+  - Add "Google Identity Services (GIS) Setup Guide" explaining Google Cloud Console OAuth Consent Screen and Web Client ID configuration.
+  - Document zero backend / zero database architecture.
+- **Acceptance Criteria**:
+  - `README.md` contains accurate setup instructions for Google Cloud Console GIS and zero references to Firebase.
+- **Tests**:
+  - *Happy*: Markdown renders cleanly with verified links and instructions.
+
+---
+
+### T7: End-to-End Verification Protocol
+- **Deps**: T1, T2, T3, T4, T5, T6
 - **Est. Time**: 20 min
 - **Files**:
   - `index.html`
-  - `firebase-config.js`
+  - `google-auth-config.js`
   - `auth.js`
-  - `Admin.js`
+  - `AuthPortal.js`
   - `Navbar.js`
+  - `App.js`
 - **Action**:
   - Caveman: Serve app locally (`python3 -m http.server 8000`). Execute 5-step verification test matrix:
-    1. **Cold Load**: Open `http://localhost:8000/#admin` in clean/incognito browser. Verify clean "Sign in with Google" button with SVG logo renders. Zero mock prompts.
-    2. **Popup Trigger**: Click "Sign in with Google". Verify Google account chooser popup opens with account selector.
-    3. **Sign In**: Select ANY Google account (@gmail.com, @terpmail.umd.edu, @umd.edu). Verify popup closes, login succeeds, and User Profile Card displays avatar, display name, and email address.
-    4. **Session Persistence**: Press `F5` / reload browser page. Verify session persists automatically without re-prompting login.
-    5. **Sign Out**: Click "Sign Out" button on profile card. Verify session clears immediately and UI reverts to "Sign in with Google" button.
+    1. **Cold Load (Guest View)**: Open `http://localhost:8000/#auth`. Verify official Google Sign-In button renders cleanly. Confirm zero Firebase network requests or console errors.
+    2. **Sign-In Flow**: Click Google Sign-In button. Complete account authentication. Verify GIS returns credential and JWT payload is decoded without errors.
+    3. **Authenticated View**: Confirm User Profile Card displays user's Google profile picture, display name, email, and "Google Authenticated" badge.
+    4. **Session Persistence**: Press `F5` / reload browser page. Confirm session is restored instantly from `localStorage` without layout shift or re-prompting.
+    5. **Sign Out Flow**: Click "Sign Out". Confirm user state is cleared from `localStorage`, `google.accounts.id.disableAutoSelect()` is called, Navbar reverts to "Sign In", and UI returns to guest view.
 - **Acceptance Criteria**:
-  - All 5 verification steps pass cleanly with zero console errors or broken UI states.
+  - All 5 verification steps pass cleanly with zero console warnings, errors, or Firebase traces.
 - **Tests**:
   - *Happy*: Steps 1-5 pass end-to-end.
-  - *Edge*: Popup cancellation handled gracefully with dismissible error alert.
+  - *Edge*: Unconfigured client ID displays configuration alert card.
 
 ---
 
-### T7: Commit changes, documentation & worktree cleanup
-- **Deps**: T6
-- **Est. Time**: 10 min
+### T8: Commit changes & cleanup git worktree
+- **Deps**: T7
+- **Est. Time**: 5 min
 - **Files**:
-  - All modified codebase files
+  - All modified files
 - **Action**:
   - Caveman: In worktree directory, stage and commit changes:
-    `git add . && git commit -m "feat(auth): integrate pure google sign-in with firebase compat auth sdk"`
+    `git add . && git commit -m "feat(auth): integrate pure google identity services with zero firebase"`
   - Switch back to main repository root: `cd /home/bobjoe/IdeaProjects/umd-uqa.github.io`
   - Clean up worktree: `git worktree remove ../worktree-google-auth`
 - **Acceptance Criteria**:
-  - Clean commit on `feature/google-auth`.
-  - Worktree removed cleanly.
+  - Clean commit on `feature/google-auth` branch.
+  - Worktree directory `../worktree-google-auth` cleanly removed.
 - **Tests**:
-  - *Happy*: `git worktree list` confirms worktree cleaned up; repository clean.
+  - *Happy*: `git worktree list` confirms worktree cleanup; main workspace clean.
 
 ---
 
@@ -372,11 +469,12 @@ window.isFirebaseConfigured = function() {
 
 | Error Scenario | Root Cause | Detection Point | Automated Recovery / UI Mitigation |
 | :--- | :--- | :--- | :--- |
-| **Popup Closed by User (`auth/popup-closed-by-user`)** | User closes popup window before completing Google sign-in | `signInWithPopup` promise rejection | Catch error, reset `isLoading: false`, display dismissible info banner: "Sign-in window closed before completing authentication." |
-| **Popup Blocked (`auth/popup-blocked`)** | Browser popup blocker prevents popup window | `signInWithPopup` rejection | Surface clear banner: "Sign-in popup was blocked by your browser. Please allow popups for this site and try again." |
-| **Unauthorized Domain (`auth/unauthorized-domain`)** | Current domain not in Firebase Authorized Domains list | `signInWithPopup` rejection | Show banner: "Domain unauthorized: Add this domain (e.g. localhost or umd-uqa.github.io) to Firebase Console > Authentication > Settings > Authorized Domains." |
-| **Network Failure (`auth/network-request-failed`)** | User loses internet connection during OAuth handshake | Network fetch rejection | Show banner: "Network error encountered during sign-in. Please check your internet connection and retry." |
-| **Missing Firebase Configuration** | Placeholder keys in `firebase-config.js` | `window.isFirebaseConfigured()` check | Prevent broken network calls; render warning card explaining how to populate `firebase-config.js`. |
+| **Unconfigured Client ID** | Placeholder in `google-auth-config.js` | `window.isGoogleAuthConfigured()` returns `false` | Prevent GIS initialization crash; render informative setup banner with step-by-step Google Cloud guide. |
+| **Origin Not Whitelisted (`origin_mismatch`)** | Localhost port or production domain not added to Google Cloud Console | GIS library callback error / console warning | Catch initialization failure; display clear troubleshooting prompt to add origin to Authorized JavaScript Origins. |
+| **GIS Script Blocked / Offline** | Ad-blocker or network disconnect blocks `gsi/client` | `typeof window.google === "undefined"` | Gracefully fall back, display warning notice to disable ad-blocker for Google Sign-In, prevent white screen crash. |
+| **Malformed JWT Token** | Corrupted or unexpected credential string from response | `try/catch` in `parseJwt` | Catch JSON parsing / base64 decode exception, emit user-friendly error message, reset user state to `null`. |
+| **Corrupted `localStorage` Cache** | User tampered with `'uqa_google_user'` key in browser storage | `try/catch` during `_initSession()` | Safely delete corrupted `localStorage` entry, default to guest state (`user: null`), avoid application crash. |
+| **Missing Google Profile Photo** | User account does not have custom profile photo | `img.onError` event handler in `AuthPortal.js` and `Navbar.js` | Automatically hide broken image element and display stylized initial circle avatar. |
 
 ---
 
@@ -384,12 +482,21 @@ window.isFirebaseConfigured = function() {
 
 | Step | Test Scenario | Action / Input | Expected Result | Pass Criteria |
 | :--- | :--- | :--- | :--- | :--- |
-| **Step 1** | Cold Guest Load | Open `http://localhost:8000/#admin` in fresh browser | Clean "Sign in with Google" button with Google SVG logo renders. Zero mock dialogs. | `auth.user === null`, Sign-in button visible |
-| **Step 2** | Popup Trigger | Click "Sign in with Google" button | Google OAuth popup opens displaying Google account chooser (`prompt: select_account`). | Popup window opens to `accounts.google.com` |
-| **Step 3** | Google Account Login | Select ANY valid Google account (@gmail, @umd.edu, etc.) | Popup closes, user authenticated, User Profile Card renders photo, name, email. | `auth.user !== null`, `email` and `photoURL` displayed in profile card |
-| **Step 4** | Session Persistence | Press `F5` / Refresh page | `onAuthStateChanged` restores session automatically without re-prompt. | Profile card visible immediately after reload (<500ms) |
-| **Step 5** | Sign-Out Flow | Click "Sign Out" button on profile card | Session terminates, UI immediately resets to "Sign in with Google". | `auth.user === null`, Sign-in button visible, Navbar updated |
-| **Step 6 (Edge)** | Popup Dismissal | Open popup and close window manually | Error banner displayed without breaking UI layout. | Dismissible error banner visible, `isLoading === false` |
+| **Step 1** | Cold Guest Load | Open `http://localhost:8000/#auth` in fresh browser | Official Google Sign-In button renders in container. Zero Firebase console errors or network calls. | `auth.user === null`, GIS button visible |
+| **Step 2** | Google Sign-In | Click official Google Sign-In button & authenticate | Google credential received, JWT decoded, user object populated. | `auth.user !== null`, `email` and `displayName` populated |
+| **Step 3** | Authenticated Profile Card | View `#auth` page after successful authentication | Profile card renders user avatar, display name, email, Google session badge. | Profile details accurate and visually verified |
+| **Step 4** | Session Persistence | Press `F5` / Refresh browser | Session restored instantly from `localStorage` without login prompt. | User remains logged in across reload (<50ms) |
+| **Step 5** | Sign Out Flow | Click "Sign Out" button on profile card | Session cleared from `localStorage`, auto-select disabled, UI returns to guest button. | `auth.user === null`, `localStorage` key removed |
+| **Step 6 (Edge)** | Unconfigured Mode | Load app with default placeholder Client ID | Warning banner displayed explaining how to configure Google Cloud Client ID. | Amber setup card rendered without JS exceptions |
+
+---
+
+## Test Strategy
+- **Zero Firebase Verification**: Grep entire repository for `firebase` strings to ensure 100% elimination of all SDK scripts, config files, and variable names.
+- **Static JSX & Script Validation**: Ensure Babel Standalone in browser parses `google-auth-config.js`, `auth.js`, `AuthPortal.js`, `Navbar.js`, and `App.js` without syntax errors.
+- **JWT Decoder Robustness**: Validate UTF-8 character decoding for international names and symbols in user profile.
+- **Session Resilience**: Verify `localStorage` serialization, retrieval, corruption handling, and atomic removal upon sign out.
+- **Responsive Visual UI**: Test sign-in container and authenticated profile card across mobile (375px), tablet (768px), and desktop (1400px+) viewports.
 
 ---
 
@@ -397,8 +504,8 @@ window.isFirebaseConfigured = function() {
 
 | Risk | Impact | Mitigation Strategy |
 | :--- | :--- | :--- |
-| **Browser Popup Blocker** | Medium | Catch `auth/popup-blocked` error code and display explicit helper instruction guiding user to allow popups. |
-| **Missing Authorized Domain on Deployment** | High | Include explicit checklist and troubleshooting guide in plan for adding `localhost`, `127.0.0.1`, and `umd-uqa.github.io` in Firebase Console. |
-| **Account Chooser Skipped** | Low | `provider.setCustomParameters({ prompt: 'select_account' })` forces account selector every time so users can switch accounts. |
-| **Missing Avatar / Display Name in Google Profile** | Low | Provide fallback initials circle and default fallback username ("Google User") if Google profile fields are empty. |
-| **Zero-Build Architecture Integrity** | Medium | Use standard Firebase v10 Compat CDN scripts without adding Node.js bundlers or npm dependencies. |
+| **Ad-Blocker Blocking GIS SDK (`gsi/client`)** | Medium | Check for `window.google?.accounts?.id` availability before invoking GIS methods; display non-blocking banner if blocked. |
+| **OAuth Origin Mismatch in Local Dev** | High | Include exact URIs (`http://localhost:8000`, `http://127.0.0.1:8000`, `https://umd-uqa.github.io`) in setup guide and console alerts. |
+| **Expired ID Token in `localStorage`** | Low | Client session is used purely for client-side UI display. Re-authenticating via Google button refreshes ID token instantly. |
+| **JWT UTF-8 Decoding Garbled Text** | Low | Implement UTF-8 safe `decodeURIComponent(atob(...).split('').map(...).join(''))` decoding pattern. |
+| **Zero-Build CDN Architecture Compatibility** | Medium | Keep all scripts vanilla ES6 / React standalone compatible with browser Babel transpiler without requiring bundlers. |
