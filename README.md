@@ -4,50 +4,38 @@ Official website for the University of Maryland Undergraduate Quantum Associatio
 
 ---
 
-## Features & Content Management System (CMS)
+## Features
 
 - **Client-Side Single Page Application**: Built with React 18, Tailwind CSS, and Babel Standalone.
-- **Admin Authentication**: Google Sign-In with email validation against a Firestore `admin_emails` whitelist.
-- **Dynamic Resources CMS**: Inline and dashboard controls to add, reorder, and remove featured YouTube workshop videos.
-- **Dynamic Events & Poster CMS**: Full CRUD controls to create, edit, and delete/take away events with custom flyer/poster uploads to Cloud Storage, and full-resolution Lightbox viewer.
-- **Resilient Fallback**: Site automatically displays built-in default content if offline or before Firebase is configured.
+- **Pure Google Authentication**: Direct client-side Google Identity Services (GIS) OAuth 2.0 integration (zero Firebase backend required).
+- **User Profile Management**: Authenticated users can view their Google avatar, name, and email profile card.
+- **Calendar & Events**: Comprehensive list of upcoming, annual, and recurring UQA quantum events.
+- **Resources & Learning Hub**: Interactive Quantum Coalition learning graph, video presentations, and study materials.
+- **RQS Sponsorship**: Supported by the Institute for Robust Quantum Simulation (RQS).
 
 ---
 
-## Firebase Setup & Activation Guide
+## Google Authentication Setup Guide
 
-To connect your live Firebase project to the website:
+Google Sign-In uses Google's official client-side Google Identity Services (GIS) library.
 
-### 1. Create Firebase Project
-1. Go to the [Firebase Console](https://console.firebase.google.com/) and click **Add Project**.
-2. Name the project `umd-uqa-web` (or any name you prefer).
+### 1. Generate Google OAuth 2.0 Client ID (Free, <1 minute)
+1. Open the [Google Cloud Console Credentials Page](https://console.cloud.google.com/apis/credentials).
+2. Click **Create Credentials** > **OAuth client ID**.
+   *(If prompted to configure OAuth Consent Screen: select **External**, name it `UMD UQA`, and enter your support email)*.
+3. Select **Application type**: **Web application**.
+4. Set **Name**: `UMD UQA Web`.
+5. Under **Authorized JavaScript origins**, add:
+   - `http://localhost:8000`
+   - `http://127.0.0.1:8000`
+   - `https://umd-uqa.github.io`
+6. Click **Create** and copy your **Client ID** (e.g. `123456789-abcdef.apps.googleusercontent.com`).
 
-### 2. Enable Google Authentication
-1. In Firebase Console, go to **Build** > **Authentication** > **Get Started**.
-2. Under **Sign-in method**, choose **Google**, enable it, select your project support email, and click **Save**.
-3. Under **Settings** > **Authorized domains**, add your deployment domains (e.g. `umd-uqa.github.io` and `localhost`).
-
-### 3. Set Up Cloud Firestore
-1. Go to **Build** > **Firestore Database** > **Create database**.
-2. Choose **Start in production mode** and pick your region.
-3. Click the **Rules** tab, paste the contents of [`firestore.rules`](./firestore.rules), and click **Publish**.
-4. In the **Data** tab, create a new collection named `admin_emails`. Add a document whose **Document ID** is your Google/UMD email (e.g. `president@umd.edu`), with fields:
-   ```json
-   {
-     "email": "president@umd.edu",
-     "role": "admin",
-     "createdAt": "2026-08-20T18:00:00Z"
-   }
-   ```
-
-### 4. Set Up Cloud Storage
-1. Go to **Build** > **Storage** > **Get Started**.
-2. Click the **Rules** tab, paste the contents of [`storage.rules`](./storage.rules), and click **Publish**.
-
-### 5. Add API Keys to `firebase-config.js`
-1. Go to **Project Settings** (gear icon) > **General** > **Your apps** > click the Web icon `</>`.
-2. Register the app name (e.g. `UMD UQA Web`).
-3. Copy the `firebaseConfig` object and paste it into [`firebase-config.js`](./firebase-config.js).
+### 2. Configure `google-auth-config.js`
+Open [`google-auth-config.js`](./google-auth-config.js) and paste your Client ID:
+```javascript
+window.UQA_GOOGLE_CLIENT_ID = "YOUR_CLIENT_ID.apps.googleusercontent.com";
+```
 
 ---
 
@@ -62,6 +50,3 @@ python3 -m http.server 8000
 # Open your browser:
 http://localhost:8000
 ```
-
-- Navigate to `#admin` or click the **Login / Admin** button in the Navbar or Footer.
-- In Demo mode (before Firebase keys are added), you can test the full UI, add videos, and manage events with mock local storage.

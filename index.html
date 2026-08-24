@@ -11,9 +11,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Firebase v10 Compat SDK (App & Auth) -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <!-- Google Identity Services (GIS) SDK -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <style>
         .animate-fade-in {
@@ -40,8 +39,8 @@
 <body>
 <div id="root"></div>
 
-<!-- Firebase Config & Authentication Layer -->
-<script type="text/babel" src="./firebase-config.js"></script>
+<!-- Google Auth Config & Service -->
+<script type="text/babel" src="./google-auth-config.js"></script>
 <script type="text/babel" src="./auth.js"></script>
 
 <!-- Application Components -->
