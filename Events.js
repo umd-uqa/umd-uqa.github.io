@@ -12,7 +12,7 @@ window.Events = function Events({ navigateTo }) {
   // Default hardcoded fallback event
   const defaultAnnualEvents = [
     {
-      id: "seed_qlcn",
+      id: "default_qlcn",
       month: "Sept",
       day: "15",
       year: "2026",
@@ -98,7 +98,7 @@ window.Events = function Events({ navigateTo }) {
         updatedAt: new Date().toISOString()
       };
 
-      if (editingEvent?.id && !editingEvent.id.startsWith('seed_')) {
+      if (editingEvent?.id && !editingEvent.id.startsWith('default_')) {
         await window.uqaDb.collection('events').doc(editingEvent.id).update(payload);
       } else {
         payload.createdAt = new Date().toISOString();
@@ -115,7 +115,7 @@ window.Events = function Events({ navigateTo }) {
   const handleDeleteInlineEvent = async (eventId, posterPath) => {
     if (!confirm("Are you sure you want to remove this event?")) return;
     try {
-      if (window.uqaDb && eventId && !eventId.startsWith('seed_')) {
+      if (window.uqaDb && eventId && !eventId.startsWith('default_')) {
         await window.uqaDb.collection('events').doc(eventId).delete();
       }
       if (posterPath && window.uqaStorage) {
@@ -392,7 +392,7 @@ window.Events = function Events({ navigateTo }) {
           <div className="bg-[#0c0d23] border border-white/20 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 md:p-8 shadow-2xl space-y-6">
             <div className="flex justify-between items-center border-b border-white/10 pb-4">
               <h3 className="text-xl font-bold text-white font-['Raleway']">
-                {editingEvent.id && !editingEvent.id.startsWith('seed_') ? 'Edit Event' : 'Add New Event'}
+                {editingEvent.id && !editingEvent.id.startsWith('default_') ? 'Edit Event' : 'Add New Event'}
               </h3>
               <button onClick={() => setIsEventModalOpen(false)} className="text-slate-400 hover:text-white font-bold text-lg">✕</button>
             </div>

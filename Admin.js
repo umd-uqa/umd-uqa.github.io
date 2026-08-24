@@ -56,10 +56,26 @@ window.Admin = function Admin({ navigateTo }) {
         },
         (err) => {
           console.warn("[Admin] Events snapshot error:", err);
-          // Fallback to initial seed data if error/offline
-          if (window.UQA_SEED_DATA?.events) {
-            setEvents(window.UQA_SEED_DATA.events.map((e, idx) => ({ id: `seed_${idx}`, ...e })));
-          }
+          setEvents([
+            {
+              id: "default_qlcn",
+              month: "Sept",
+              day: "15",
+              year: "2026",
+              title: "Quantum Leap Career Nexus",
+              subtitle: "QLCN 2026 · University of Maryland",
+              description: "A career fair and professional development event bringing together quantum computing students, researchers, and industry professionals.",
+              highlights: [
+                "Networking with quantum industry professionals and recruiters",
+                "Workshops focused on internship and job placement"
+              ],
+              links: [
+                { label: "Register via Handshake", url: "https://go.umd.edu/QLCNregister", primary: true }
+              ],
+              isAnnual: true,
+              order: 1
+            }
+          ]);
           setLoadingData(false);
         }
       );
@@ -72,9 +88,11 @@ window.Admin = function Admin({ navigateTo }) {
         },
         (err) => {
           console.warn("[Admin] Videos snapshot error:", err);
-          if (window.UQA_SEED_DATA?.videos) {
-            setVideos(window.UQA_SEED_DATA.videos);
-          }
+          setVideos([
+            { id: "agOdzgWTr-Y", title: "QuEra Workshop 1", order: 1 },
+            { id: "i_MKOCxInOQ", title: "QuEra Quantum Challenge Walkthrough", order: 2 },
+            { id: "xEa3WIzgxDQ", title: "QuEra Workshop 2", order: 3 }
+          ]);
         }
       );
 
@@ -205,7 +223,7 @@ window.Admin = function Admin({ navigateTo }) {
         updatedAt: new Date().toISOString()
       };
 
-      if (editingEvent && editingEvent.id && !editingEvent.id.startsWith('seed_')) {
+      if (editingEvent && editingEvent.id && !editingEvent.id.startsWith('default_')) {
         await window.uqaDb.collection('events').doc(editingEvent.id).update(payload);
         showNotification("Event updated successfully!");
       } else {
@@ -226,7 +244,7 @@ window.Admin = function Admin({ navigateTo }) {
     if (!confirm("Are you sure you want to delete this event? This action cannot be undone.")) return;
 
     try {
-      if (window.uqaDb && eventId && !eventId.startsWith('seed_')) {
+      if (window.uqaDb && eventId && !eventId.startsWith('default_')) {
         await window.uqaDb.collection('events').doc(eventId).delete();
       }
 
@@ -346,21 +364,6 @@ window.Admin = function Admin({ navigateTo }) {
   };
 
   // ----------------------------------------------------
-  // SEED UTILITY HANDLER
-  // ----------------------------------------------------
-  const handleSeedDatabase = async () => {
-    if (!confirm("This will seed initial data into empty Firestore collections. Continue?")) return;
-    try {
-      if (window.seedInitialData) {
-        const res = await window.seedInitialData();
-        showNotification(`Database seeded! ${res.messages.join(' ')}`);
-      }
-    } catch (err) {
-      showNotification(`Seed failed: ${err.message}`, true);
-    }
-  };
-
-  // ----------------------------------------------------
   // AUTHENTICATED ADMIN DASHBOARD UI
   // ----------------------------------------------------
   return (
@@ -438,7 +441,7 @@ window.Admin = function Admin({ navigateTo }) {
               activeTab === 'settings' ? 'border-[#a8abdb] text-[#a8abdb]' : 'border-transparent text-slate-400 hover:text-white'
             }`}
           >
-            ⚙️ System & Seed
+            ⚙️ System Status
           </button>
         </div>
       </div>
@@ -556,7 +559,7 @@ window.Admin = function Admin({ navigateTo }) {
 
               {events.length === 0 && !loadingData && (
                 <div className="text-center py-12 text-slate-500 bg-[#0c0d23] rounded-2xl border border-white/10">
-                  <p>No events found. Click "+ Add New Event" or use the seed button under Settings.</p>
+                  <p>No events found. Click "+ Add New Event" to create one.</p>
                 </div>
               )}
             </div>
@@ -696,19 +699,19 @@ window.Admin = function Admin({ navigateTo }) {
           </div>
         )}
 
-        {/* ── TAB 4: SETTINGS & SEED ── */}
+        {/* ── TAB 4: SYSTEM STATUS ── */}
         {activeTab === 'settings' && (
           <div className="space-y-6">
             <div className="bg-[#0c0d23] border border-white/10 p-6 rounded-2xl space-y-4">
-              <h2 className="text-xl font-bold text-white font-['Raleway']">System Status & Initial Seeding</h2>
-              <p className="text-slate-400 text-sm">Manage database initialization and verify service connections.</p>
+              <h2 className="text-xl font-bold text-white font-['Raleway']">System Connection Status</h2>
+              <p className="text-slate-400 text-sm">Verify backend service connectivity and configuration health.</p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
                 <div className="bg-[#0f1128] border border-white/10 p-4 rounded-xl space-y-1">
                   <span className="text-xs text-slate-400">Firebase Firestore Status:</span>
                   <div className="text-sm font-semibold flex items-center gap-2">
                     <span className={`w-2.5 h-2.5 rounded-full ${isFbConfigured ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`}></span>
-                    {isFbConfigured ? 'Connected & Active' : 'Fallback / Local Demo'}
+                    {isFbConfigured ? 'Connected & Active' : 'Fallback / Local Mode'}
                   </div>
                 </div>
 
@@ -719,19 +722,6 @@ window.Admin = function Admin({ navigateTo }) {
                     {isConfigured ? 'Valid Configuration' : 'Default / Missing'}
                   </div>
                 </div>
-              </div>
-
-              <div className="pt-6 border-t border-white/10">
-                <h4 className="text-base font-bold text-white mb-2">Seed Initial Database</h4>
-                <p className="text-slate-400 text-xs mb-4">
-                  Populate empty Firestore collections with the default initial YouTube workshop videos and the annual QLCN event.
-                </p>
-                <button
-                  onClick={handleSeedDatabase}
-                  className="bg-[#9296c8] text-[#0f1128] font-bold px-6 py-2.5 rounded-lg text-sm hover:brightness-110 transition-all"
-                >
-                  🚀 Run Initial Data Seed
-                </button>
               </div>
             </div>
           </div>
