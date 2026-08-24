@@ -228,13 +228,13 @@ window.Events = function Events({ navigateTo }) {
                           }}
                           className="px-3 py-1 bg-white/10 hover:bg-white/20 text-slate-200 border border-white/20 rounded-md text-xs font-semibold"
                         >
-                          ✏️ Edit
+                          Edit
                         </button>
                         <button
                           onClick={() => handleDeleteInlineEvent(event.id, event.posterPath)}
                           className="px-3 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/30 rounded-md text-xs font-semibold"
                         >
-                          🗑️ Delete
+                          Delete
                         </button>
                       </div>
                     )}

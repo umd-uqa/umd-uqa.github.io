@@ -82,14 +82,13 @@ window.Navbar = function Navbar({ currentPage, navigateTo }) {
                             <button
                                 onClick={() => navigateTo('admin')}
                                 title="Open Admin CMS"
-                                className={`px-2.5 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 text-xs font-bold ${
+                                className={`px-3 py-1.5 rounded-lg border transition-all text-xs font-bold ${
                                     currentPage === 'admin'
                                         ? 'bg-amber-400 text-[#0f1128] border-amber-400'
                                         : 'bg-amber-400/15 border-amber-400/40 text-amber-300 hover:bg-amber-400/25'
                                 }`}
                             >
-                                <span>🛡️</span>
-                                <span className="hidden sm:inline">Admin CMS</span>
+                                Admin CMS
                             </button>
                         )}
 

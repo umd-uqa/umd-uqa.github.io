@@ -171,9 +171,9 @@ window.Resources = function Resources({ navigateTo }) {
                         handleDeleteInlineVideo(video.id);
                       }}
                       title="Remove this video"
-                      className="text-red-400 hover:text-red-300 px-2 text-xs"
+                      className="text-red-400 hover:text-red-300 px-2 text-xs font-semibold hover:underline"
                     >
-                      🗑️
+                      Delete
                     </button>
                   )}
                 </div>

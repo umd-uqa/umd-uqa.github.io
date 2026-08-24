@@ -159,9 +159,9 @@ window.AuthPortal = function AuthPortal({ navigateTo }) {
         {auth.isAdmin && navigateTo && (
           <button
             onClick={() => navigateTo('admin')}
-            className="w-full bg-[#9296c8] hover:brightness-110 text-[#0f1128] font-bold py-3.5 px-6 rounded-lg transition-all text-sm shadow-md flex items-center justify-center gap-2"
+            className="w-full bg-[#9296c8] hover:brightness-110 text-[#0f1128] font-bold py-3.5 px-6 rounded-lg transition-all text-sm shadow-md flex items-center justify-center"
           >
-            <span>🛡️ Open Admin CMS Dashboard</span>
+            Open Admin CMS Dashboard
           </button>
         )}
 
