@@ -7,7 +7,7 @@
  * 3. Add Authorized JavaScript Origins: http://localhost:8000, http://127.0.0.1:8000, https://umd-uqa.github.io
  * 4. Paste your Client ID below.
  */
-window.UQA_GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
+window.UQA_GOOGLE_CLIENT_ID = "998330975634-611hfe3fmsgokccgr913v7md908cdidv.apps.googleusercontent.com";
 
 /**
  * Check if a valid Google OAuth Client ID has been configured
