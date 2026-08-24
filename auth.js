@@ -89,7 +89,11 @@ window.UQAAuth = {
     }
 
     // Default fallback admin check for local/offline testing
-    const localAdmins = ['president@umduqa.org', 'lead@umd.edu', 'admin@umd.edu'];
+    const localAdmins = [
+      'itskrithikmohan@gmail.com',
+      'krithikm@terpmail.umd.edu',
+      'umd.uqa@gmail.com'
+    ];
     if (localAdmins.includes(cleanEmail)) {
       return true;
     }

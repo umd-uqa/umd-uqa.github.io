@@ -33,8 +33,9 @@ window.UQA_SEED_DATA = {
     }
   ],
   admins: [
-    { email: "president@umduqa.org", role: "admin", addedBy: "system_init" },
-    { email: "lead@umd.edu", role: "admin", addedBy: "system_init" }
+    { email: "itskrithikmohan@gmail.com", role: "admin", addedBy: "system_init" },
+    { email: "krithikm@terpmail.umd.edu", role: "admin", addedBy: "system_init" },
+    { email: "umd.uqa@gmail.com", role: "admin", addedBy: "system_init" }
   ]
 };
 
