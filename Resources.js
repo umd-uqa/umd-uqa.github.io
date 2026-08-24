@@ -118,7 +118,7 @@ window.Resources = function Resources({ navigateTo }) {
             </h1>
             {auth.isAdmin && (
               <div className="flex items-center gap-3">
-                <span className="px-3 py-1 bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-bold rounded-full uppercase tracking-wider">
+                <span className="px-3 py-1 bg-[#9296c8]/15 border border-[#9296c8]/30 text-[#a8abdb] text-xs font-bold rounded-full uppercase tracking-wider">
                   Admin Mode Active
                 </span>
                 {navigateTo && (
@@ -126,7 +126,7 @@ window.Resources = function Resources({ navigateTo }) {
                     onClick={() => navigateTo('admin')}
                     className="text-xs bg-[#9296c8]/20 hover:bg-[#9296c8]/30 text-[#a8abdb] px-3 py-1.5 rounded-lg border border-[#9296c8]/30 font-semibold transition-colors"
                   >
-                    Open CMS Dashboard →
+                    Admin CMS →
                   </button>
                 )}
               </div>

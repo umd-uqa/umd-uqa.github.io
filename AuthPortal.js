@@ -91,10 +91,14 @@ window.AuthPortal = function AuthPortal({ navigateTo }) {
   }
 
   // ----------------------------------------------------
-  // AUTHENTICATED VIEW: USER PROFILE CARD
+  // AUTHENTICATED VIEW: FUSED ADMIN CMS OR USER PROFILE CARD
   // ----------------------------------------------------
+  if (auth.isAdmin && window.Admin) {
+    return <window.Admin navigateTo={navigateTo} />;
+  }
+
   return (
-    <div className="min-h-screen bg-[#0f1128] text-[#f0f0f8] font-sans selection:bg-[#9296c8]/30 animate-fade-in flex items-center justify-center px-6 py-24">
+    <div className="min-h-screen bg-[#0f1128] text-[#f0f0f8] font-sans selection:bg-[#9296c8]/30 animate-fade-in flex items-center justify-center px-6 py-[120px]">
       <div className="max-w-md w-full bg-[#0c0d23] border border-white/10 rounded-2xl p-8 md:p-10 shadow-2xl text-center space-y-6">
         
         {/* User Avatar */}
@@ -117,17 +121,10 @@ window.AuthPortal = function AuthPortal({ navigateTo }) {
 
         {/* User Info */}
         <div>
-          {auth.isAdmin ? (
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-300 text-xs font-bold mb-3 uppercase tracking-wider">
-              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-              Admin Authorized
-            </div>
-          ) : (
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold mb-3">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              Google Authenticated
-            </div>
-          )}
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold mb-3">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            Google Authenticated
+          </div>
 
           <h2 className="font-['Raleway'] text-2xl font-bold text-white mb-1">
             {auth.user.displayName || "Google User"}
@@ -145,8 +142,8 @@ window.AuthPortal = function AuthPortal({ navigateTo }) {
           </div>
           <div className="flex justify-between text-slate-400">
             <span>Role:</span>
-            <span className={`font-semibold ${auth.isAdmin ? 'text-amber-300 font-bold' : 'text-slate-300'}`}>
-              {auth.isAdmin ? 'Administrator (Full CMS Write)' : 'Member (Read Only)'}
+            <span className="font-semibold text-[#a8abdb]">
+              Member (Read Only)
             </span>
           </div>
           <div className="flex justify-between text-slate-400">
@@ -154,16 +151,6 @@ window.AuthPortal = function AuthPortal({ navigateTo }) {
             <span className="text-emerald-400 font-semibold">Active Session</span>
           </div>
         </div>
-
-        {/* Admin CMS Shortcut */}
-        {auth.isAdmin && navigateTo && (
-          <button
-            onClick={() => navigateTo('admin')}
-            className="w-full bg-[#9296c8] hover:brightness-110 text-[#0f1128] font-bold py-3.5 px-6 rounded-lg transition-all text-sm shadow-md flex items-center justify-center"
-          >
-            Open Admin CMS Dashboard
-          </button>
-        )}
 
         {/* Sign Out Button */}
         <button

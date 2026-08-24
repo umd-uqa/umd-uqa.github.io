@@ -84,8 +84,8 @@ window.Navbar = function Navbar({ currentPage, navigateTo }) {
                                 title="Open Admin CMS"
                                 className={`px-3 py-1.5 rounded-lg border transition-all text-xs font-bold ${
                                     currentPage === 'admin'
-                                        ? 'bg-amber-400 text-[#0f1128] border-amber-400'
-                                        : 'bg-amber-400/15 border-amber-400/40 text-amber-300 hover:bg-amber-400/25'
+                                        ? 'bg-[#9296c8] text-[#0f1128] border-[#9296c8]'
+                                        : 'bg-[#9296c8]/15 border-[#9296c8]/40 text-[#a8abdb] hover:bg-[#9296c8]/25'
                                 }`}
                             >
                                 Admin CMS
@@ -94,10 +94,10 @@ window.Navbar = function Navbar({ currentPage, navigateTo }) {
 
                         {/* Google Auth Status / Sign In Trigger */}
                         <button
-                            onClick={() => navigateTo('auth')}
+                            onClick={() => navigateTo(auth.isAdmin ? 'admin' : 'auth')}
                             title={auth.user ? `Signed in as ${auth.user.email}` : "Sign in with Google"}
                             className={`p-2 sm:px-3 sm:py-2 rounded-lg border transition-all flex items-center gap-2 text-xs sm:text-sm font-bold ${
-                                currentPage === 'auth'
+                                currentPage === 'auth' || (auth.isAdmin && currentPage === 'admin')
                                     ? 'bg-[#9296c8] text-[#0f1128] border-[#9296c8]'
                                     : auth.user
                                         ? 'bg-[#9296c8]/15 border-[#9296c8]/40 text-[#a8abdb] hover:bg-[#9296c8]/25'
@@ -116,7 +116,7 @@ window.Navbar = function Navbar({ currentPage, navigateTo }) {
                                     <span className="hidden sm:inline truncate max-w-[100px]">
                                         {auth.user.displayName?.split(' ')[0] || 'User'}
                                     </span>
-                                    <span className={`w-2 h-2 rounded-full ${auth.isAdmin ? 'bg-amber-400' : 'bg-emerald-400'}`}></span>
+                                    <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
                                 </>
                             ) : (
                                 <>

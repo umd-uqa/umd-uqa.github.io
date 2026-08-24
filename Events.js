@@ -165,7 +165,7 @@ window.Events = function Events({ navigateTo }) {
                 }}
                 className="bg-[#9296c8] text-[#0f1128] font-bold px-5 py-2.5 rounded-lg text-xs hover:brightness-110 transition-all flex items-center gap-2 shadow-lg"
               >
-                <span>+ Add New Event</span>
+                <span>Add New Event</span>
               </button>
               {navigateTo && (
                 <button

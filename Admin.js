@@ -2,7 +2,7 @@ const { useState, useEffect, useRef } = window.React || React;
 
 /**
  * UMD UQA ADMIN CMS DASHBOARD
- * Complete Content Management System for Events, Posters, Videos, and Whitelist.
+ * Unified Content Management System with fused account profile and clean quantum theme.
  */
 window.Admin = function Admin({ navigateTo }) {
   const auth = window.useUQAAuth ? window.useUQAAuth() : { user: null, isAdmin: false, isLoading: false, error: null };
@@ -16,7 +16,7 @@ window.Admin = function Admin({ navigateTo }) {
   const [statusMessage, setStatusMessage] = useState(null);
 
   // Modals
-  const [editingEvent, setEditingEvent] = useState(null); // null or object
+  const [editingEvent, setEditingEvent] = useState(null);
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
   const [editingVideo, setEditingVideo] = useState(null);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
@@ -125,7 +125,7 @@ window.Admin = function Admin({ navigateTo }) {
   // ----------------------------------------------------
   if (!auth.user) {
     return (
-      <div className="min-h-screen bg-[#0f1128] text-[#f0f0f8] font-sans animate-fade-in flex items-center justify-center px-6 py-[120px]">
+      <div className="min-h-screen bg-[#0f1128] text-[#f0f0f8] font-sans selection:bg-[#9296c8]/30 animate-fade-in flex items-center justify-center px-6 py-[120px]">
         <div className="max-w-md w-full bg-[#0c0d23] border border-white/10 rounded-2xl p-8 md:p-10 shadow-2xl text-center">
           <h1 className="font-['Raleway'] text-2xl md:text-3xl font-bold text-white mb-3">Admin CMS Sign In</h1>
           <p className="text-slate-400 text-sm mb-8">
@@ -150,8 +150,8 @@ window.Admin = function Admin({ navigateTo }) {
   // ----------------------------------------------------
   if (!auth.isAdmin) {
     return (
-      <div className="min-h-screen bg-[#0f1128] text-[#f0f0f8] font-sans animate-fade-in flex items-center justify-center px-6 py-[120px]">
-        <div className="max-w-md w-full bg-[#0c0d23] border border-amber-500/30 rounded-2xl p-8 md:p-10 shadow-2xl text-center space-y-6">
+      <div className="min-h-screen bg-[#0f1128] text-[#f0f0f8] font-sans selection:bg-[#9296c8]/30 animate-fade-in flex items-center justify-center px-6 py-[120px]">
+        <div className="max-w-md w-full bg-[#0c0d23] border border-[#9296c8]/30 rounded-2xl p-8 md:p-10 shadow-2xl text-center space-y-6">
           <h2 className="font-['Raleway'] text-2xl font-bold text-white">Access Restricted</h2>
           <p className="text-slate-300 text-sm leading-relaxed">
             Logged in as <strong className="text-white font-mono">{auth.user.email}</strong>. This account is not currently on the administrator whitelist.
@@ -356,99 +356,95 @@ window.Admin = function Admin({ navigateTo }) {
   // AUTHENTICATED ADMIN DASHBOARD UI
   // ----------------------------------------------------
   return (
-    <div className="min-h-screen bg-[#0f1128] text-[#f0f0f8] font-sans animate-fade-in pt-[80px] pb-24">
-      {/* Top Admin Header */}
-      <div className="bg-[#0c0d23] border-b border-white/10 shadow-md">
-        <div className="max-w-[1400px] mx-auto px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-full bg-[#9296c8]/20 border border-[#9296c8]/40 overflow-hidden flex items-center justify-center">
+    <div className="min-h-screen bg-[#0f1128] text-[#f0f0f8] font-sans selection:bg-[#9296c8]/30 animate-fade-in">
+      <div className="max-w-[1400px] mx-auto px-10 py-[120px] pb-[120px]">
+
+        {/* ── FUSED TITLE & ACCOUNT PROFILE HEADER ── */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 pb-10 border-b border-white/10 mb-10">
+          <div>
+            <h1 className="font-['Raleway'] text-[clamp(32px,5vw,48px)] font-semibold tracking-tight leading-[1.2] text-[#a8abdb] mb-2">
+              Admin CMS
+            </h1>
+            <p className="text-slate-400 text-base md:text-lg">
+              Manage website events, flyers, featured videos, and officer whitelist access.
+            </p>
+          </div>
+
+          {/* Fused Account Profile Details Card */}
+          <div className="bg-[#0c0d23] border border-white/10 rounded-2xl p-4 sm:p-5 flex items-center gap-4 shadow-xl">
+            <div className="w-12 h-12 rounded-full bg-[#9296c8]/20 border border-[#9296c8]/40 overflow-hidden flex items-center justify-center flex-shrink-0">
               {auth.user.photoURL ? (
                 <img src={auth.user.photoURL} alt={auth.user.displayName} className="w-full h-full object-cover" />
               ) : (
-                <span className="font-bold text-[#a8abdb] text-sm">{auth.user.email?.charAt(0).toUpperCase()}</span>
+                <span className="font-bold text-[#a8abdb] text-base">{auth.user.email?.charAt(0).toUpperCase()}</span>
               )}
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-white text-sm">{auth.user.displayName || auth.user.email}</span>
-                <span className="px-2 py-0.5 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 text-[10px] font-bold tracking-wider uppercase">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                <span className="font-bold text-white text-sm truncate">{auth.user.displayName || auth.user.email}</span>
+                <span className="px-2.5 py-0.5 rounded-full bg-[#9296c8]/15 border border-[#9296c8]/30 text-[#a8abdb] text-[10px] font-bold tracking-wider uppercase">
                   Admin
                 </span>
+                <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-semibold flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                  Active
+                </span>
               </div>
-              <span className="text-slate-400 text-xs font-mono">{auth.user.email}</span>
+              <span className="text-slate-400 text-xs font-mono block truncate">{auth.user.email}</span>
             </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => navigateTo('home')}
-              className="text-xs bg-white/5 hover:bg-white/10 text-slate-300 px-4 py-2 rounded-lg border border-white/10 transition-colors"
-            >
-              View Site
-            </button>
-            <button
-              onClick={() => auth.signOut()}
-              className="text-xs bg-red-500/15 hover:bg-red-500/25 text-red-300 px-4 py-2 rounded-lg border border-red-500/30 transition-colors font-semibold"
-            >
-              Sign Out
-            </button>
           </div>
         </div>
 
         {/* Tab Navigation */}
-        <div className="max-w-[1400px] mx-auto px-6 flex gap-6 overflow-x-auto scrollbar-hide text-sm font-semibold">
+        <div className="flex gap-2 sm:gap-6 border-b border-white/10 mb-10 overflow-x-auto scrollbar-hide text-sm sm:text-base font-semibold">
           <button
             onClick={() => setActiveTab('events')}
-            className={`py-3 border-b-2 transition-colors flex items-center gap-2 ${
+            className={`py-4 border-b-2 transition-colors whitespace-nowrap flex items-center gap-2 ${
               activeTab === 'events' ? 'border-[#a8abdb] text-[#a8abdb]' : 'border-transparent text-slate-400 hover:text-white'
             }`}
           >
             <span>Events & Posters</span>
-            <span className="px-1.5 py-0.5 rounded-full bg-white/10 text-[11px]">{events.length}</span>
+            <span className="px-2 py-0.5 rounded-full bg-white/10 text-xs">{events.length}</span>
           </button>
           <button
             onClick={() => setActiveTab('videos')}
-            className={`py-3 border-b-2 transition-colors flex items-center gap-2 ${
+            className={`py-4 border-b-2 transition-colors whitespace-nowrap flex items-center gap-2 ${
               activeTab === 'videos' ? 'border-[#a8abdb] text-[#a8abdb]' : 'border-transparent text-slate-400 hover:text-white'
             }`}
           >
             <span>Featured Videos</span>
-            <span className="px-1.5 py-0.5 rounded-full bg-white/10 text-[11px]">{videos.length}</span>
+            <span className="px-2 py-0.5 rounded-full bg-white/10 text-xs">{videos.length}</span>
           </button>
           <button
             onClick={() => setActiveTab('admins')}
-            className={`py-3 border-b-2 transition-colors flex items-center gap-2 ${
+            className={`py-4 border-b-2 transition-colors whitespace-nowrap flex items-center gap-2 ${
               activeTab === 'admins' ? 'border-[#a8abdb] text-[#a8abdb]' : 'border-transparent text-slate-400 hover:text-white'
             }`}
           >
             <span>Admin Whitelist</span>
-            <span className="px-1.5 py-0.5 rounded-full bg-white/10 text-[11px]">{admins.length}</span>
+            <span className="px-2 py-0.5 rounded-full bg-white/10 text-xs">{admins.length}</span>
           </button>
           <button
             onClick={() => setActiveTab('settings')}
-            className={`py-3 border-b-2 transition-colors ${
+            className={`py-4 border-b-2 transition-colors whitespace-nowrap ${
               activeTab === 'settings' ? 'border-[#a8abdb] text-[#a8abdb]' : 'border-transparent text-slate-400 hover:text-white'
             }`}
           >
             System Status
           </button>
         </div>
-      </div>
 
-      {/* Notification Toast */}
-      {statusMessage && (
-        <div className="max-w-[1400px] mx-auto px-6 pt-6">
-          <div className={`p-4 rounded-xl text-sm font-medium flex items-center justify-between ${
-            statusMessage.isError ? 'bg-red-950/80 border border-red-500/40 text-red-200' : 'bg-emerald-950/80 border border-emerald-500/40 text-emerald-200'
-          }`}>
-            <span>{statusMessage.text}</span>
-            <button onClick={() => setStatusMessage(null)} className="opacity-70 hover:opacity-100 font-bold ml-4">✕</button>
+        {/* Notification Toast */}
+        {statusMessage && (
+          <div className="mb-6">
+            <div className={`p-4 rounded-xl text-sm font-medium flex items-center justify-between ${
+              statusMessage.isError ? 'bg-red-950/80 border border-red-500/40 text-red-200' : 'bg-emerald-950/80 border border-emerald-500/40 text-emerald-200'
+            }`}>
+              <span>{statusMessage.text}</span>
+              <button onClick={() => setStatusMessage(null)} className="opacity-70 hover:opacity-100 font-bold ml-4">✕</button>
+            </div>
           </div>
-        </div>
-      )}
-
-      {/* Main Content Area */}
-      <div className="max-w-[1400px] mx-auto px-6 py-8">
+        )}
 
         {/* ── TAB 1: EVENTS CMS ── */}
         {activeTab === 'events' && (
@@ -479,7 +475,7 @@ window.Admin = function Admin({ navigateTo }) {
                 }}
                 className="bg-[#9296c8] text-[#0f1128] hover:brightness-110 font-bold px-5 py-2.5 rounded-lg text-sm transition-all flex items-center gap-2 shadow-lg"
               >
-                <span>+ Add New Event</span>
+                <span>Add New Event</span>
               </button>
             </div>
 
@@ -548,7 +544,7 @@ window.Admin = function Admin({ navigateTo }) {
 
               {events.length === 0 && !loadingData && (
                 <div className="text-center py-12 text-slate-500 bg-[#0c0d23] rounded-2xl border border-white/10">
-                  <p>No events found. Click "+ Add New Event" to create one.</p>
+                  <p>No events found. Click "Add New Event" to create one.</p>
                 </div>
               )}
             </div>
@@ -570,7 +566,7 @@ window.Admin = function Admin({ navigateTo }) {
                 }}
                 className="bg-[#9296c8] text-[#0f1128] hover:brightness-110 font-bold px-5 py-2.5 rounded-lg text-sm transition-all flex items-center gap-2 shadow-lg"
               >
-                <span>+ Add Video</span>
+                <span>Add Video</span>
               </button>
             </div>
 
@@ -638,7 +634,7 @@ window.Admin = function Admin({ navigateTo }) {
                   type="submit"
                   className="bg-[#9296c8] text-[#0f1128] font-bold px-6 py-2.5 rounded-lg text-sm hover:brightness-110 transition-all whitespace-nowrap"
                 >
-                  + Add Administrator
+                  Add Administrator
                 </button>
               </form>
             </div>
@@ -666,7 +662,7 @@ window.Admin = function Admin({ navigateTo }) {
                             </span>
                           )}
                         </td>
-                        <td className="py-4 px-6 text-amber-300 font-semibold uppercase text-xs">{adm.role || 'admin'}</td>
+                        <td className="py-4 px-6 text-[#a8abdb] font-semibold uppercase text-xs">{adm.role || 'admin'}</td>
                         <td className="py-4 px-6 text-slate-400 text-xs font-mono">{adm.addedBy || 'System'}</td>
                         <td className="py-4 px-6 text-right">
                           <button
@@ -699,7 +695,7 @@ window.Admin = function Admin({ navigateTo }) {
                 <div className="bg-[#0f1128] border border-white/10 p-4 rounded-xl space-y-1">
                   <span className="text-xs text-slate-400">Firebase Firestore Status:</span>
                   <div className="text-sm font-semibold flex items-center gap-2">
-                    <span className={`w-2.5 h-2.5 rounded-full ${isFbConfigured ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`}></span>
+                    <span className={`w-2.5 h-2.5 rounded-full ${isFbConfigured ? 'bg-emerald-400 animate-pulse' : 'bg-slate-500'}`}></span>
                     {isFbConfigured ? 'Connected & Active' : 'Fallback / Local Mode'}
                   </div>
                 </div>
@@ -707,7 +703,7 @@ window.Admin = function Admin({ navigateTo }) {
                 <div className="bg-[#0f1128] border border-white/10 p-4 rounded-xl space-y-1">
                   <span className="text-xs text-slate-400">Google Client ID:</span>
                   <div className="text-sm font-semibold flex items-center gap-2">
-                    <span className={`w-2.5 h-2.5 rounded-full ${isConfigured ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
+                    <span className={`w-2.5 h-2.5 rounded-full ${isConfigured ? 'bg-emerald-400' : 'bg-slate-500'}`}></span>
                     {isConfigured ? 'Valid Configuration' : 'Default / Missing'}
                   </div>
                 </div>
@@ -715,6 +711,31 @@ window.Admin = function Admin({ navigateTo }) {
             </div>
           </div>
         )}
+
+        {/* ── UNIFIED BOTTOM ACCOUNT & SIGN OUT SECTION ── */}
+        <div className="mt-20 pt-10 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-6 bg-[#0c0d23] border border-white/10 p-8 rounded-2xl shadow-xl">
+          <div className="space-y-1 text-center sm:text-left">
+            <h4 className="text-white font-bold text-base">Authenticated Admin Account</h4>
+            <p className="text-slate-400 text-xs font-mono">
+              Signed in as <span className="text-[#a8abdb]">{auth.user.email}</span> (Google Identity Services)
+            </p>
+          </div>
+          <div className="flex items-center gap-4 w-full sm:w-auto">
+            <button
+              onClick={() => navigateTo('home')}
+              className="flex-1 sm:flex-none text-xs bg-white/5 hover:bg-white/10 text-slate-300 px-6 py-3 rounded-lg border border-white/10 transition-colors font-semibold"
+            >
+              Return to Site
+            </button>
+            <button
+              onClick={() => auth.signOut()}
+              className="flex-1 sm:flex-none text-xs bg-red-500/15 hover:bg-red-500/25 text-red-300 px-6 py-3 rounded-lg border border-red-500/30 transition-colors font-bold shadow-md"
+            >
+              Sign Out
+            </button>
+          </div>
+        </div>
+
       </div>
 
       {/* ── EVENT ADD/EDIT MODAL ── */}
@@ -832,7 +853,7 @@ function EventFormModal({ event, onClose, onSave }) {
       <div className="bg-[#0c0d23] border border-white/20 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 md:p-8 shadow-2xl space-y-6">
         <div className="flex justify-between items-center border-b border-white/10 pb-4">
           <h3 className="text-xl font-bold text-white font-['Raleway']">
-            {formData.id ? 'Edit Event' : 'Add New Event'}
+            {formData.id && !formData.id.startsWith('default_') ? 'Edit Event' : 'Add New Event'}
           </h3>
           <button onClick={onClose} className="text-slate-400 hover:text-white font-bold text-lg">✕</button>
         </div>
