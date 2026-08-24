@@ -21,27 +21,31 @@ window.Resources = function Resources({ navigateTo }) {
   const [isAddingVideo, setIsAddingVideo] = useState(false);
   const [videoForm, setVideoForm] = useState({ title: '', id: '', order: 1 });
 
-  // Subscribe to live Firestore videos if available
-  useEffect(() => {
-    if (window.isFirebaseConfigured && window.isFirebaseConfigured() && window.uqaDb) {
-      const unsub = window.uqaDb.collection('videos').orderBy('order', 'asc').onSnapshot(
-        (snapshot) => {
-          if (!snapshot.empty) {
-            const fetched = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setVideos(fetched);
-          } else {
-            setVideos(defaultVideoResources);
-          }
-        },
-        (err) => {
-          console.warn("[Resources] Firestore videos load warning:", err);
+  // Load live Supabase videos if available
+  const loadVideos = async () => {
+    if (window.isSupabaseConfigured && window.isSupabaseConfigured() && window.uqaSupabase) {
+      try {
+        const { data, error } = await window.uqaSupabase
+          .from('videos')
+          .select('*')
+          .order('order_num', { ascending: true });
+
+        if (!error && data && data.length > 0) {
+          setVideos(data);
+        } else {
           setVideos(defaultVideoResources);
         }
-      );
-      return () => unsub();
+      } catch (err) {
+        console.warn("[Resources] Supabase videos load warning:", err);
+        setVideos(defaultVideoResources);
+      }
     } else {
       setVideos(defaultVideoResources);
     }
+  };
+
+  useEffect(() => {
+    loadVideos();
   }, []);
 
   // Safe active video resolution
@@ -61,15 +65,17 @@ window.Resources = function Resources({ navigateTo }) {
     const payload = {
       id: cleanId,
       title: videoForm.title.trim(),
-      order: Number(videoForm.order) || (videos.length + 1),
-      updatedAt: new Date().toISOString()
+      order_num: Number(videoForm.order) || (videos.length + 1),
+      updated_at: new Date().toISOString()
     };
 
-    if (window.uqaDb && auth.isAdmin) {
+    if (window.uqaSupabase && window.isSupabaseConfigured() && auth.isAdmin) {
       try {
-        await window.uqaDb.collection('videos').doc(payload.id).set(payload, { merge: true });
+        const { error } = await window.uqaSupabase.from('videos').upsert(payload);
+        if (error) throw error;
         setIsAddingVideo(false);
         setVideoForm({ title: '', id: '', order: 1 });
+        loadVideos();
       } catch (err) {
         alert("Failed to save video: " + err.message);
       }
@@ -83,12 +89,14 @@ window.Resources = function Resources({ navigateTo }) {
 
   const handleDeleteInlineVideo = async (videoId) => {
     if (!confirm("Are you sure you want to remove this video?")) return;
-    if (window.uqaDb && auth.isAdmin) {
+    if (window.uqaSupabase && window.isSupabaseConfigured() && auth.isAdmin) {
       try {
-        await window.uqaDb.collection('videos').doc(videoId).delete();
+        const { error } = await window.uqaSupabase.from('videos').delete().eq('id', videoId);
+        if (error) throw error;
         if (activeTab >= videos.length - 1) {
           setActiveTab(Math.max(0, videos.length - 2));
         }
+        loadVideos();
       } catch (err) {
         alert("Failed to delete video: " + err.message);
       }

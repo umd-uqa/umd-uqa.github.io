@@ -11,11 +11,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Firebase v10 Compat SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+    <!-- Supabase JS v2 Client SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <!-- Google Identity Services (GIS) SDK -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -45,8 +42,8 @@
 <body>
 <div id="root"></div>
 
-<!-- Firebase Config & Authentication Layer -->
-<script type="text/babel" src="./firebase-config.js"></script>
+<!-- Supabase Config & Client Layer -->
+<script type="text/babel" src="./supabase-config.js"></script>
 
 <!-- Google Auth Config & Service -->
 <script type="text/babel" src="./google-auth-config.js"></script>

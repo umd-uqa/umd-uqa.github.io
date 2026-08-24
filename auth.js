@@ -22,8 +22,8 @@ function parseJwt(token) {
 
 /**
  * UMD UQA Unified Authentication Service
- * Bridges Google Identity Services (GIS) with Firebase Auth (v10 Compat),
- * Firestore Whitelist Verification, and resilient offline fallback.
+ * Bridges Google Identity Services (GIS) with Supabase Auth (v2 JS Client),
+ * PostgreSQL Whitelist Verification, and resilient offline fallback.
  */
 window.UQAAuth = {
   _listeners: [],
@@ -70,21 +70,26 @@ window.UQAAuth = {
   },
 
   /**
-   * Verify if email is in the Firestore admin_emails whitelist
+   * Verify if email is in the admin_emails whitelist
    */
   async checkAdminStatus(email) {
     if (!email) return false;
     const cleanEmail = email.toLowerCase().trim();
 
-    // Check Firestore if configured and online
-    if (window.isFirebaseConfigured && window.isFirebaseConfigured() && window.uqaDb) {
+    // Check Supabase if configured and online
+    if (window.isSupabaseConfigured && window.isSupabaseConfigured() && window.uqaSupabase) {
       try {
-        const doc = await window.uqaDb.collection('admin_emails').doc(cleanEmail).get();
-        if (doc.exists && doc.data()?.role === 'admin') {
+        const { data, error } = await window.uqaSupabase
+          .from('admin_emails')
+          .select('role')
+          .eq('email', cleanEmail)
+          .maybeSingle();
+
+        if (!error && data && data.role === 'admin') {
           return true;
         }
       } catch (err) {
-        console.warn("[UQA Auth] Firestore whitelist query error (unauthenticated or offline):", err);
+        console.warn("[UQA Auth] Supabase whitelist query error:", err);
       }
     }
 
@@ -103,7 +108,7 @@ window.UQAAuth = {
 
   /**
    * Handle Google Credential Response from GIS SDK
-   * Bridges GIS ID Token into Firebase Auth
+   * Bridges GIS ID Token into Supabase Auth
    */
   async _handleCredentialResponse(response) {
     if (!response || !response.credential) {
@@ -117,24 +122,28 @@ window.UQAAuth = {
       let userObj = null;
       let isAdmin = false;
 
-      // 1. If Firebase Auth is configured, exchange GIS ID Token with Firebase
-      if (window.isFirebaseConfigured && window.isFirebaseConfigured() && window.uqaAuth && window.firebase?.auth?.GoogleAuthProvider) {
+      // 1. If Supabase is configured, exchange GIS ID Token with Supabase Auth
+      if (window.isSupabaseConfigured && window.isSupabaseConfigured() && window.uqaSupabase) {
         try {
-          const credential = window.firebase.auth.GoogleAuthProvider.credential(response.credential);
-          const userCredential = await window.uqaAuth.signInWithCredential(credential);
-          const fbUser = userCredential.user;
+          const { data, error } = await window.uqaSupabase.auth.signInWithIdToken({
+            provider: 'google',
+            token: response.credential
+          });
 
-          userObj = {
-            uid: fbUser.uid,
-            email: fbUser.email,
-            displayName: fbUser.displayName || fbUser.email.split('@')[0],
-            photoURL: fbUser.photoURL || "https://www.gravatar.com/avatar/?d=mp"
-          };
-
-          isAdmin = await this.checkAdminStatus(userObj.email);
-        } catch (fbErr) {
-          console.warn("[UQA Auth] Firebase credential sign-in warning:", fbErr);
-          // Fall back to direct JWT decode if Firebase token exchange threw an issue
+          if (!error && data?.user) {
+            const sbUser = data.user;
+            userObj = {
+              uid: sbUser.id,
+              email: sbUser.email,
+              displayName: sbUser.user_metadata?.full_name || sbUser.user_metadata?.name || sbUser.email.split('@')[0],
+              photoURL: sbUser.user_metadata?.avatar_url || sbUser.user_metadata?.picture || "https://www.gravatar.com/avatar/?d=mp"
+            };
+            isAdmin = await this.checkAdminStatus(userObj.email);
+          } else if (error) {
+            console.warn("[UQA Auth] Supabase token sign-in notice:", error.message);
+          }
+        } catch (sbErr) {
+          console.warn("[UQA Auth] Supabase credential exchange notice:", sbErr);
         }
       }
 
@@ -245,12 +254,12 @@ window.UQAAuth = {
   async signOut() {
     this._emit({ isLoading: true });
 
-    // Firebase Auth sign out
-    if (window.uqaAuth) {
+    // Supabase Auth sign out
+    if (window.uqaSupabase?.auth) {
       try {
-        await window.uqaAuth.signOut();
+        await window.uqaSupabase.auth.signOut();
       } catch (e) {
-        console.warn("[UQA Auth] Firebase sign out error:", e);
+        console.warn("[UQA Auth] Supabase sign out notice:", e);
       }
     }
 
@@ -283,16 +292,17 @@ window.UQAAuth = {
 if (typeof window !== "undefined") {
   window.UQAAuth.initGIS();
 
-  // Listen to Firebase Auth state changes if Firebase is active
-  if (window.isFirebaseConfigured && window.isFirebaseConfigured() && window.uqaAuth) {
-    window.uqaAuth.onAuthStateChanged(async (fbUser) => {
-      if (fbUser) {
-        const isAdmin = await window.UQAAuth.checkAdminStatus(fbUser.email);
+  // Listen to Supabase Auth state changes if Supabase is active
+  if (window.isSupabaseConfigured && window.isSupabaseConfigured() && window.uqaSupabase?.auth) {
+    window.uqaSupabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        const sbUser = session.user;
+        const isAdmin = await window.UQAAuth.checkAdminStatus(sbUser.email);
         const userObj = {
-          uid: fbUser.uid,
-          email: fbUser.email,
-          displayName: fbUser.displayName || fbUser.email.split('@')[0],
-          photoURL: fbUser.photoURL || "https://www.gravatar.com/avatar/?d=mp"
+          uid: sbUser.id,
+          email: sbUser.email,
+          displayName: sbUser.user_metadata?.full_name || sbUser.user_metadata?.name || sbUser.email.split('@')[0],
+          photoURL: sbUser.user_metadata?.avatar_url || sbUser.user_metadata?.picture || "https://www.gravatar.com/avatar/?d=mp"
         };
         try {
           localStorage.setItem('uqa_google_user', JSON.stringify({ ...userObj, isAdmin }));

@@ -41,27 +41,31 @@ window.Events = function Events({ navigateTo }) {
   const [editingEvent, setEditingEvent] = useState(null);
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
 
-  // Subscribe to live Firestore events
-  useEffect(() => {
-    if (window.isFirebaseConfigured && window.isFirebaseConfigured() && window.uqaDb) {
-      const unsub = window.uqaDb.collection('events').orderBy('order', 'asc').onSnapshot(
-        (snapshot) => {
-          if (!snapshot.empty) {
-            const fetched = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setEvents(fetched);
-          } else {
-            setEvents(defaultAnnualEvents);
-          }
-        },
-        (err) => {
-          console.warn("[Events] Firestore events snapshot warning:", err);
+  // Load live Supabase events
+  const loadEvents = async () => {
+    if (window.isSupabaseConfigured && window.isSupabaseConfigured() && window.uqaSupabase) {
+      try {
+        const { data, error } = await window.uqaSupabase
+          .from('events')
+          .select('*')
+          .order('order_num', { ascending: true });
+
+        if (!error && data && data.length > 0) {
+          setEvents(data);
+        } else {
           setEvents(defaultAnnualEvents);
         }
-      );
-      return () => unsub();
+      } catch (err) {
+        console.warn("[Events] Supabase load warning:", err);
+        setEvents(defaultAnnualEvents);
+      }
     } else {
       setEvents(defaultAnnualEvents);
     }
+  };
+
+  useEffect(() => {
+    loadEvents();
   }, []);
 
   // Keyboard shortcut (Esc) for closing lightbox
@@ -77,36 +81,61 @@ window.Events = function Events({ navigateTo }) {
 
   // Inline Admin CRUD Actions
   const handleSaveInlineEvent = async (eventData, file) => {
-    if (!window.uqaDb) return;
+    if (!window.uqaSupabase || !window.isSupabaseConfigured()) {
+      alert("Supabase is not configured yet. Set up credentials in supabase-config.js.");
+      return;
+    }
     try {
-      let posterUrl = eventData.posterUrl || "";
-      let posterPath = eventData.posterPath || "";
+      let poster_url = eventData.poster_url || eventData.posterUrl || "";
+      let poster_path = eventData.poster_path || eventData.posterPath || "";
 
-      if (file && window.uqaStorage) {
+      if (file) {
         const cleanName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-        const filePath = `posters/${Date.now()}_${cleanName}`;
-        const posterRef = window.uqaStorage.ref().child(filePath);
-        const uploadTask = await posterRef.put(file);
-        posterUrl = await uploadTask.ref.getDownloadURL();
-        posterPath = filePath;
+        const filePath = `${Date.now()}_${cleanName}`;
+        const { error: uploadErr } = await window.uqaSupabase.storage
+          .from('posters')
+          .upload(filePath, file, { cacheControl: '3600', upsert: true });
+
+        if (uploadErr) throw new Error(uploadErr.message);
+
+        const { data: urlData } = window.uqaSupabase.storage
+          .from('posters')
+          .getPublicUrl(filePath);
+
+        poster_url = urlData?.publicUrl || "";
+        poster_path = filePath;
       }
 
       const payload = {
-        ...eventData,
-        posterUrl,
-        posterPath,
-        updatedAt: new Date().toISOString()
+        month: eventData.month,
+        day: eventData.day,
+        year: eventData.year || "2026",
+        title: eventData.title,
+        subtitle: eventData.subtitle || "",
+        description: eventData.description,
+        highlights: eventData.highlights || [],
+        links: eventData.links || [],
+        poster_url,
+        poster_path,
+        poster_alt: eventData.poster_alt || eventData.title || "Event Poster",
+        is_annual: Boolean(eventData.is_annual || eventData.isAnnual),
+        order_num: Number(eventData.order_num || eventData.order) || 1,
+        updated_at: new Date().toISOString()
       };
 
       if (editingEvent?.id && !editingEvent.id.startsWith('default_')) {
-        await window.uqaDb.collection('events').doc(editingEvent.id).update(payload);
+        payload.id = editingEvent.id;
+        const { error } = await window.uqaSupabase.from('events').upsert(payload);
+        if (error) throw error;
       } else {
-        payload.createdAt = new Date().toISOString();
-        await window.uqaDb.collection('events').add(payload);
+        payload.created_at = new Date().toISOString();
+        const { error } = await window.uqaSupabase.from('events').insert([payload]);
+        if (error) throw error;
       }
 
       setIsEventModalOpen(false);
       setEditingEvent(null);
+      loadEvents();
     } catch (err) {
       alert("Failed to save event: " + err.message);
     }
@@ -115,12 +144,13 @@ window.Events = function Events({ navigateTo }) {
   const handleDeleteInlineEvent = async (eventId, posterPath) => {
     if (!confirm("Are you sure you want to remove this event?")) return;
     try {
-      if (window.uqaDb && eventId && !eventId.startsWith('default_')) {
-        await window.uqaDb.collection('events').doc(eventId).delete();
+      if (window.uqaSupabase && window.isSupabaseConfigured() && eventId && !eventId.startsWith('default_')) {
+        const { error } = await window.uqaSupabase.from('events').delete().eq('id', eventId);
+        if (error) throw error;
       }
-      if (posterPath && window.uqaStorage) {
+      if (posterPath && window.uqaSupabase?.storage) {
         try {
-          await window.uqaStorage.ref().child(posterPath).delete();
+          await window.uqaSupabase.storage.from('posters').remove([posterPath]);
         } catch (e) {}
       }
       setEvents(events.filter(e => e.id !== eventId));
@@ -129,7 +159,7 @@ window.Events = function Events({ navigateTo }) {
     }
   };
 
-  const postersList = events.filter(e => Boolean(e.posterUrl));
+  const postersList = events.filter(e => Boolean(e.poster_url || e.posterUrl));
 
   return (
     <div className="min-h-screen bg-[#0f1128] text-[#f0f0f8] font-sans selection:bg-[#9296c8]/30 animate-fade-in">
@@ -264,9 +294,13 @@ window.Events = function Events({ navigateTo }) {
                     ))}
 
                     {/* Poster Lightbox Trigger */}
-                    {event.posterUrl && (
+                    {(event.poster_url || event.posterUrl) && (
                       <button
-                        onClick={() => setSelectedLightboxPoster({ url: event.posterUrl, alt: event.posterAlt || event.title, title: event.title })}
+                        onClick={() => setSelectedLightboxPoster({
+                          url: event.poster_url || event.posterUrl,
+                          alt: event.poster_alt || event.posterAlt || event.title,
+                          title: event.title
+                        })}
                         className="flex items-center gap-2.5 text-[#a8abdb] hover:text-white border border-[#9a9dd4]/30 hover:border-[#9a9dd4] px-5 py-3 rounded-[6px] text-[14px] font-semibold transition-all bg-[#9a9dd4]/5"
                       >
                         <svg className="w-5 h-5 text-[#9296c8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -292,12 +326,16 @@ window.Events = function Events({ navigateTo }) {
               {postersList.map((evt, i) => (
                 <div
                   key={evt.id || i}
-                  onClick={() => setSelectedLightboxPoster({ url: evt.posterUrl, alt: evt.posterAlt || evt.title, title: evt.title })}
+                  onClick={() => setSelectedLightboxPoster({
+                    url: evt.poster_url || evt.posterUrl,
+                    alt: evt.poster_alt || evt.posterAlt || evt.title,
+                    title: evt.title
+                  })}
                   className="group relative rounded-2xl overflow-hidden border border-white/10 bg-[#0c0d23] cursor-pointer hover:border-[#a8abdb]/60 transition-all shadow-lg aspect-[3/4]"
                 >
                   <img
-                    src={evt.posterUrl}
-                    alt={evt.posterAlt || evt.title}
+                    src={evt.poster_url || evt.posterUrl}
+                    alt={evt.poster_alt || evt.posterAlt || evt.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">

@@ -2,7 +2,7 @@ const { useState, useEffect, useRef } = window.React || React;
 
 /**
  * UMD UQA ADMIN CMS DASHBOARD
- * Unified Content Management System with fused account profile and clean quantum theme.
+ * Unified Content Management System powered by Supabase (PostgreSQL & Storage).
  */
 window.Admin = function Admin({ navigateTo }) {
   const auth = window.useUQAAuth ? window.useUQAAuth() : { user: null, isAdmin: false, isLoading: false, error: null };
@@ -27,7 +27,7 @@ window.Admin = function Admin({ navigateTo }) {
   const googleBtnRef = useRef(null);
 
   const isConfigured = window.isGoogleAuthConfigured ? window.isGoogleAuthConfigured() : false;
-  const isFbConfigured = window.isFirebaseConfigured ? window.isFirebaseConfigured() : false;
+  const isSbConfigured = window.isSupabaseConfigured ? window.isSupabaseConfigured() : false;
 
   // Mount Google Sign-In button if guest
   useEffect(() => {
@@ -42,78 +42,100 @@ window.Admin = function Admin({ navigateTo }) {
     }
   }, [auth.user, isConfigured]);
 
-  // Load Firestore data when admin is authenticated
-  useEffect(() => {
-    if (auth.isAdmin && window.uqaDb) {
-      setLoadingData(true);
-
-      // Subscribe to Events
-      const unsubEvents = window.uqaDb.collection('events').orderBy('order', 'asc').onSnapshot(
-        (snapshot) => {
-          const evts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-          setEvents(evts);
-          setLoadingData(false);
-        },
-        (err) => {
-          console.warn("[Admin] Events snapshot error:", err);
-          setEvents([
-            {
-              id: "default_qlcn",
-              month: "Sept",
-              day: "15",
-              year: "2026",
-              title: "Quantum Leap Career Nexus",
-              subtitle: "QLCN 2026 · University of Maryland",
-              description: "A career fair and professional development event bringing together quantum computing students, researchers, and industry professionals.",
-              highlights: [
-                "Networking with quantum industry professionals and recruiters",
-                "Workshops focused on internship and job placement"
-              ],
-              links: [
-                { label: "Register via Handshake", url: "https://go.umd.edu/QLCNregister", primary: true }
-              ],
-              isAnnual: true,
-              order: 1
-            }
-          ]);
-          setLoadingData(false);
-        }
-      );
-
-      // Subscribe to Videos
-      const unsubVideos = window.uqaDb.collection('videos').orderBy('order', 'asc').onSnapshot(
-        (snapshot) => {
-          const vids = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-          setVideos(vids);
-        },
-        (err) => {
-          console.warn("[Admin] Videos snapshot error:", err);
-          setVideos([
-            { id: "agOdzgWTr-Y", title: "QuEra Workshop 1", order: 1 },
-            { id: "i_MKOCxInOQ", title: "QuEra Quantum Challenge Walkthrough", order: 2 },
-            { id: "xEa3WIzgxDQ", title: "QuEra Workshop 2", order: 3 }
-          ]);
-        }
-      );
-
-      // Subscribe to Admins
-      const unsubAdmins = window.uqaDb.collection('admin_emails').onSnapshot(
-        (snapshot) => {
-          const adms = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-          setAdmins(adms);
-        },
-        (err) => {
-          console.warn("[Admin] Admins snapshot error:", err);
-        }
-      );
-
-      return () => {
-        unsubEvents();
-        unsubVideos();
-        unsubAdmins();
-      };
+  const defaultEventsFallback = [
+    {
+      id: "default_qlcn",
+      month: "Sept",
+      day: "15",
+      year: "2026",
+      title: "Quantum Leap Career Nexus",
+      subtitle: "QLCN 2026 · University of Maryland",
+      description: "A career fair and professional development event bringing together quantum computing students, researchers, and industry professionals.",
+      highlights: [
+        "Networking with quantum industry professionals and recruiters",
+        "Workshops focused on internship and job placement"
+      ],
+      links: [
+        { label: "Register via Handshake", url: "https://go.umd.edu/QLCNregister", primary: true }
+      ],
+      is_annual: true,
+      order_num: 1
     }
-  }, [auth.isAdmin]);
+  ];
+
+  const defaultVideosFallback = [
+    { id: "agOdzgWTr-Y", title: "QuEra Workshop 1", order_num: 1 },
+    { id: "i_MKOCxInOQ", title: "QuEra Quantum Challenge Walkthrough", order_num: 2 },
+    { id: "xEa3WIzgxDQ", title: "QuEra Workshop 2", order_num: 3 }
+  ];
+
+  // Fetch all CMS data from Supabase
+  const loadCMSData = async () => {
+    if (!auth.isAdmin) return;
+    setLoadingData(true);
+
+    if (window.uqaSupabase && isSbConfigured) {
+      try {
+        // 1. Fetch Events
+        const { data: eventsData, error: eventsErr } = await window.uqaSupabase
+          .from('events')
+          .select('*')
+          .order('order_num', { ascending: true });
+        
+        if (!eventsErr && eventsData) {
+          setEvents(eventsData);
+        } else {
+          console.warn("[Admin] Supabase events load notice:", eventsErr);
+          setEvents(defaultEventsFallback);
+        }
+
+        // 2. Fetch Videos
+        const { data: vidsData, error: vidsErr } = await window.uqaSupabase
+          .from('videos')
+          .select('*')
+          .order('order_num', { ascending: true });
+        
+        if (!vidsErr && vidsData) {
+          setVideos(vidsData);
+        } else {
+          setVideos(defaultVideosFallback);
+        }
+
+        // 3. Fetch Admins
+        const { data: admsData, error: admsErr } = await window.uqaSupabase
+          .from('admin_emails')
+          .select('*');
+        
+        if (!admsErr && admsData) {
+          setAdmins(admsData);
+        } else {
+          setAdmins([
+            { email: 'itskrithikmohan@gmail.com', role: 'admin', added_by: 'System' },
+            { email: 'krithikm@terpmail.umd.edu', role: 'admin', added_by: 'System' },
+            { email: 'umd.uqa@gmail.com', role: 'admin', added_by: 'System' }
+          ]);
+        }
+      } catch (err) {
+        console.warn("[Admin] Supabase data load error:", err);
+        setEvents(defaultEventsFallback);
+        setVideos(defaultVideosFallback);
+      }
+    } else {
+      // Local/offline fallback
+      setEvents(defaultEventsFallback);
+      setVideos(defaultVideosFallback);
+      setAdmins([
+        { email: 'itskrithikmohan@gmail.com', role: 'admin', added_by: 'System' },
+        { email: 'krithikm@terpmail.umd.edu', role: 'admin', added_by: 'System' },
+        { email: 'umd.uqa@gmail.com', role: 'admin', added_by: 'System' }
+      ]);
+    }
+    setLoadingData(false);
+  };
+
+  useEffect(() => {
+    loadCMSData();
+  }, [auth.isAdmin, isSbConfigured]);
 
   const showNotification = (msg, isError = false) => {
     setStatusMessage({ text: msg, isError });
@@ -137,7 +159,7 @@ window.Admin = function Admin({ navigateTo }) {
           </div>
 
           <div className="mt-8 pt-6 border-t border-white/10 flex justify-between items-center text-xs text-slate-500">
-            <span>Powered by Google & Firebase</span>
+            <span>Powered by Google & Supabase</span>
             <button onClick={() => navigateTo('home')} className="text-[#a8abdb] hover:underline">Home</button>
           </div>
         </div>
@@ -158,7 +180,7 @@ window.Admin = function Admin({ navigateTo }) {
           </p>
 
           <div className="bg-[#0f1128] border border-white/10 rounded-xl p-4 text-left text-xs text-slate-400">
-            <p>To obtain admin permissions, ask an existing officer to add your email to the whitelist in Firebase.</p>
+            <p>To obtain admin permissions, ask an existing officer to add your email to the whitelist in Supabase.</p>
           </div>
 
           <div className="flex gap-4 pt-2">
@@ -184,45 +206,71 @@ window.Admin = function Admin({ navigateTo }) {
   // EVENT CRUD HANDLERS
   // ----------------------------------------------------
   const handleSaveEvent = async (eventData, file) => {
-    if (!window.uqaDb) {
-      showNotification("Firestore is not available.", true);
+    if (!window.uqaSupabase || !isSbConfigured) {
+      showNotification("Supabase is not configured yet. Changes cannot persist.", true);
       return;
     }
 
     try {
-      let posterUrl = eventData.posterUrl || "";
-      let posterPath = eventData.posterPath || "";
+      let poster_url = eventData.poster_url || eventData.posterUrl || "";
+      let poster_path = eventData.poster_path || eventData.posterPath || "";
 
-      // Upload file to Cloud Storage if provided
-      if (file && window.uqaStorage) {
-        const storageRef = window.uqaStorage.ref();
+      // Upload file to Supabase Storage bucket 'posters' if file is selected
+      if (file) {
         const cleanName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-        const filePath = `posters/${Date.now()}_${cleanName}`;
-        const posterFileRef = storageRef.child(filePath);
+        const filePath = `${Date.now()}_${cleanName}`;
 
-        const uploadTask = await posterFileRef.put(file);
-        posterUrl = await uploadTask.ref.getDownloadURL();
-        posterPath = filePath;
+        const { data: uploadData, error: uploadErr } = await window.uqaSupabase.storage
+          .from('posters')
+          .upload(filePath, file, {
+            cacheControl: '3600',
+            upsert: true
+          });
+
+        if (uploadErr) {
+          throw new Error(`Poster upload failed: ${uploadErr.message}`);
+        }
+
+        const { data: urlData } = window.uqaSupabase.storage
+          .from('posters')
+          .getPublicUrl(filePath);
+
+        poster_url = urlData?.publicUrl || "";
+        poster_path = filePath;
       }
 
       const payload = {
-        ...eventData,
-        posterUrl,
-        posterPath,
-        updatedAt: new Date().toISOString()
+        month: eventData.month,
+        day: eventData.day,
+        year: eventData.year || "2026",
+        title: eventData.title,
+        subtitle: eventData.subtitle || "",
+        description: eventData.description,
+        highlights: eventData.highlights || [],
+        links: eventData.links || [],
+        poster_url: poster_url,
+        poster_path: poster_path,
+        poster_alt: eventData.poster_alt || eventData.title || "Event Poster",
+        is_annual: Boolean(eventData.is_annual || eventData.isAnnual),
+        order_num: Number(eventData.order_num || eventData.order) || 1,
+        updated_at: new Date().toISOString()
       };
 
-      if (editingEvent && editingEvent.id && !editingEvent.id.startsWith('default_')) {
-        await window.uqaDb.collection('events').doc(editingEvent.id).update(payload);
+      if (editingEvent?.id && !editingEvent.id.startsWith('default_')) {
+        payload.id = editingEvent.id;
+        const { error } = await window.uqaSupabase.from('events').upsert(payload);
+        if (error) throw error;
         showNotification("Event updated successfully!");
       } else {
-        payload.createdAt = new Date().toISOString();
-        await window.uqaDb.collection('events').add(payload);
+        payload.created_at = new Date().toISOString();
+        const { error } = await window.uqaSupabase.from('events').insert([payload]);
+        if (error) throw error;
         showNotification("New event added successfully!");
       }
 
       setIsEventModalOpen(false);
       setEditingEvent(null);
+      loadCMSData();
     } catch (err) {
       console.error("[Admin] Error saving event:", err);
       showNotification(`Failed to save event: ${err.message}`, true);
@@ -233,21 +281,22 @@ window.Admin = function Admin({ navigateTo }) {
     if (!confirm("Are you sure you want to delete this event? This action cannot be undone.")) return;
 
     try {
-      if (window.uqaDb && eventId && !eventId.startsWith('default_')) {
-        await window.uqaDb.collection('events').doc(eventId).delete();
+      if (window.uqaSupabase && isSbConfigured && eventId && !eventId.startsWith('default_')) {
+        const { error } = await window.uqaSupabase.from('events').delete().eq('id', eventId);
+        if (error) throw error;
       }
 
-      // Cleanup poster from Cloud Storage if exists
-      if (posterPath && window.uqaStorage) {
+      // Cleanup poster from Supabase Storage if path exists
+      if (posterPath && window.uqaSupabase?.storage) {
         try {
-          const posterRef = window.uqaStorage.ref().child(posterPath);
-          await posterRef.delete();
+          await window.uqaSupabase.storage.from('posters').remove([posterPath]);
         } catch (e) {
-          console.warn("[Admin] Could not delete poster from storage:", e);
+          console.warn("[Admin] Poster storage deletion notice:", e);
         }
       }
 
       showNotification("Event deleted successfully!");
+      loadCMSData();
     } catch (err) {
       console.error("[Admin] Error deleting event:", err);
       showNotification(`Failed to delete event: ${err.message}`, true);
@@ -258,13 +307,12 @@ window.Admin = function Admin({ navigateTo }) {
   // VIDEO CRUD HANDLERS
   // ----------------------------------------------------
   const handleSaveVideo = async (videoData) => {
-    if (!window.uqaDb) {
-      showNotification("Firestore is not available.", true);
+    if (!window.uqaSupabase || !isSbConfigured) {
+      showNotification("Supabase is not configured yet. Changes cannot persist.", true);
       return;
     }
 
     try {
-      // Parse YouTube ID if full URL pasted
       let videoId = videoData.id.trim();
       const match = videoId.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
       if (match && match[1]) {
@@ -274,8 +322,8 @@ window.Admin = function Admin({ navigateTo }) {
       const payload = {
         id: videoId,
         title: videoData.title.trim(),
-        order: Number(videoData.order) || 1,
-        updatedAt: new Date().toISOString()
+        order_num: Number(videoData.order_num || videoData.order) || 1,
+        updated_at: new Date().toISOString()
       };
 
       if (!payload.id || !payload.title) {
@@ -283,10 +331,13 @@ window.Admin = function Admin({ navigateTo }) {
         return;
       }
 
-      await window.uqaDb.collection('videos').doc(payload.id).set(payload, { merge: true });
+      const { error } = await window.uqaSupabase.from('videos').upsert(payload);
+      if (error) throw error;
+
       showNotification("Video saved successfully!");
       setIsVideoModalOpen(false);
       setEditingVideo(null);
+      loadCMSData();
     } catch (err) {
       console.error("[Admin] Error saving video:", err);
       showNotification(`Failed to save video: ${err.message}`, true);
@@ -296,9 +347,11 @@ window.Admin = function Admin({ navigateTo }) {
   const handleDeleteVideo = async (videoId) => {
     if (!confirm("Are you sure you want to remove this video?")) return;
     try {
-      if (window.uqaDb) {
-        await window.uqaDb.collection('videos').doc(videoId).delete();
+      if (window.uqaSupabase && isSbConfigured) {
+        const { error } = await window.uqaSupabase.from('videos').delete().eq('id', videoId);
+        if (error) throw error;
         showNotification("Video removed successfully!");
+        loadCMSData();
       }
     } catch (err) {
       console.error("[Admin] Error deleting video:", err);
@@ -318,15 +371,17 @@ window.Admin = function Admin({ navigateTo }) {
 
     const cleanEmail = newAdminEmail.toLowerCase().trim();
     try {
-      if (window.uqaDb) {
-        await window.uqaDb.collection('admin_emails').doc(cleanEmail).set({
+      if (window.uqaSupabase && isSbConfigured) {
+        const { error } = await window.uqaSupabase.from('admin_emails').upsert({
           email: cleanEmail,
           role: 'admin',
-          addedBy: auth.user.email,
-          createdAt: new Date().toISOString()
+          added_by: auth.user.email,
+          created_at: new Date().toISOString()
         });
+        if (error) throw error;
         setNewAdminEmail('');
         showNotification(`Added ${cleanEmail} as admin!`);
+        loadCMSData();
       }
     } catch (err) {
       console.error("[Admin] Error adding admin email:", err);
@@ -342,9 +397,11 @@ window.Admin = function Admin({ navigateTo }) {
     if (!confirm(`Are you sure you want to remove ${email} from administrators?`)) return;
 
     try {
-      if (window.uqaDb) {
-        await window.uqaDb.collection('admin_emails').doc(email.toLowerCase().trim()).delete();
+      if (window.uqaSupabase && isSbConfigured) {
+        const { error } = await window.uqaSupabase.from('admin_emails').delete().eq('email', email.toLowerCase().trim());
+        if (error) throw error;
         showNotification(`Removed ${email} from admin whitelist.`);
+        loadCMSData();
       }
     } catch (err) {
       console.error("[Admin] Error removing admin:", err);
@@ -366,7 +423,7 @@ window.Admin = function Admin({ navigateTo }) {
               Admin CMS
             </h1>
             <p className="text-slate-400 text-base md:text-lg">
-              Manage website events, flyers, featured videos, and officer whitelist access.
+              Manage website events, flyers, featured videos, and officer whitelist access via Supabase.
             </p>
           </div>
 
@@ -452,7 +509,7 @@ window.Admin = function Admin({ navigateTo }) {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[#0c0d23] border border-white/10 p-6 rounded-2xl">
               <div>
                 <h2 className="text-xl font-bold text-white font-['Raleway']">Event Management</h2>
-                <p className="text-slate-400 text-sm">Add, edit details, upload flyer posters, and remove events.</p>
+                <p className="text-slate-400 text-sm">Add, edit details, upload flyer posters to Supabase Storage, and remove events.</p>
               </div>
               <button
                 onClick={() => {
@@ -465,11 +522,11 @@ window.Admin = function Admin({ navigateTo }) {
                     description: "",
                     highlights: [""],
                     links: [{ label: "Register", url: "", primary: true }],
-                    posterUrl: "",
-                    posterPath: "",
-                    posterAlt: "Event Poster",
-                    isAnnual: true,
-                    order: events.length + 1
+                    poster_url: "",
+                    poster_path: "",
+                    poster_alt: "Event Poster",
+                    is_annual: true,
+                    order_num: events.length + 1
                   });
                   setIsEventModalOpen(true);
                 }}
@@ -495,7 +552,7 @@ window.Admin = function Admin({ navigateTo }) {
                     <div className="space-y-2 flex-1">
                       <div className="flex items-center gap-3 flex-wrap">
                         <h3 className="text-lg font-bold text-white">{evt.title}</h3>
-                        {evt.isAnnual && (
+                        {(evt.is_annual || evt.isAnnual) && (
                           <span className="px-2 py-0.5 bg-[#9296c8]/15 border border-[#9296c8]/30 text-[#a8abdb] text-xs rounded-md font-semibold">
                             Annual
                           </span>
@@ -506,19 +563,21 @@ window.Admin = function Admin({ navigateTo }) {
                       <div className="flex items-center gap-4 text-xs text-slate-400 pt-2">
                         <span>{evt.highlights?.length || 0} Highlights</span>
                         <span>{evt.links?.length || 0} Action Links</span>
-                        {evt.posterUrl && <span className="text-emerald-400 font-medium">Poster Uploaded</span>}
+                        {(evt.poster_url || evt.posterUrl) && (
+                          <span className="text-emerald-400 font-medium">Poster Uploaded</span>
+                        )}
                       </div>
                     </div>
                   </div>
 
                   {/* Poster Thumbnail & Actions */}
                   <div className="flex sm:flex-row lg:flex-col items-end gap-4 w-full lg:w-auto justify-between border-t lg:border-t-0 pt-4 lg:pt-0 border-white/10">
-                    {evt.posterUrl && (
+                    {(evt.poster_url || evt.posterUrl) && (
                       <img
-                        src={evt.posterUrl}
-                        alt={evt.posterAlt || evt.title}
+                        src={evt.poster_url || evt.posterUrl}
+                        alt={evt.poster_alt || evt.title}
                         className="w-20 h-28 object-cover rounded-lg border border-white/20 shadow-md cursor-pointer hover:opacity-80 transition-opacity"
-                        onClick={() => setSelectedPosterPreview(evt.posterUrl)}
+                        onClick={() => setSelectedPosterPreview(evt.poster_url || evt.posterUrl)}
                       />
                     )}
                     <div className="flex gap-2">
@@ -532,7 +591,7 @@ window.Admin = function Admin({ navigateTo }) {
                         Edit
                       </button>
                       <button
-                        onClick={() => handleDeleteEvent(evt.id, evt.posterPath)}
+                        onClick={() => handleDeleteEvent(evt.id, evt.poster_path || evt.posterPath)}
                         className="px-3 py-1.5 bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 rounded-lg text-xs font-semibold transition-colors"
                       >
                         Delete
@@ -561,7 +620,7 @@ window.Admin = function Admin({ navigateTo }) {
               </div>
               <button
                 onClick={() => {
-                  setEditingVideo({ title: '', id: '', order: videos.length + 1 });
+                  setEditingVideo({ title: '', id: '', order_num: videos.length + 1 });
                   setIsVideoModalOpen(true);
                 }}
                 className="bg-[#9296c8] text-[#0f1128] hover:brightness-110 font-bold px-5 py-2.5 rounded-lg text-sm transition-all flex items-center gap-2 shadow-lg"
@@ -586,7 +645,7 @@ window.Admin = function Admin({ navigateTo }) {
                   <div className="p-5 space-y-3">
                     <div className="flex justify-between items-start gap-2">
                       <h4 className="font-bold text-white text-base">{vid.title}</h4>
-                      <span className="text-[11px] px-2 py-0.5 bg-white/10 text-slate-300 rounded font-mono">#{vid.order}</span>
+                      <span className="text-[11px] px-2 py-0.5 bg-white/10 text-slate-300 rounded font-mono">#{vid.order_num || vid.order}</span>
                     </div>
                     <div className="text-xs text-slate-400 font-mono">ID: {vid.id}</div>
                     <div className="flex justify-end gap-2 pt-3 border-t border-white/10">
@@ -653,7 +712,7 @@ window.Admin = function Admin({ navigateTo }) {
                   {admins.map((adm) => {
                     const isCurrent = adm.email?.toLowerCase().trim() === auth.user.email?.toLowerCase().trim();
                     return (
-                      <tr key={adm.id || adm.email} className="hover:bg-white/[0.02]">
+                      <tr key={adm.email} className="hover:bg-white/[0.02]">
                         <td className="py-4 px-6 font-mono text-white flex items-center gap-2">
                           <span>{adm.email}</span>
                           {isCurrent && (
@@ -663,7 +722,7 @@ window.Admin = function Admin({ navigateTo }) {
                           )}
                         </td>
                         <td className="py-4 px-6 text-[#a8abdb] font-semibold uppercase text-xs">{adm.role || 'admin'}</td>
-                        <td className="py-4 px-6 text-slate-400 text-xs font-mono">{adm.addedBy || 'System'}</td>
+                        <td className="py-4 px-6 text-slate-400 text-xs font-mono">{adm.added_by || adm.addedBy || 'System'}</td>
                         <td className="py-4 px-6 text-right">
                           <button
                             onClick={() => handleRemoveAdmin(adm.email)}
@@ -689,14 +748,14 @@ window.Admin = function Admin({ navigateTo }) {
           <div className="space-y-6">
             <div className="bg-[#0c0d23] border border-white/10 p-6 rounded-2xl space-y-4">
               <h2 className="text-xl font-bold text-white font-['Raleway']">System Connection Status</h2>
-              <p className="text-slate-400 text-sm">Verify backend service connectivity and configuration health.</p>
+              <p className="text-slate-400 text-sm">Verify Supabase database connectivity and Google Client ID configuration health.</p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
                 <div className="bg-[#0f1128] border border-white/10 p-4 rounded-xl space-y-1">
-                  <span className="text-xs text-slate-400">Firebase Firestore Status:</span>
+                  <span className="text-xs text-slate-400">Supabase Backend Status:</span>
                   <div className="text-sm font-semibold flex items-center gap-2">
-                    <span className={`w-2.5 h-2.5 rounded-full ${isFbConfigured ? 'bg-emerald-400 animate-pulse' : 'bg-slate-500'}`}></span>
-                    {isFbConfigured ? 'Connected & Active' : 'Fallback / Local Mode'}
+                    <span className={`w-2.5 h-2.5 rounded-full ${isSbConfigured ? 'bg-emerald-400 animate-pulse' : 'bg-slate-500'}`}></span>
+                    {isSbConfigured ? 'Connected & Active' : 'Fallback / Local Mode'}
                   </div>
                 </div>
 
@@ -717,7 +776,7 @@ window.Admin = function Admin({ navigateTo }) {
           <div className="space-y-1 text-center sm:text-left">
             <h4 className="text-white font-bold text-base">Authenticated Admin Account</h4>
             <p className="text-slate-400 text-xs font-mono">
-              Signed in as <span className="text-[#a8abdb]">{auth.user.email}</span> (Google Identity Services)
+              Signed in as <span className="text-[#a8abdb]">{auth.user.email}</span> (Google Identity Services + Supabase)
             </p>
           </div>
           <div className="flex items-center gap-4 w-full sm:w-auto">
@@ -787,9 +846,13 @@ window.Admin = function Admin({ navigateTo }) {
  * Event Form Modal Subcomponent
  */
 function EventFormModal({ event, onClose, onSave }) {
-  const [formData, setFormData] = useState({ ...event });
+  const [formData, setFormData] = useState({
+    ...event,
+    highlights: Array.isArray(event.highlights) ? event.highlights : [],
+    links: Array.isArray(event.links) ? event.links : []
+  });
   const [posterFile, setPosterFile] = useState(null);
-  const [posterPreviewUrl, setPosterPreviewUrl] = useState(event.posterUrl || '');
+  const [posterPreviewUrl, setPosterPreviewUrl] = useState(event.poster_url || event.posterUrl || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleHighlightChange = (idx, value) => {
@@ -837,8 +900,8 @@ function EventFormModal({ event, onClose, onSave }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    const cleanedHighlights = (formData.highlights || []).filter(h => h.trim() !== '');
-    const cleanedLinks = (formData.links || []).filter(l => l.label.trim() !== '' && l.url.trim() !== '');
+    const cleanedHighlights = (formData.highlights || []).filter(h => typeof h === 'string' && h.trim() !== '');
+    const cleanedLinks = (formData.links || []).filter(l => l.label && l.label.trim() !== '' && l.url && l.url.trim() !== '');
 
     await onSave({
       ...formData,
@@ -866,7 +929,7 @@ function EventFormModal({ event, onClose, onSave }) {
               <input
                 type="text"
                 placeholder="e.g. Sept"
-                value={formData.month}
+                value={formData.month || ''}
                 onChange={e => setFormData({ ...formData, month: e.target.value })}
                 className="w-full bg-[#0f1128] border border-white/20 rounded-lg p-2.5 text-white"
                 required
@@ -877,7 +940,7 @@ function EventFormModal({ event, onClose, onSave }) {
               <input
                 type="text"
                 placeholder="e.g. 15"
-                value={formData.day}
+                value={formData.day || ''}
                 onChange={e => setFormData({ ...formData, day: e.target.value })}
                 className="w-full bg-[#0f1128] border border-white/20 rounded-lg p-2.5 text-white"
                 required
@@ -888,7 +951,7 @@ function EventFormModal({ event, onClose, onSave }) {
               <input
                 type="text"
                 placeholder="e.g. 2026"
-                value={formData.year}
+                value={formData.year || '2026'}
                 onChange={e => setFormData({ ...formData, year: e.target.value })}
                 className="w-full bg-[#0f1128] border border-white/20 rounded-lg p-2.5 text-white"
               />
@@ -901,7 +964,7 @@ function EventFormModal({ event, onClose, onSave }) {
             <input
               type="text"
               placeholder="e.g. Quantum Leap Career Nexus"
-              value={formData.title}
+              value={formData.title || ''}
               onChange={e => setFormData({ ...formData, title: e.target.value })}
               className="w-full bg-[#0f1128] border border-white/20 rounded-lg p-2.5 text-white"
               required
@@ -913,7 +976,7 @@ function EventFormModal({ event, onClose, onSave }) {
             <input
               type="text"
               placeholder="e.g. QLCN 2026 · University of Maryland"
-              value={formData.subtitle}
+              value={formData.subtitle || ''}
               onChange={e => setFormData({ ...formData, subtitle: e.target.value })}
               className="w-full bg-[#0f1128] border border-white/20 rounded-lg p-2.5 text-white"
             />
@@ -925,7 +988,7 @@ function EventFormModal({ event, onClose, onSave }) {
             <textarea
               rows="3"
               placeholder="Detailed summary of the event..."
-              value={formData.description}
+              value={formData.description || ''}
               onChange={e => setFormData({ ...formData, description: e.target.value })}
               className="w-full bg-[#0f1128] border border-white/20 rounded-lg p-2.5 text-white"
               required
@@ -961,21 +1024,21 @@ function EventFormModal({ event, onClose, onSave }) {
                   <input
                     type="text"
                     placeholder="Label (e.g. Register via Handshake)"
-                    value={lnk.label}
+                    value={lnk.label || ''}
                     onChange={e => handleLinkChange(i, 'label', e.target.value)}
                     className="flex-1 bg-transparent border-b border-white/20 p-1 text-xs text-white"
                   />
                   <input
                     type="url"
                     placeholder="URL (https://...)"
-                    value={lnk.url}
+                    value={lnk.url || ''}
                     onChange={e => handleLinkChange(i, 'url', e.target.value)}
                     className="flex-1 bg-transparent border-b border-white/20 p-1 text-xs text-white"
                   />
                   <label className="flex items-center gap-1 text-[11px] text-slate-400 whitespace-nowrap">
                     <input
                       type="checkbox"
-                      checked={lnk.primary}
+                      checked={Boolean(lnk.primary)}
                       onChange={e => handleLinkChange(i, 'primary', e.target.checked)}
                     />
                     Primary
@@ -1001,7 +1064,7 @@ function EventFormModal({ event, onClose, onSave }) {
                   onChange={handleFileSelect}
                   className="text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-[#9296c8]/20 file:text-[#a8abdb] hover:file:bg-[#9296c8]/30"
                 />
-                <span className="block text-[11px] text-slate-500 mt-1">PNG, JPG, or WebP up to 5MB</span>
+                <span className="block text-[11px] text-slate-500 mt-1">PNG, JPG, or WebP up to 5MB (Supabase Storage)</span>
               </div>
               {posterPreviewUrl && (
                 <button
@@ -1009,7 +1072,7 @@ function EventFormModal({ event, onClose, onSave }) {
                   onClick={() => {
                     setPosterFile(null);
                     setPosterPreviewUrl('');
-                    setFormData({ ...formData, posterUrl: '', posterPath: '' });
+                    setFormData({ ...formData, poster_url: '', poster_path: '', posterUrl: '', posterPath: '' });
                   }}
                   className="text-xs text-red-400 hover:underline"
                 >
@@ -1048,11 +1111,11 @@ function EventFormModal({ event, onClose, onSave }) {
 function VideoFormModal({ video, onClose, onSave }) {
   const [title, setTitle] = useState(video.title || '');
   const [videoInput, setVideoInput] = useState(video.id || '');
-  const [order, setOrder] = useState(video.order || 1);
+  const [orderNum, setOrderNum] = useState(video.order_num || video.order || 1);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave({ title, id: videoInput, order });
+    onSave({ title, id: videoInput, order_num: orderNum });
   };
 
   return (
@@ -1095,8 +1158,8 @@ function VideoFormModal({ video, onClose, onSave }) {
             <input
               type="number"
               min="1"
-              value={order}
-              onChange={e => setOrder(e.target.value)}
+              value={orderNum}
+              onChange={e => setOrderNum(e.target.value)}
               className="w-full bg-[#0f1128] border border-white/20 rounded-lg p-2.5 text-white"
             />
           </div>
