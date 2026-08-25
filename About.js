@@ -3,12 +3,12 @@
  * Expanded layout: 1400px container width for better screen usage.
  * Typography: 20px body text and 16px labels for high readability.
  */
-window.About = function About() {
+window.About = function About({ navigateTo }) {
   return (
       <div className="min-h-screen bg-[#0f1128] text-[#f0f0f8] font-sans selection:bg-[#9296c8]/30 animate-fade-in">
 
-        {/* Container expanded to 1400px to fill more of the screen width */}
-        <div className="max-w-[1400px] mx-auto px-10 py-[120px] pb-[120px]">
+        {/* Container expanded to 1400px with responsive mobile padding */}
+        <div className="max-w-[1400px] mx-auto px-5 sm:px-8 md:px-10 py-24 sm:py-28 md:py-[120px] pb-16 sm:pb-24 md:pb-[120px]">
 
           {/* Simplified Header: Consistent weight and size */}
           <h1 className="font-['Raleway'] text-[clamp(32px,5vw,48px)] font-semibold tracking-tight leading-[1.2] mb-12 text-[#a8abdb]">
@@ -32,11 +32,20 @@ window.About = function About() {
                 Our community consists of physics, computer science, and other majors who are eager to explore quantum science.
                 Regardless of major, everyone is welcome at UQA.
                 Follow along at the{" "}
-                <a href="#calendar" className="text-[#a8abdb] border-b border-[#b0b3e0]/30 hover:border-[#b0b3e0] transition-colors">
-                  calendar
+                <a
+                  href="#schedule"
+                  onClick={(e) => {
+                    if (navigateTo) {
+                      e.preventDefault();
+                      navigateTo('schedule');
+                    }
+                  }}
+                  className="text-[#a8abdb] border-b border-[#b0b3e0]/30 hover:border-[#b0b3e0] transition-colors"
+                >
+                  schedule
                 </a>
                 {" "}or join our{" "}
-                <a href="https://discord.gg/qtqcAjhRVP" target="_blank" className="text-[#a8abdb] border-b border-[#b0b3e0]/30 hover:border-[#b0b3e0] transition-colors">
+                <a href="https://discord.gg/qtqcAjhRVP" target="_blank" rel="noopener noreferrer" className="text-[#a8abdb] border-b border-[#b0b3e0]/30 hover:border-[#b0b3e0] transition-colors">
                   Discord server
                 </a>
                 {" "}for announcements about meetings, events, and opportunities.

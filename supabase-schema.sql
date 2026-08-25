@@ -1,8 +1,7 @@
 -- ========================================================
 -- UMD UQA SUPABASE SCHEMA & SECURITY POLICIES
 -- Run this in your Supabase Project: SQL Editor -> New Query -> Run
--- ========================================================
-
+-- ======================================================
 -- 1. ADMIN EMAILS TABLE
 CREATE TABLE IF NOT EXISTS public.admin_emails (
     email TEXT PRIMARY KEY,
@@ -101,52 +100,64 @@ ALTER TABLE public.events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.videos ENABLE ROW LEVEL SECURITY;
 
 -- Admin Emails Policies
+DROP POLICY IF EXISTS "Public can view admin whitelist" ON public.admin_emails;
 CREATE POLICY "Public can view admin whitelist"
     ON public.admin_emails FOR SELECT
     USING (true);
 
+DROP POLICY IF EXISTS "Admins can insert new admins" ON public.admin_emails;
 CREATE POLICY "Admins can insert new admins"
     ON public.admin_emails FOR INSERT
     WITH CHECK (public.is_admin());
 
+DROP POLICY IF EXISTS "Admins can update admin records" ON public.admin_emails;
 CREATE POLICY "Admins can update admin records"
     ON public.admin_emails FOR UPDATE
     USING (public.is_admin());
 
+DROP POLICY IF EXISTS "Admins can delete admin records" ON public.admin_emails;
 CREATE POLICY "Admins can delete admin records"
     ON public.admin_emails FOR DELETE
     USING (public.is_admin());
 
 -- Events Policies
+DROP POLICY IF EXISTS "Public can view events" ON public.events;
 CREATE POLICY "Public can view events"
     ON public.events FOR SELECT
     USING (true);
 
+DROP POLICY IF EXISTS "Admins can insert events" ON public.events;
 CREATE POLICY "Admins can insert events"
     ON public.events FOR INSERT
     WITH CHECK (public.is_admin());
 
+DROP POLICY IF EXISTS "Admins can update events" ON public.events;
 CREATE POLICY "Admins can update events"
     ON public.events FOR UPDATE
     USING (public.is_admin());
 
+DROP POLICY IF EXISTS "Admins can delete events" ON public.events;
 CREATE POLICY "Admins can delete events"
     ON public.events FOR DELETE
     USING (public.is_admin());
 
 -- Videos Policies
+DROP POLICY IF EXISTS "Public can view videos" ON public.videos;
 CREATE POLICY "Public can view videos"
     ON public.videos FOR SELECT
     USING (true);
 
+DROP POLICY IF EXISTS "Admins can insert videos" ON public.videos;
 CREATE POLICY "Admins can insert videos"
     ON public.videos FOR INSERT
     WITH CHECK (public.is_admin());
 
+DROP POLICY IF EXISTS "Admins can update videos" ON public.videos;
 CREATE POLICY "Admins can update videos"
     ON public.videos FOR UPDATE
     USING (public.is_admin());
 
+DROP POLICY IF EXISTS "Admins can delete videos" ON public.videos;
 CREATE POLICY "Admins can delete videos"
     ON public.videos FOR DELETE
     USING (public.is_admin());
@@ -168,10 +179,12 @@ ON CONFLICT (id) DO UPDATE SET
     allowed_mime_types = ARRAY['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
 
 -- Storage RLS Policies
+DROP POLICY IF EXISTS "Public can view event posters" ON storage.objects;
 CREATE POLICY "Public can view event posters"
     ON storage.objects FOR SELECT
     USING (bucket_id = 'posters');
 
+DROP POLICY IF EXISTS "Admins can upload event posters" ON storage.objects;
 CREATE POLICY "Admins can upload event posters"
     ON storage.objects FOR INSERT
     WITH CHECK (
@@ -179,6 +192,7 @@ CREATE POLICY "Admins can upload event posters"
         AND (public.is_admin() OR auth.role() = 'authenticated')
     );
 
+DROP POLICY IF EXISTS "Admins can update event posters" ON storage.objects;
 CREATE POLICY "Admins can update event posters"
     ON storage.objects FOR UPDATE
     USING (
@@ -186,6 +200,7 @@ CREATE POLICY "Admins can update event posters"
         AND (public.is_admin() OR auth.role() = 'authenticated')
     );
 
+DROP POLICY IF EXISTS "Admins can delete event posters" ON storage.objects;
 CREATE POLICY "Admins can delete event posters"
     ON storage.objects FOR DELETE
     USING (

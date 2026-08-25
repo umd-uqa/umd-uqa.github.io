@@ -19,13 +19,21 @@ function UMDUQAWebsite() {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  // Helper function passed to Navbar/components to trigger page changes
+  // Helper function passed to Navbar/components to trigger immediate page changes
   const navigateTo = (id) => {
-    window.location.hash = id;
+    const cleanId = (id || 'home').replace('#', '');
+    setCurrentPage(cleanId);
+    if (window.location.hash !== `#${cleanId}`) {
+      window.location.hash = cleanId;
+    }
+    window.scrollTo(0, 0);
   };
 
   const isAuthPortalRoute = currentPage === 'auth' || currentPage === 'login';
   const isAdminRoute = currentPage === 'admin';
+  const isScheduleRoute = currentPage === 'schedule' || currentPage === 'events' || currentPage === 'calendar';
+
+  const ScheduleComponent = window.Schedule || window.Events || window.Calendar;
 
   return (
       <div className="min-h-screen text-slate-200 font-sans bg-[#0f1128]">
@@ -37,17 +45,16 @@ function UMDUQAWebsite() {
 
         {/* ── MAIN PAGE ROUTER ── */}
         <main className="pt-[52px]">
-          {currentPage === 'home' && window.Home && <window.Home />}
-          {currentPage === 'about' && window.About && <window.About />}
-          {currentPage === 'events' && window.Events && <window.Events navigateTo={navigateTo} />}
-          {currentPage === 'calendar' && window.Calendar && <window.Calendar />}
+          {currentPage === 'home' && window.Home && <window.Home navigateTo={navigateTo} />}
+          {currentPage === 'about' && window.About && <window.About navigateTo={navigateTo} />}
+          {isScheduleRoute && ScheduleComponent && <ScheduleComponent navigateTo={navigateTo} />}
           {currentPage === 'resources' && window.Resources && <window.Resources navigateTo={navigateTo} />}
-          {currentPage === 'contact' && window.Contact && <window.Contact />}
+          {currentPage === 'contact' && window.Contact && <window.Contact navigateTo={navigateTo} />}
           {isAuthPortalRoute && window.AuthPortal && <window.AuthPortal navigateTo={navigateTo} />}
           {isAdminRoute && window.Admin && <window.Admin navigateTo={navigateTo} />}
 
           {/* Fallback display if a component is still initializing */}
-          {(!window[currentPage.charAt(0).toUpperCase() + currentPage.slice(1)] && currentPage !== 'home' && !isAuthPortalRoute && !isAdminRoute) && (
+          {(!window[currentPage.charAt(0).toUpperCase() + currentPage.slice(1)] && currentPage !== 'home' && !isAuthPortalRoute && !isAdminRoute && !isScheduleRoute) && (
               <div className="flex items-center justify-center min-h-[60vh] text-slate-400">
                 <p className="animate-pulse text-xl">Initializing Quantum Module: {currentPage}...</p>
               </div>

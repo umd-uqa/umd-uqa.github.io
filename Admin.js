@@ -256,7 +256,7 @@ window.Admin = function Admin({ navigateTo }) {
         updated_at: new Date().toISOString()
       };
 
-      if (editingEvent?.id && !editingEvent.id.startsWith('default_')) {
+      if (editingEvent?.id) {
         payload.id = editingEvent.id;
         const { error } = await window.uqaSupabase.from('events').upsert(payload);
         if (error) throw error;
@@ -281,7 +281,7 @@ window.Admin = function Admin({ navigateTo }) {
     if (!confirm("Are you sure you want to delete this event? This action cannot be undone.")) return;
 
     try {
-      if (window.uqaSupabase && isSbConfigured && eventId && !eventId.startsWith('default_')) {
+      if (window.uqaSupabase && isSbConfigured && eventId) {
         const { error } = await window.uqaSupabase.from('events').delete().eq('id', eventId);
         if (error) throw error;
       }
@@ -414,7 +414,7 @@ window.Admin = function Admin({ navigateTo }) {
   // ----------------------------------------------------
   return (
     <div className="min-h-screen bg-[#0f1128] text-[#f0f0f8] font-sans selection:bg-[#9296c8]/30 animate-fade-in">
-      <div className="max-w-[1400px] mx-auto px-10 py-[120px] pb-[120px]">
+      <div className="max-w-[1400px] mx-auto px-5 sm:px-8 md:px-10 py-24 sm:py-28 md:py-[120px] pb-16 sm:pb-24 md:pb-[120px]">
 
         {/* ── FUSED TITLE & ACCOUNT PROFILE HEADER ── */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 pb-10 border-b border-white/10 mb-10">

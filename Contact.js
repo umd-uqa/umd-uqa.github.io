@@ -3,23 +3,23 @@
  * Expanded layout: 1400px container width for maximum screen usage.
  * Typography: 20px body text and 16px labels for high readability.
  */
-window.Contact = function Contact() {
+window.Contact = function Contact({ navigateTo }) {
   return (
       <div className="min-h-screen bg-[#0f1128] text-[#f0f0f8] font-sans selection:bg-[#9296c8]/30 animate-fade-in">
 
-        {/* 1400px container matching site-wide ultra-wide standard */}
-        <div className="max-w-[1400px] mx-auto px-10 py-[120px] pb-[120px]">
+        {/* 1400px container matching site-wide ultra-wide standard with responsive mobile padding */}
+        <div className="max-w-[1400px] mx-auto px-5 sm:px-8 md:px-10 py-24 sm:py-28 md:py-[120px] pb-16 sm:pb-24 md:pb-[120px]">
 
           {/* Simplified Header: Uniform font and optimized size */}
           <h1 className="font-['Raleway'] text-[clamp(32px,5vw,48px)] font-semibold tracking-tight leading-[1.2] mb-4 text-[#a8abdb]">
             Get In Touch
           </h1>
-          <p className="text-[20px] text-[#f0f0f8]/60 mb-16 leading-relaxed">
+          <p className="text-[18px] sm:text-[20px] text-[#f0f0f8]/60 mb-12 sm:mb-16 leading-relaxed">
             We'd love to hear from you — students, researchers, and partners alike.
           </p>
 
           {/* TWO-COL CONTACT GRID */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 mb-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 mb-16">
 
             <div className="space-y-8">
               <div className="font-['Raleway'] text-[16px] font-bold tracking-[0.22em] uppercase text-[#9296c8]">
@@ -38,7 +38,20 @@ window.Contact = function Contact() {
                   Physics Toll 2124
                 </div>
                 <p className="text-[18px] text-[#f0f0f8]/60 leading-relaxed">
-                  Check the <a href="#events" className="text-[#a8abdb] border-b border-[#a8abdb]/30 hover:border-[#a8abdb] transition-colors">Events</a> page for specific meeting dates and times.
+                  Check the{" "}
+                  <a
+                    href="#schedule"
+                    onClick={(e) => {
+                      if (navigateTo) {
+                        e.preventDefault();
+                        navigateTo('schedule');
+                      }
+                    }}
+                    className="text-[#a8abdb] border-b border-[#a8abdb]/30 hover:border-[#a8abdb] transition-colors"
+                  >
+                    Schedule
+                  </a>
+                  {" "}page for specific meeting dates and times.
                 </p>
               </div>
             </div>

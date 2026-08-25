@@ -116,8 +116,8 @@ window.Resources = function Resources({ navigateTo }) {
   return (
       <div className="min-h-screen bg-[#0f1128] text-[#f0f0f8] font-sans selection:bg-[#9296c8]/30 animate-fade-in">
 
-        {/* Container expanded to 1400px */}
-        <div className="max-w-[1400px] mx-auto px-10 py-[120px] pb-[120px]">
+        {/* Container expanded to 1400px with responsive mobile padding */}
+        <div className="max-w-[1400px] mx-auto px-5 sm:px-8 md:px-10 py-24 sm:py-28 md:py-[120px] pb-16 sm:pb-24 md:pb-[120px]">
 
           {/* Simplified Heading: Optimized for 1400px layout */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-16">

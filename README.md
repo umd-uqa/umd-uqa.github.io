@@ -1,69 +1,66 @@
-# UMD Undergraduate Quantum Association (UMD UQA)
+# UMD Undergraduate Quantum Association (UQA)
 
-Official website for the University of Maryland Undergraduate Quantum Association (hosted at [umd-uqa.github.io](https://umd-uqa.github.io)).
+The official website for the Undergraduate Quantum Association (UQA) at the University of Maryland, College Park.
 
----
-
-## 🚀 Architecture Overview
-
-- **Zero-Build Architecture**: Runs entirely via CDN-loaded React 18, Babel Standalone, and Tailwind CSS without Node.js bundlers.
-- **Authentication**: Official Google Identity Services (GIS) button bridged into Supabase Auth.
-- **Backend & Database**: 100% Free Supabase PostgreSQL Database (`events`, `videos`, `admin_emails`).
-- **Flyer Storage**: Supabase Storage public bucket `posters` with instant CDN preview and Lightbox gallery.
-- **Content Management System (CMS)**: 
-  - **Events & Flyers**: Full CRUD for club events and high-res poster uploads with Lightbox preview.
-  - **Featured Videos**: Tab-based YouTube video management on the Resources page.
-  - **Admin Whitelist**: Role-based access control with PostgreSQL Row-Level Security (RLS).
-- **Resilient Fallback**: Public pages automatically fall back to built-in static content if offline or before Supabase is configured.
+This platform serves as the digital hub for quantum computing and quantum science undergraduates, providing event schedules, workshop recordings, speaker announcements, and community resources.
 
 ---
 
-## 🛠️ Local Development & Testing
+## Overview
 
-Run a simple local HTTP server from the repository root:
+- **Schedule & Events**: Showcases upcoming quantum career fairs, speaker panels, and workshops, with live Google Calendar synchronization and flyer galleries.
+- **Resources**: Houses technical video workshops, challenge walkthroughs, and educational materials.
+- **Community & Contact**: Connects students with club officers, meeting locations (Physics Toll Building), and the Discord community.
+- **Officer CMS**: Allows authorized club administrators to add events, upload promotional flyers, and manage resources directly from the browser.
+
+---
+
+## Architecture
+
+- **Frontend**: React 18, Babel Standalone, and Tailwind CSS loaded via CDN (zero-build architecture without Node.js bundlers).
+- **Navigation**: Client-side hash routing (`#home`, `#about`, `#schedule`, `#resources`, `#contact`, `#admin`) with synchronous state transitions.
+- **Backend & Storage**: Supabase PostgreSQL for structured event and video records, and Supabase Storage for poster images.
+- **Authentication**: Google Identity Services (GIS) for role-based officer access control.
+
+---
+
+## Running Locally
+
+To run the site locally, start an HTTP server in the project root:
 
 ```bash
 python3 -m http.server 8000
 ```
 
-Open [http://localhost:8000](http://localhost:8000) in your browser.
-
-- **Guest Portal**: `http://localhost:8000/#auth`
-- **Admin CMS**: `http://localhost:8000/#admin`
-- **Events & Posters**: `http://localhost:8000/#events`
-- **Featured Resources**: `http://localhost:8000/#resources`
+Open `http://localhost:8000` in your web browser.
 
 ---
 
-## ⚙️ 100% Free Supabase Backend Setup Guide
+## Contributing
 
-### 1. Google Cloud Console (OAuth 2.0 Web Client ID)
-1. Go to the [Google Cloud Credentials Console](https://console.cloud.google.com/apis/credentials).
-2. Create an **OAuth 2.0 Client ID** (Application type: **Web application**).
-3. Under **Authorized JavaScript origins**, add:
-   - `http://localhost:8000`
-   - `http://127.0.0.1:8000`
-   - `https://umd-uqa.github.io`
-4. Paste the Client ID into `google-auth-config.js`.
-
-### 2. Supabase Free Project Configuration (No Credit Card Required)
-1. Create a free account and project at [Supabase Console](https://supabase.com/).
-2. Open the **SQL Editor** in your Supabase project dashboard.
-3. Open `supabase-schema.sql` from this repository, paste the entire SQL content into the SQL Editor, and click **Run**.
-   - This automatically creates the `admin_emails`, `events`, and `videos` tables, Row-Level Security policies, and the `posters` storage bucket.
-4. Go to **Project Settings** > **API**.
-5. Copy your **Project URL** and **anon public Key** and paste them into `supabase-config.js`:
-   ```javascript
-   window.UQA_SUPABASE_CONFIG = {
-     url: "https://your-project.supabase.co",
-     anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
-   };
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/umd-uqa/umd-uqa.github.io.git
+   cd umd-uqa.github.io
    ```
 
-### 3. Authorized Admin Whitelist
-The initial database schema pre-authorizes the 3 club administrators:
-- `itskrithikmohan@gmail.com`
-- `krithikm@terpmail.umd.edu`
-- `umd.uqa@gmail.com`
+2. **Create a Feature Branch**:
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
 
-Sign in with any of these accounts to manage events, posters, videos, and add/remove other administrator emails directly from `#admin`!
+3. **Development Guidelines**:
+   - Maintain the zero-build setup by attaching components directly to `window`.
+   - Ensure responsive design across desktop and mobile viewports using Tailwind CSS.
+
+4. **Testing**:
+   - Run a local HTTP server and verify changes across desktop and mobile browsers.
+
+5. **Submit a Pull Request**:
+   - Push your branch to GitHub and open a Pull Request describing your changes.
+
+---
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

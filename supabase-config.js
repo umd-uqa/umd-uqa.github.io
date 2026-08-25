@@ -8,8 +8,8 @@
  * 4. Paste them into `window.UQA_SUPABASE_CONFIG` below.
  */
 window.UQA_SUPABASE_CONFIG = {
-  url: "YOUR_SUPABASE_PROJECT_URL",
-  anonKey: "YOUR_SUPABASE_ANON_KEY"
+  url: "https://dpveemewzxkjwvsnbdqp.supabase.co",
+  anonKey: "sb_publishable_6w6wM6F_fIHA5ZmL3J9LaQ_1Q_wi0QQ"
 };
 
 /**
