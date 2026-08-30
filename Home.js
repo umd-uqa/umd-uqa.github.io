@@ -68,16 +68,17 @@ window.Home = function Home({ navigateTo }) {
           <div className="relative z-10 flex flex-col sm:flex-row gap-3.5 w-full sm:w-auto max-w-xs sm:max-w-none mx-auto items-stretch sm:items-center justify-center">
             <button
                 onClick={() => handleNav('about')}
-                className="bg-[#9a9dd4] text-[#181a38] px-7 py-3 rounded-md font-semibold text-[14px] hover:brightness-110 transition-all cursor-pointer w-full sm:w-auto text-center shadow-lg"
+                className="bg-[#9a9dd4] text-[#181a38] px-7 py-3 rounded-md font-['Nexa_Free'] font-extrabold text-[14px] hover:brightness-110 transition-all cursor-pointer w-full sm:w-auto text-center shadow-lg"
             >
-              Learn More About Us
+                Learn More About Us
             </button>
             <button
                 onClick={() => handleNav('schedule')}
-                className="border border-[#9a9dd4]/40 text-[#b0b3e0] px-7 py-3 rounded-md font-medium text-[14px] hover:bg-white/5 transition-all cursor-pointer w-full sm:w-auto text-center"
+                className="border border-[#9a9dd4]/40 text-[#b0b3e0] px-7 py-3 rounded-md font-['Nexa_Free'] font-light text-[14px] hover:bg-white/5 transition-all cursor-pointer w-full sm:w-auto text-center"
             >
               When We Meet
             </button>
+          </div>
           </div>
         </section>
       </div>
