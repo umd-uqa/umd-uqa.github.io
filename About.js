@@ -84,15 +84,15 @@ window.About = function About({ navigateTo }) {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
               <div className="space-y-3">
                 <h3 className="font-['Nexa_Free'] font-extrabold text-[18px] text-white">Learn & Grow</h3>
-                <p className="text-[16px] text-[#f0f0f8]/60 leading-[1.75]">Access workshops, tutorials, and resources to build your quantum computing skills from beginner to advanced levels.</p>
+                <p className="text-[16px] text-[#f0f0f8]/60 leading-[1.75]">Access workshops, tutorials, and resources to build your quantum science skills from beginner to advanced levels.</p>
               </div>
               <div className="space-y-3">
                 <h3 className="font-['Nexa_Free'] font-extrabold text-[18px] text-white">Network</h3>
-                <p className="text-[16px] text-[#f0f0f8]/60 leading-[1.75]">Connect with like-minded students, researchers, and industry professionals in the quantum computing field.</p>
+                <p className="text-[16px] text-[#f0f0f8]/60 leading-[1.75]">Connect with like-minded students, researchers, and industry professionals in the quantum fields.</p>
               </div>
               <div className="space-y-3">
                 <h3 className="font-['Nexa_Free'] font-extrabold text-[18px] text-white">Hands-On Experience</h3>
-                <p className="text-[16px] text-[#f0f0f8]/60 leading-[1.75]">Work on real quantum computing projects using platforms like IBM Qiskit and participate in hackathons.</p>
+                <p className="text-[16px] text-[#f0f0f8]/60 leading-[1.75]">Work on real quantum projects using platforms like IBM Qiskit and participate in hackathons.</p>
               </div>
               <div className="space-y-3">
                 <h3 className="font-['Nexa_Free'] font-extrabold text-[18px] text-white">Community</h3>
