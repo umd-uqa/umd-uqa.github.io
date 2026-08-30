@@ -24,12 +24,12 @@ window.About = function About({ navigateTo }) {
             {/* Body text at 20px for clear readability on wide displays */}
             <div className="space-y-6 text-[20px] text-[#f0f0f8]/80 leading-[1.9]">
               <p>
-                The Undergraduate Quantum Association (UQA) is a research and career-oriented student organization
-                which provides a space for students to engage with and learn more about quantum science.
-                UQA helps to connect the campus community to the frontiers of quantum through various events.
+                The UMD Undergraduate Quantum Association (UQA) is the primary student body for quantum enthusiasts across the University of Maryland, 
+                fostering a national community of students, researchers, and learners while connecting top student talent with opportunities for internships 
+                and careers in the field.
               </p>
               <p>
-                Our community consists of physics, computer science, and other majors who are eager to explore quantum science.
+                Our community consists of STEM majors, liberal arts majors, and all other enthusiasts who are eager to explore quantum science.
                 Regardless of major, everyone is welcome at UQA.
                 Follow along at the{" "}
                 
@@ -62,10 +62,10 @@ window.About = function About({ navigateTo }) {
             </h2>
             <ul className="space-y-7">
               {[
-                "Taken tours to local facilities like IonQ, a quantum computing company focused on software and hardware development.",
-                "Invited speakers from quantum industries to discuss their work via a speaker series.",
-                "Invited UMD faculty to discuss quantum research opportunities on campus.",
-                "Collaborated with hackathon organizations to create a quantum computing track."
+                "We host our annual Quantum Leap Career Nexus (QLCN) in the Fall — a national mini-conference supported by the NSF-funded Institute for Robust Quantum Simulation (RQS) and the NSF-funded Center for Quantum Networks (CQN).",
+                "We bring in world-renowned researchers, professors, and industry leaders to present their work through weekly seminars.",
+                "We host workshops focused on career development, such as introductory quantum workshops and IBM Quantum Foundation certifications.",
+                "We tour world-class quantum facilities, including IonQ Headquarters, the National Quantum Laboratory (QLab), the Joint Quantum Institute (JQI), the Center for Quantum Information and Computer Science (QuICS), and more."
               ].map((item, i) => (
                   <li key={i} className="relative pl-8 text-[20px] text-[#f0f0f8]/80 leading-[1.8] before:content-['—'] before:absolute before:left-0 before:text-[#9296c8]">
                     {item}
