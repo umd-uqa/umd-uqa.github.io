@@ -86,7 +86,7 @@ window.Navbar = function Navbar({ currentPage, navigateTo }) {
                             <button
                                 key={item.id}
                                 onClick={() => handleLinkClick(item.id)}
-                                className={`transition-colors font-semibold tracking-wide whitespace-nowrap text-base md:text-lg ${
+                                className={`font-['Nexa_Free'] transition-colors font-extrabold tracking-wide whitespace-nowrap text-base md:text-lg ${
                                     isItemActive(item.id) 
                                         ? 'text-[#a8abdb]' 
                                         : 'text-slate-400 hover:text-[#a8abdb]'
@@ -115,7 +115,7 @@ window.Navbar = function Navbar({ currentPage, navigateTo }) {
                         <button
                             onClick={() => handleLinkClick(auth.isAdmin ? 'admin' : 'auth')}
                             title={auth.user ? `Signed in as ${auth.user.email}` : "Sign in with Google"}
-                            className={`px-4 py-2 rounded-lg border transition-all flex items-center gap-2.5 text-xs sm:text-sm font-bold shadow-sm ${
+                            className={`font-['Nexa_Free'] px-4 py-2 rounded-lg border transition-all flex items-center gap-2.5 text-xs sm:text-sm font-extrabold shadow-sm ${
                                 currentPage === 'auth' || (auth.isAdmin && currentPage === 'admin')
                                     ? 'bg-[#9296c8] text-[#0f1128] border-[#9296c8]'
                                     : auth.user
@@ -149,7 +149,7 @@ window.Navbar = function Navbar({ currentPage, navigateTo }) {
 
                         <button
                             onClick={() => handleLinkClick('contact')}
-                            className="bg-[#9a9dd4]/15 border border-[#9a9dd4]/35 text-[#a8abdb] px-5 py-2 rounded-lg transition-all text-sm font-bold whitespace-nowrap hover:bg-[#9a9dd4]/25 shadow-sm"
+                            className="font-['Nexa_Free'] bg-[#9a9dd4]/15 border border-[#9a9dd4]/35 text-[#a8abdb] px-5 py-2 rounded-lg transition-all text-sm font-extrabold whitespace-nowrap hover:bg-[#9a9dd4]/25 shadow-sm"
                         >
                             Contact
                         </button>
@@ -203,9 +203,9 @@ window.Navbar = function Navbar({ currentPage, navigateTo }) {
                                 <button
                                     key={item.id}
                                     onClick={() => handleLinkClick(item.id)}
-                                    className={`px-4 py-3 rounded-xl text-left font-semibold text-lg transition-colors flex items-center justify-between ${
+                                    className={`font-['Nexa_Free'] px-4 py-3 rounded-xl text-left font-extrabold text-lg transition-colors flex items-center justify-between ${
                                         isItemActive(item.id)
-                                            ? 'bg-[#9296c8]/20 text-[#a8abdb] font-bold'
+                                            ? 'bg-[#9296c8]/20 text-[#a8abdb]'
                                             : 'text-slate-300 hover:bg-white/5 hover:text-white'
                                     }`}
                                 >
@@ -217,9 +217,9 @@ window.Navbar = function Navbar({ currentPage, navigateTo }) {
                             ))}
                             <button
                                 onClick={() => handleLinkClick('contact')}
-                                className={`px-4 py-3 rounded-xl text-left font-semibold text-lg transition-colors flex items-center justify-between ${
+                                className={`font-['Nexa_Free'] px-4 py-3 rounded-xl text-left font-extrabold text-lg transition-colors flex items-center justify-between ${
                                     currentPage === 'contact'
-                                        ? 'bg-[#9296c8]/20 text-[#a8abdb] font-bold'
+                                        ? 'bg-[#9296c8]/20 text-[#a8abdb]'
                                         : 'text-slate-300 hover:bg-white/5 hover:text-white'
                                 }`}
                             >
@@ -234,7 +234,7 @@ window.Navbar = function Navbar({ currentPage, navigateTo }) {
                         <div className="pt-2 border-t border-white/10">
                             <button
                                 onClick={() => handleLinkClick(auth.isAdmin ? 'admin' : 'auth')}
-                                className={`w-full py-3 px-4 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-3 ${
+                                className={`font-['Nexa_Free'] w-full py-3 px-4 rounded-xl font-extrabold text-sm transition-all flex items-center justify-center gap-3 ${
                                     auth.isAdmin
                                         ? 'bg-[#9296c8] text-[#0f1128]'
                                         : auth.user
