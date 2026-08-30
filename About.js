@@ -24,15 +24,15 @@ window.About = function About({ navigateTo }) {
             {/* Body text at 20px for clear readability on wide displays */}
             <div className="space-y-6 text-[20px] text-[#f0f0f8]/80 leading-[1.9]">
               <p>
-                The UMD Undergraduate Quantum Association (UQA) is the primary student body for quantum enthusiasts across the University of Maryland, 
-                fostering a national community of students, researchers, and learners while connecting top student talent with opportunities for internships 
+                The UMD Undergraduate Quantum Association (UQA) is the primary student body for quantum enthusiasts across the University of Maryland,
+                fostering a national community of students, researchers, and learners while connecting top student talent with opportunities for internships
                 and careers in the field.
               </p>
               <p>
-                Our community consists of STEM majors, liberal arts majors, and all other enthusiasts who are eager to explore quantum science.
+                Our community consists of STEM majors, liberal arts majors, and all other passionate learners who are eager to explore quantum science.
                 Regardless of major, everyone is welcome at UQA.
                 Follow along at the{" "}
-                
+                <a
                   href="#schedule"
                   onClick={(e) => {
                     if (navigateTo) {
@@ -111,7 +111,7 @@ window.About = function About({ navigateTo }) {
             <div className="text-[20px] text-[#f0f0f8]/80 leading-[1.9] mb-6">
               <p>
                 Supported by the{" "}
-                
+                <a
                   href="https://rqs.umd.edu/"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -123,7 +123,7 @@ window.About = function About({ navigateTo }) {
               </p>
             </div>
             <div className="pt-2">
-              
+              <a
                 href="https://rqs.umd.edu/"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -143,9 +143,6 @@ window.About = function About({ navigateTo }) {
           </div>
 
         </div>
-      </div>
-  );
-};
       </div>
   );
 };
