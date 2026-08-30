@@ -11,14 +11,14 @@ window.About = function About({ navigateTo }) {
         <div className="max-w-[1400px] mx-auto px-5 sm:px-8 md:px-10 py-24 sm:py-28 md:py-[120px] pb-16 sm:pb-24 md:pb-[120px]">
 
           {/* Simplified Header: Consistent weight and size */}
-          <h1 className="font-['Raleway'] text-[clamp(32px,5vw,48px)] font-semibold tracking-tight leading-[1.2] mb-12 text-[#a8abdb]">
+          <h1 className="font-['Nexa_Free'] text-[clamp(32px,5vw,48px)] font-extrabold tracking-tight leading-[1.2] mb-12 text-[#a8abdb]">
             About UMD Undergraduate Quantum Association
           </h1>
 
           {/* WHO WE ARE SECTION */}
           <section className="mb-10">
             {/* Label size consistent with large-scale UI */}
-            <h2 className="font-['Raleway'] text-[16px] font-bold tracking-[0.22em] uppercase text-[#9296c8] mb-8">
+            <h2 className="font-['Nexa_Free'] text-[16px] font-extrabold tracking-[0.22em] uppercase text-[#9296c8] mb-8">
               Who We Are
             </h2>
             {/* Body text at 20px for clear readability on wide displays */}
@@ -32,7 +32,7 @@ window.About = function About({ navigateTo }) {
                 Our community consists of physics, computer science, and other majors who are eager to explore quantum science.
                 Regardless of major, everyone is welcome at UQA.
                 Follow along at the{" "}
-                <a
+                
                   href="#schedule"
                   onClick={(e) => {
                     if (navigateTo) {
@@ -57,7 +57,7 @@ window.About = function About({ navigateTo }) {
 
           {/* WHAT WE DO SECTION */}
           <section className="mb-10">
-            <h2 className="font-['Raleway'] text-[16px] font-bold tracking-[0.22em] uppercase text-[#9296c8] mb-8">
+            <h2 className="font-['Nexa_Free'] text-[16px] font-extrabold tracking-[0.22em] uppercase text-[#9296c8] mb-8">
               What We Do
             </h2>
             <ul className="space-y-7">
@@ -78,24 +78,24 @@ window.About = function About({ navigateTo }) {
 
           {/* WHY JOIN UQA? SECTION */}
           <section className="mb-10">
-            <h2 className="font-['Raleway'] text-[16px] font-bold tracking-[0.22em] uppercase text-[#9296c8] mb-8">
+            <h2 className="font-['Nexa_Free'] text-[16px] font-extrabold tracking-[0.22em] uppercase text-[#9296c8] mb-8">
               Why Join UQA?
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
               <div className="space-y-3">
-                <h3 className="font-['Raleway'] font-semibold text-[18px] text-white">Learn & Grow</h3>
+                <h3 className="font-['Nexa_Free'] font-extrabold text-[18px] text-white">Learn & Grow</h3>
                 <p className="text-[16px] text-[#f0f0f8]/60 leading-[1.75]">Access workshops, tutorials, and resources to build your quantum computing skills from beginner to advanced levels.</p>
               </div>
               <div className="space-y-3">
-                <h3 className="font-['Raleway'] font-semibold text-[18px] text-white">Network</h3>
+                <h3 className="font-['Nexa_Free'] font-extrabold text-[18px] text-white">Network</h3>
                 <p className="text-[16px] text-[#f0f0f8]/60 leading-[1.75]">Connect with like-minded students, researchers, and industry professionals in the quantum computing field.</p>
               </div>
               <div className="space-y-3">
-                <h3 className="font-['Raleway'] font-semibold text-[18px] text-white">Hands-On Experience</h3>
+                <h3 className="font-['Nexa_Free'] font-extrabold text-[18px] text-white">Hands-On Experience</h3>
                 <p className="text-[16px] text-[#f0f0f8]/60 leading-[1.75]">Work on real quantum computing projects using platforms like IBM Qiskit and participate in hackathons.</p>
               </div>
               <div className="space-y-3">
-                <h3 className="font-['Raleway'] font-semibold text-[18px] text-white">Community</h3>
+                <h3 className="font-['Nexa_Free'] font-extrabold text-[18px] text-white">Community</h3>
                 <p className="text-[16px] text-[#f0f0f8]/60 leading-[1.75]">Be part of a welcoming community that supports your academic and professional growth in quantum technologies.</p>
               </div>
             </div>
@@ -105,13 +105,13 @@ window.About = function About({ navigateTo }) {
 
           {/* SUPPORTED BY SECTION */}
           <section className="mb-10">
-            <h2 className="font-['Raleway'] text-[16px] font-bold tracking-[0.22em] uppercase text-[#9296c8] mb-8">
+            <h2 className="font-['Nexa_Free'] text-[16px] font-extrabold tracking-[0.22em] uppercase text-[#9296c8] mb-8">
               Supported By
             </h2>
             <div className="text-[20px] text-[#f0f0f8]/80 leading-[1.9] mb-6">
               <p>
                 Supported by the{" "}
-                <a
+                
                   href="https://rqs.umd.edu/"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -123,7 +123,7 @@ window.About = function About({ navigateTo }) {
               </p>
             </div>
             <div className="pt-2">
-              <a
+              
                 href="https://rqs.umd.edu/"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -139,10 +139,13 @@ window.About = function About({ navigateTo }) {
           </section>
 
           <div className="mt-[80px] pt-8 border-t border-white/10 text-[18px] text-[#f0f0f8]/60 text-center">
-            <strong className="font-semibold text-white">Weekly General Body Meetings</strong> — Every Wednesday at 6:00 PM · Room 2124, John S. Toll Physics Building
+            <strong className="font-extrabold text-white">Weekly General Body Meetings</strong> — Every Wednesday at 6:00 PM · Room 2124, John S. Toll Physics Building
           </div>
 
         </div>
+      </div>
+  );
+};
       </div>
   );
 };
