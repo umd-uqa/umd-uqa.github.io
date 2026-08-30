@@ -121,7 +121,7 @@ window.Resources = function Resources({ navigateTo }) {
 
           {/* Simplified Heading: Optimized for 1400px layout */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-16">
-            <h1 className="font-['Raleway'] text-[clamp(32px,5vw,48px)] font-semibold tracking-tight leading-[1.2] text-[#a8abdb]">
+            <h1 className="font-['Nexa_Free'] text-[clamp(32px,5vw,48px)] font-extrabold tracking-tight leading-[1.2] text-[#a8abdb]">
               UQA Resources
             </h1>
             {auth.isAdmin && (
@@ -134,7 +134,7 @@ window.Resources = function Resources({ navigateTo }) {
           {/* ── SECTION 1: FEATURED VIDEOS ── */}
           <div className="mb-14">
             <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
-              <div className="font-['Raleway'] text-[16px] font-bold tracking-[0.22em] uppercase text-[#9296c8]">
+              <div className="font-['Nexa_Free'] text-[16px] font-extrabold tracking-[0.22em] uppercase text-[#9296c8]">
                 Featured Videos
               </div>
               {auth.isAdmin && (
@@ -156,7 +156,7 @@ window.Resources = function Resources({ navigateTo }) {
                 <div key={video.id || i} className="flex items-center border-b-2 border-transparent">
                   <button
                     onClick={() => setActiveTab(i)}
-                    className={`font-['Raleway'] text-[18px] font-medium px-8 py-4 border-b-2 transition-colors whitespace-nowrap
+                    className={`font-['Nexa_Free'] text-[18px] font-light px-8 py-4 border-b-2 transition-colors whitespace-nowrap
                       ${safeActiveIndex === i ? 'text-[#a8abdb] border-[#a8abdb]' : 'text-[#f0f0f8]/50 border-transparent hover:text-[#f0f0f8]'}
                     `}
                   >
@@ -197,7 +197,7 @@ window.Resources = function Resources({ navigateTo }) {
             <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
               <div className="bg-[#0c0d23] border border-white/20 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
                 <div className="flex justify-between items-center border-b border-white/10 pb-3">
-                  <h3 className="text-lg font-bold text-white font-['Raleway']">Add Featured Video</h3>
+                  <h3 className="text-lg font-extrabold text-white font-['Nexa_Free']">Add Featured Video</h3>
                   <button onClick={() => setIsAddingVideo(false)} className="text-slate-400 hover:text-white font-bold">✕</button>
                 </div>
                 <form onSubmit={handleSaveInlineVideo} className="space-y-4 text-sm">
@@ -247,17 +247,17 @@ window.Resources = function Resources({ navigateTo }) {
 
           {/* ── SECTION 2: UQA CREATED RESOURCES ── */}
           <div className="mb-14">
-            <div className="font-['Raleway'] text-[16px] font-bold tracking-[0.22em] uppercase text-[#9296c8] mb-10">
+            <div className="font-['Nexa_Free'] text-[16px] font-extrabold tracking-[0.22em] uppercase text-[#9296c8] mb-10">
               UQA Created Resources
             </div>
             <div className="flex flex-col">
               {uqaPresentations.map((item, i) => (
                   <div key={i} className="flex items-center justify-between py-8 border-t border-white/10 first:border-t-0 group">
                     <div>
-                      <div className="font-['Raleway'] text-[14px] font-bold tracking-[0.14em] uppercase text-[#9296c8] mb-2">{item.tag}</div>
+                      <div className="font-['Nexa_Free'] text-[14px] font-extrabold tracking-[0.14em] uppercase text-[#9296c8] mb-2">{item.tag}</div>
                       <div className="text-[20px] font-semibold text-white">{item.title}</div>
                     </div>
-                    <a href={item.link} target="_blank" className="font-['Raleway'] text-[16px] font-semibold text-[#a8abdb] border-b border-[#a8abdb]/30 hover:border-[#a8abdb] transition-all whitespace-nowrap">
+                    <a href={item.link} target="_blank" className="font-['Nexa_Free'] text-[16px] font-extrabold text-[#a8abdb] border-b border-[#a8abdb]/30 hover:border-[#a8abdb] transition-all whitespace-nowrap">
                       Open Slides →
                     </a>
                   </div>
@@ -268,7 +268,7 @@ window.Resources = function Resources({ navigateTo }) {
           {/* ── SECTION 3: LAUNCH BANNER ── */}
           <div className="mb-14 flex flex-col md:flex-row items-center justify-between gap-12 py-12 border-y border-white/10">
             <div>
-              <h3 className="font-['Raleway'] text-[28px] font-semibold text-white mb-3">Quantum Coalition Learning Graph</h3>
+              <h3 className="font-['Nexa_Free'] text-[28px] font-extrabold text-white mb-3">Quantum Coalition Learning Graph</h3>
               <p className="text-[#f0f0f8]/60 text-[20px] leading-relaxed max-w-4xl">The visual, interactive roadmap for learning quantum protocols, math prerequisites, and IBM course mappings.</p>
             </div>
             <a href="https://quantum-coalition-learning-resource.vercel.app/graph" target="_blank" className="bg-[#9296c8] text-[#0f1128] px-10 py-4 rounded-lg font-bold text-[15px] tracking-wide whitespace-nowrap hover:brightness-110 transition-all">
@@ -278,7 +278,7 @@ window.Resources = function Resources({ navigateTo }) {
 
           {/* ── SECTION 4: REPOSITORIES (4-COL GRID) ── */}
           <div className="mb-14">
-            <div className="font-['Raleway'] text-[16px] font-bold tracking-[0.22em] uppercase text-[#9296c8] mb-10">
+            <div className="font-['Nexa_Free'] text-[16px] font-extrabold tracking-[0.22em] uppercase text-[#9296c8] mb-10">
               Repositories & Community
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-12 gap-y-12">
@@ -302,7 +302,7 @@ window.Resources = function Resources({ navigateTo }) {
           {/* ── SECTION 5: BOTTOM GRID ── */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-24">
             <div>
-              <div className="font-['Raleway'] text-[16px] font-bold tracking-[0.22em] uppercase text-[#9296c8] mb-10">Learning Platforms & Demos</div>
+              <div className="font-['Nexa_Free'] text-[16px] font-extrabold tracking-[0.22em] uppercase text-[#9296c8] mb-10">Learning Platforms & Demos</div>
               <div className="flex flex-col">
                 {[
                   { title: "IBM Quantum Learning", link: "https://quantum.cloud.ibm.com/learning/en" },
@@ -319,7 +319,7 @@ window.Resources = function Resources({ navigateTo }) {
             </div>
 
             <div className="flex flex-col">
-              <div className="font-['Raleway'] text-[16px] font-bold tracking-[0.22em] uppercase text-[#9296c8] mb-10">Textbooks & Notes</div>
+              <div className="font-['Nexa_Free'] text-[16px] font-extrabold tracking-[0.22em] uppercase text-[#9296c8] mb-10">Textbooks & Notes</div>
               <div className="space-y-10">
                 <div>
                   <h4 className="text-[18px] font-bold text-white mb-2">Quantum Computation and Information</h4>
