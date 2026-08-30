@@ -26,28 +26,31 @@ window.Home = function Home({ navigateTo }) {
                 xmlns="http://www.w3.org/2000/svg"
                 style={{ overflow: 'visible' }}
             >
-              {/* Nucleus */}
-              <circle cx="100" cy="100" r="7" fill="#ffffff" />
-              {/* ORBIT 1: Horizontal */}
-              <g>
-                <ellipse cx="100" cy="100" rx="82" ry="30" fill="none" stroke="#9a9dd4" strokeWidth="1.2" opacity="0.4" />
-                <circle r="4" fill="#ffffff">
-                  <animateMotion dur="6s" repeatCount="indefinite" path={orbitPath} />
-                </circle>
-              </g>
-              {/* ORBIT 2: 60 Degree Rotation */}
-              <g transform="rotate(60 100 100)">
-                <ellipse cx="100" cy="100" rx="82" ry="30" fill="none" stroke="#9a9dd4" strokeWidth="1.2" opacity="0.4" />
-                <circle r="4" fill="#ffffff">
-                  <animateMotion dur="9s" repeatCount="indefinite" path={orbitPath} begin="-2s" />
-                </circle>
-              </g>
-              {/* ORBIT 3: -60 Degree Rotation */}
-              <g transform="rotate(-60 100 100)">
-                <ellipse cx="100" cy="100" rx="82" ry="30" fill="none" stroke="#9a9dd4" strokeWidth="1.2" opacity="0.4" />
-                <circle r="4" fill="#ffffff">
-                  <animateMotion dur="7s" repeatCount="indefinite" path={orbitPath} begin="-4s" />
-                </circle>
+              {/* Whole atom tilted 90deg as one group — orbit low point sits at bottom, mirror-symmetric left/right */}
+              <g transform="rotate(90 100 100)">
+                {/* Nucleus */}
+                <circle cx="100" cy="100" r="7" fill="#ffffff" />
+                {/* ORBIT 1 */}
+                <g>
+                  <ellipse cx="100" cy="100" rx="82" ry="30" fill="none" stroke="#9a9dd4" strokeWidth="1.2" opacity="0.4" />
+                  <circle r="4" fill="#ffffff">
+                    <animateMotion dur="6s" repeatCount="indefinite" path={orbitPath} />
+                  </circle>
+                </g>
+                {/* ORBIT 2: 60 Degree Rotation (relative to tilted group) */}
+                <g transform="rotate(60 100 100)">
+                  <ellipse cx="100" cy="100" rx="82" ry="30" fill="none" stroke="#9a9dd4" strokeWidth="1.2" opacity="0.4" />
+                  <circle r="4" fill="#ffffff">
+                    <animateMotion dur="9s" repeatCount="indefinite" path={orbitPath} begin="-2s" />
+                  </circle>
+                </g>
+                {/* ORBIT 3: -60 Degree Rotation (relative to tilted group) */}
+                <g transform="rotate(-60 100 100)">
+                  <ellipse cx="100" cy="100" rx="82" ry="30" fill="none" stroke="#9a9dd4" strokeWidth="1.2" opacity="0.4" />
+                  <circle r="4" fill="#ffffff">
+                    <animateMotion dur="7s" repeatCount="indefinite" path={orbitPath} begin="-4s" />
+                  </circle>
+                </g>
               </g>
             </svg>
           </div>
@@ -72,5 +75,7 @@ window.Home = function Home({ navigateTo }) {
           </div>
         </section>
       </div>
+  );
+};
   );
 };
