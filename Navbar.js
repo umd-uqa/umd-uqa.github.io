@@ -64,7 +64,7 @@ window.Navbar = function Navbar({ currentPage, navigateTo }) {
             className="fixed top-0 left-0 right-0 z-[9999]"
         >
             <nav
-                className="w-full transition-all duration-300 bg-[#0c0d23]/95 backdrop-blur-xl border-b border-white/[0.08] px-5 sm:px-8 md:px-10 py-3.5 md:py-4.5"
+                className="w-full transition-all duration-300 bg-[#0c0d23]/95 backdrop-blur-xl border-b border-white/[0.08] px-5 sm:px-8 md:px-10 py-5 md:py-7"
             >
                 <div className="relative flex items-center justify-between w-full max-w-[1400px] mx-auto">
 
@@ -76,7 +76,7 @@ window.Navbar = function Navbar({ currentPage, navigateTo }) {
                         <img
                             src="UQA_White.png"
                             alt="UMD UQA Logo"
-                            className="h-9 sm:h-11 md:h-12 w-auto object-contain transition-transform hover:scale-105"
+                            className="h-12 sm:h-14 md:h-16 w-auto object-contain transition-transform hover:scale-105"
                         />
                     </div>
 
