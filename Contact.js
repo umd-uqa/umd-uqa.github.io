@@ -11,7 +11,7 @@ window.Contact = function Contact({ navigateTo }) {
         <div className="max-w-[1400px] mx-auto px-5 sm:px-8 md:px-10 py-24 sm:py-28 md:py-[120px] pb-16 sm:pb-24 md:pb-[120px]">
 
           {/* Simplified Header: Uniform font and optimized size */}
-          <h1 className="font-['Raleway'] text-[clamp(32px,5vw,48px)] font-semibold tracking-tight leading-[1.2] mb-4 text-[#a8abdb]">
+          <h1 className="font-['Nexa_Free'] text-[clamp(32px,5vw,48px)] font-extrabold tracking-tight leading-[1.2] mb-4 text-[#a8abdb]">
             Get In Touch
           </h1>
           <p className="text-[18px] sm:text-[20px] text-[#f0f0f8]/60 mb-12 sm:mb-16 leading-relaxed">
@@ -22,7 +22,7 @@ window.Contact = function Contact({ navigateTo }) {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 mb-16">
 
             <div className="space-y-8">
-              <div className="font-['Raleway'] text-[16px] font-bold tracking-[0.22em] uppercase text-[#9296c8]">
+              <div className="font-['Nexa_Free'] text-[16px] font-extrabold tracking-[0.22em] uppercase text-[#9296c8]">
                 For Students
               </div>
               <h2 className="text-[28px] font-semibold text-white">Visit Us</h2>
@@ -31,7 +31,7 @@ window.Contact = function Contact({ navigateTo }) {
               </p>
 
               <div className="pt-8 border-t border-white/10">
-                <div className="font-['Raleway'] text-[13px] font-bold tracking-[0.14em] uppercase text-[#9296c8] mb-3">
+                <div className="font-['Nexa_Free'] text-[13px] font-extrabold tracking-[0.14em] uppercase text-[#9296c8] mb-3">
                   Location
                 </div>
                 <div className="text-[22px] font-semibold text-white mb-3">
@@ -57,7 +57,7 @@ window.Contact = function Contact({ navigateTo }) {
             </div>
 
             <div className="space-y-8">
-              <div className="font-['Raleway'] text-[16px] font-bold tracking-[0.22em] uppercase text-[#9296c8]">
+              <div className="font-['Nexa_Free'] text-[16px] font-extrabold tracking-[0.22em] uppercase text-[#9296c8]">
                 For Partners
               </div>
               <h2 className="text-[28px] font-semibold text-white">Contact Us</h2>
@@ -81,7 +81,7 @@ window.Contact = function Contact({ navigateTo }) {
 
             <a
                 href="mailto:umd_uqa@gmail.com"
-                className="inline-flex items-center gap-4 bg-[#9a9dd4]/15 border border-[#9a9dd4]/35 text-[#a8abdb] px-10 py-5 rounded-lg transition-all text-[18px] font-bold hover:bg-[#9a9dd4]/25 mb-6"
+                className="inline-flex items-center gap-4 bg-[#9a9dd4]/15 border border-[#9a9dd4]/35 text-[#a8abdb] px-10 py-5 rounded-lg transition-all text-[18px] font-['Nexa_Free'] font-extrabold hover:bg-[#9a9dd4]/25 mb-6"
             >
               <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/>
@@ -100,4 +100,3 @@ window.Contact = function Contact({ navigateTo }) {
       </div>
   );
 };
-{/* TWO-COL CONTACT GRID */}
