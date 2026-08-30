@@ -4,6 +4,11 @@
  * atom shakes, blows apart, and a fresh one fades in. Nothing about layout or
  * copy changes — only a faint "x/3" counter appears once someone is actually
  * interacting with it.
+ *
+ * THEME: the game models microwave-pulse qubit control. Each electron hit is
+ * framed as a control (π-)pulse locking that electron's phase. Once all three
+ * are locked, the system has been driven too hard and decoheres — the atom
+ * "shakes apart" as the control breaks — before a fresh, coherent atom re-forms.
  */
 const { useRef, useEffect, useState } = window.React || React;
 
@@ -37,6 +42,8 @@ window.Home = function Home({ navigateTo }) {
 
   const [hitCount, setHitCount] = useState(0);
   const [hintVisible, setHintVisible] = useState(false);
+  // Thematic status line shown only during the decoherence/recoherence beat
+  const [statusMessage, setStatusMessage] = useState(null);
 
   const buildElectrons = () => {
     electronsRef.current = ORBIT_DEFS.map((def) => ({
@@ -47,6 +54,7 @@ window.Home = function Home({ navigateTo }) {
     spawnTimeRef.current = performance.now();
     gameActiveRef.current = true;
     setHitCount(0);
+    setStatusMessage(null);
   };
 
   useEffect(() => {
@@ -90,6 +98,9 @@ window.Home = function Home({ navigateTo }) {
       const next = c + 1;
       if (next >= TOTAL_ELECTRONS) {
         gameActiveRef.current = false;
+        // All electrons phase-locked — the control drive has now over-rotated
+        // the system and coherence collapses.
+        setStatusMessage('Decoherence — phase control lost');
         setTimeout(shakeAtom, 250);
       }
       return next;
@@ -133,6 +144,7 @@ window.Home = function Home({ navigateTo }) {
           dot.setAttribute('r', '4');
         }
       });
+      // Recoherence: a fresh, coherent atom re-forms and the drive resets.
       buildElectrons();
       setHintVisible(false);
 
@@ -209,7 +221,9 @@ window.Home = function Home({ navigateTo }) {
                               fill="transparent"
                               style={{ cursor: 'pointer' }}
                               onClick={() => handleElectronHit(i)}
-                          />
+                          >
+                            <title>Apply a microwave π-pulse to this electron</title>
+                          </circle>
                           {/* Visible electron */}
                           <circle
                               ref={(el) => (dotRefs.current[i] = el)}
@@ -226,12 +240,12 @@ window.Home = function Home({ navigateTo }) {
               <g ref={particlesRef} />
             </svg>
 
-            {/* Faint hint — only appears once the game is actually being played */}
+            {/* Faint status line — only appears once the game is actually being played */}
             <div
                 className="text-center text-[11px] font-medium tracking-wide text-[#9a9dd4] mt-1 transition-opacity duration-300"
-                style={{ opacity: hintVisible && hitCount < TOTAL_ELECTRONS ? 0.6 : 0 }}
+                style={{ opacity: (hintVisible && hitCount < TOTAL_ELECTRONS) || statusMessage ? 0.6 : 0 }}
             >
-              {hitCount}/{TOTAL_ELECTRONS}
+              {statusMessage ? statusMessage : `${hitCount}/${TOTAL_ELECTRONS} pulses locked`}
             </div>
           </div>
 
