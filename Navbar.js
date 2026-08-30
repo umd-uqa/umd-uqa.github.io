@@ -76,7 +76,7 @@ window.Navbar = function Navbar({ currentPage, navigateTo }) {
                         <img
                             src="UQA_White.png"
                             alt="UMD UQA Logo"
-                            className="h-12 sm:h-14 md:h-16 w-auto object-contain transition-transform hover:scale-105"
+                            className="h-16 sm:h-20 md:h-24 w-auto object-contain transition-transform hover:scale-105"
                         />
                     </div>
 
@@ -86,7 +86,7 @@ window.Navbar = function Navbar({ currentPage, navigateTo }) {
                             <button
                                 key={item.id}
                                 onClick={() => handleLinkClick(item.id)}
-                                className={`font-['Nexa_Free'] transition-colors font-extrabold tracking-wide whitespace-nowrap text-base md:text-lg ${
+                                className={`font-['Nexa_Free'] transition-colors font-extrabold tracking-wide whitespace-nowrap text-xl md:text-2xl ${
                                     isItemActive(item.id) 
                                         ? 'text-[#a8abdb]' 
                                         : 'text-slate-400 hover:text-[#a8abdb]'
@@ -115,7 +115,7 @@ window.Navbar = function Navbar({ currentPage, navigateTo }) {
                         <button
                             onClick={() => handleLinkClick(auth.isAdmin ? 'admin' : 'auth')}
                             title={auth.user ? `Signed in as ${auth.user.email}` : "Sign in with Google"}
-                            className={`font-['Nexa_Free'] px-4 py-2 rounded-lg border transition-all flex items-center gap-2.5 text-xs sm:text-sm font-extrabold shadow-sm ${
+                            className={`font-['Nexa_Free'] px-4 py-2 rounded-lg border transition-all flex items-center gap-2.5 text-sm sm:text-base font-extrabold shadow-sm ${
                                 currentPage === 'auth' || (auth.isAdmin && currentPage === 'admin')
                                     ? 'bg-[#9296c8] text-[#0f1128] border-[#9296c8]'
                                     : auth.user
