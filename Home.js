@@ -65,7 +65,7 @@ window.Home = function Home({ navigateTo }) {
             </button>
             <button
                 onClick={() => handleNav('schedule')}
-                className="border border-[#9a9dd4]/40 text-[#b0b3e0] px-7 py-3 rounded-md font-['Nexa_Free'] font-light text-[14px] hover:bg-white/5 transition-all cursor-pointer w-full sm:w-auto text-center"
+                className="border border-[#9a9dd4]/40 text-[#b0b3e0] px-7 py-3 rounded-md font-['Nexa_Free'] font-extrabold text-[14px] hover:bg-white/5 transition-all cursor-pointer w-full sm:w-auto text-center"
             >
               When We Meet
             </button>
