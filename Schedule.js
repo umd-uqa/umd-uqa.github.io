@@ -800,5 +800,3 @@ function InlineEventModal({ event, onClose, onSave }) {
     </div>
   );
 }
-  );
-}
