@@ -229,7 +229,7 @@ window.Schedule = function Schedule({ navigateTo }) {
         {/* ── PAGE HEADER ── */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
           <div>
-            <h1 className="font-['Raleway'] text-[clamp(32px,5vw,48px)] font-semibold tracking-tight leading-[1.2] text-[#a8abdb]">
+            <h1 className="font-['Nexa_Free'] text-[clamp(32px,5vw,48px)] font-extrabold tracking-tight leading-[1.2] text-[#a8abdb]">
               Schedule & Events
             </h1>
             <p className="text-[#f0f0f8]/60 text-base sm:text-lg mt-2">
@@ -269,7 +269,7 @@ window.Schedule = function Schedule({ navigateTo }) {
 
         {/* ── SECTION 1: FEATURED & UPCOMING EVENTS ── */}
         <div className="mb-20">
-          <div className="font-['Raleway'] text-[16px] font-bold tracking-[0.22em] uppercase text-[#9296c8] mb-8">
+          <div className="font-['Nexa_Free'] text-[16px] font-extrabold tracking-[0.22em] uppercase text-[#9296c8] mb-8">
             Featured & Upcoming Events
           </div>
 
@@ -281,14 +281,14 @@ window.Schedule = function Schedule({ navigateTo }) {
 
                   {/* Date Column */}
                   <div className="text-left pt-0.5 flex md:flex-col items-baseline md:items-start gap-3 md:gap-0">
-                    <div className="font-['Raleway'] text-[14px] font-bold tracking-[0.16em] uppercase text-[#9296c8]">
+                    <div className="font-['Nexa_Free'] text-[14px] font-extrabold tracking-[0.16em] uppercase text-[#9296c8]">
                       {event.month}
                     </div>
-                    <div className="font-['Raleway'] text-[52px] font-light text-white leading-none">
+                    <div className="font-['Nexa_Free'] text-[52px] font-light text-white leading-none">
                       {event.day}
                     </div>
                     {event.year && (
-                      <div className="font-['Raleway'] text-[14px] text-slate-400 font-light mt-0.5">
+                      <div className="font-['Nexa_Free'] text-[14px] text-slate-400 font-light mt-0.5">
                         {event.year}
                       </div>
                     )}
@@ -301,7 +301,7 @@ window.Schedule = function Schedule({ navigateTo }) {
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 md:mb-7">
                       <div>
                         <div className="flex items-center gap-3">
-                          <h2 className="font-['Raleway'] text-[24px] sm:text-[26px] md:text-[28px] font-semibold text-white leading-tight">
+                          <h2 className="font-['Nexa_Free'] text-[24px] sm:text-[26px] md:text-[28px] font-extrabold text-white leading-tight">
                             {event.title}
                           </h2>
                           {event.isGCal && (
@@ -395,7 +395,7 @@ window.Schedule = function Schedule({ navigateTo }) {
                               href={link.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className={`font-['Raleway'] text-[13px] sm:text-[14px] md:text-[15px] font-bold px-5 sm:px-6 py-2.5 rounded-[6px] tracking-wide transition-all ${
+                              className={`font-['Nexa_Free'] text-[13px] sm:text-[14px] md:text-[15px] font-extrabold px-5 sm:px-6 py-2.5 rounded-[6px] tracking-wide transition-all ${
                                 link.primary
                                   ? "bg-[#9296c8] text-[#0f1128] hover:brightness-110 shadow-md"
                                   : "border border-[#9a9dd4]/35 text-[#a8abdb] hover:bg-[#9a9dd4]/10"
@@ -419,10 +419,10 @@ window.Schedule = function Schedule({ navigateTo }) {
         <div className="mb-20">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8">
             <div>
-              <div className="font-['Raleway'] text-[16px] font-bold tracking-[0.22em] uppercase text-[#9296c8]">
+              <div className="font-['Nexa_Free'] text-[16px] font-extrabold tracking-[0.22em] uppercase text-[#9296c8]">
                 Interactive Schedule
               </div>
-              <h2 className="font-['Raleway'] text-[clamp(24px,3vw,32px)] font-semibold text-white mt-1">
+              <h2 className="font-['Nexa_Free'] text-[clamp(24px,3vw,32px)] font-extrabold text-white mt-1">
                 Full Calendar Schedule
               </h2>
             </div>
@@ -454,7 +454,7 @@ window.Schedule = function Schedule({ navigateTo }) {
         {/* ── SECTION 3: EVENT POSTERS & FLYERS GALLERY ── */}
         {postersList.length > 0 && (
           <div className="mb-14 pt-12 border-t border-white/10">
-            <div className="font-['Raleway'] text-[16px] font-bold tracking-[0.22em] uppercase text-[#9296c8] mb-8">
+            <div className="font-['Nexa_Free'] text-[16px] font-extrabold tracking-[0.22em] uppercase text-[#9296c8] mb-8">
               Event Posters & Flyers Gallery
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -621,7 +621,7 @@ function InlineEventModal({ event, onClose, onSave }) {
     <div className="fixed inset-0 z-[99999] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
       <div className="bg-[#161836] border border-white/20 rounded-3xl p-6 sm:p-8 max-w-2xl w-full my-8 text-white shadow-2xl animate-fade-in max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between pb-4 mb-6 border-b border-white/10">
-          <h3 className="text-2xl font-bold text-white font-['Raleway']">
+          <h3 className="text-2xl font-extrabold text-white font-['Nexa_Free']">
             {event?.id ? "Edit & Enhance Event" : "Create New Event"}
           </h3>
           <button onClick={onClose} className="text-slate-400 hover:text-white text-xl">✕</button>
@@ -798,5 +798,7 @@ function InlineEventModal({ event, onClose, onSave }) {
         </form>
       </div>
     </div>
+  );
+}
   );
 }
