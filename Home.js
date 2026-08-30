@@ -60,9 +60,9 @@ window.Home = function Home({ navigateTo }) {
           </div>
 
           {/* Hero Typography */}
-          <h1 className="relative z-10 font-['Raleway'] text-[clamp(28px,5vw,60px)] font-light leading-[1.18] mb-8 text-white max-w-4xl mx-auto">
+          <h1 className="relative z-10 font-['Nexa_Free'] text-[clamp(28px,5vw,60px)] font-light leading-[1.18] mb-8 text-white max-w-4xl mx-auto">
             Discover the Future of<br />
-            <strong className="font-bold text-[#b0b3e0]">Engineering</strong> and <strong className="font-bold text-[#b0b3e0]">Technology</strong>
+            <strong className="font-extrabold text-[#b0b3e0]">Engineering</strong> and <strong className="font-extrabold text-[#b0b3e0]">Technology</strong>
           </h1>
 
           <div className="relative z-10 flex flex-col sm:flex-row gap-3.5 w-full sm:w-auto max-w-xs sm:max-w-none mx-auto items-stretch sm:items-center justify-center">
