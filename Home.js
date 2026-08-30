@@ -77,5 +77,3 @@ window.Home = function Home({ navigateTo }) {
       </div>
   );
 };
-  );
-};
