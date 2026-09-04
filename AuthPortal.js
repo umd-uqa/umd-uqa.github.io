@@ -173,5 +173,3 @@ window.AuthPortal = function AuthPortal({ navigateTo }) {
     </div>
   );
 };
-  );
-};
