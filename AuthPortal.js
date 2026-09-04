@@ -42,7 +42,7 @@ window.AuthPortal = function AuthPortal({ navigateTo }) {
             </svg>
           </div>
 
-          <h1 className="font-['Raleway'] text-2xl md:text-3xl font-bold text-white mb-3">
+          <h1 className="font-['Nexa_Free'] text-2xl md:text-3xl font-extrabold text-white mb-3">
             Sign In with Google
           </h1>
           <p className="text-slate-400 text-sm md:text-base leading-relaxed mb-8">
@@ -126,7 +126,7 @@ window.AuthPortal = function AuthPortal({ navigateTo }) {
             Google Authenticated
           </div>
 
-          <h2 className="font-['Raleway'] text-2xl font-bold text-white mb-1">
+          <h2 className="font-['Nexa_Free'] text-2xl font-extrabold text-white mb-1">
             {auth.user.displayName || "Google User"}
           </h2>
           <p className="text-slate-300 font-mono text-sm break-all">
@@ -171,5 +171,7 @@ window.AuthPortal = function AuthPortal({ navigateTo }) {
         )}
       </div>
     </div>
+  );
+};
   );
 };
